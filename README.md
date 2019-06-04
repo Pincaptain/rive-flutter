@@ -1,4 +1,4 @@
-# rive_flutter
+# Rive Flutter
 
 Mobile application for RIVE.
 
