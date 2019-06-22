@@ -8,11 +8,14 @@ import 'package:connectivity/connectivity.dart';
 import 'package:rive_flutter/pages/map.dart';
 
 class SplashPage extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() => SplashPageState();
+
 }
 
 class SplashPageState extends State<SplashPage> {
+
   StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   String _imageLocation;
@@ -70,4 +73,5 @@ class SplashPageState extends State<SplashPage> {
 
     _connectivitySubscription.cancel();
   }
+  
 }

@@ -26,6 +26,7 @@ dependencies:
   flare_flutter: ^1.5.1
   connectivity: ^0.4.3+2
   location: ^2.3.5
+  bloc: ^0.14.2
 
 dev_dependencies:
   flutter_test:
