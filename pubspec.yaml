@@ -27,6 +27,7 @@ dependencies:
   connectivity: ^0.4.3+2
   location: ^2.3.5
   bloc: ^0.14.2
+  flushbar: 1.2.4
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +48,7 @@ flutter:
   assets:
     - assets/images/Scooter.flr
     - assets/images/NoConnection.flr
+    - assets/images/Error.flr
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

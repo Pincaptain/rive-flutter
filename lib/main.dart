@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:rive_flutter/pages/splash.dart';
+import 'package:bloc/bloc.dart';
 
-void main() => runApp(RiveApp());
+import 'package:rive_flutter/pages/splash.dart';
+import 'package:rive_flutter/blocs/delegates/base_delegate.dart';
+
+main() {
+  BlocSupervisor.delegate = BaseBlocDelegate();
+
+  runApp(RiveApp());
+}
 
 class RiveApp extends StatelessWidget {
 
