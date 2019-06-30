@@ -24,6 +24,8 @@ class SplashPageState extends State<SplashPage> {
 
   Flushbar locationPermissionFlushbar;
 
+  StreamSubscription validationSubscription;
+
   @override
   initState() {
     super.initState();
@@ -53,7 +55,7 @@ class SplashPageState extends State<SplashPage> {
   initStreams() {
     splashBloc.locationPermissionBloc.state.listen(onLocationPermissionResult);
     
-    Observable.combineLatest2(
+    validationSubscription = Observable.combineLatest2(
       Connectivity().onConnectivityChanged,
       splashBloc.locationPermissionBloc.state,
       validateConnectivityAndPermissions
@@ -125,6 +127,7 @@ class SplashPageState extends State<SplashPage> {
   void dispose() {
     super.dispose();
     splashBloc.dispose();
+    validationSubscription.cancel();
   }
   
 }
