@@ -18,7 +18,10 @@ class RiveApp extends StatelessWidget {
     return MaterialApp(
       title: 'Rive',
       theme: ThemeData(
-        primarySwatch: Colors.teal
+        primarySwatch: Colors.teal,
+        appBarTheme: AppBarTheme(
+          color: Colors.teal[400],
+        ),
       ),
       debugShowCheckedModeBanner: false,
       home: SplashPage(),

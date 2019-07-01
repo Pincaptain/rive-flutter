@@ -12,6 +12,9 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="Rive"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyCq-7SaZAGWpvCXeXxUt9R5HkKr6TWrhjg"/>
         
         <activity
             android:name=".MainActivity"

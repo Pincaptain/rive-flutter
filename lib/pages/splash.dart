@@ -6,7 +6,6 @@ import 'package:rxdart/rxdart.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:location/location.dart';
 
 import 'package:rive_flutter/blocs/splash_bloc.dart';
 import 'package:rive_flutter/pages/map.dart';
@@ -49,17 +48,13 @@ class SplashPageState extends State<SplashPage> {
     );
 
     initStreams();
-    requestLocationPermission();
+    splashBloc.locationPermissionBloc.requestLocationPermission();
   }
 
   initStreams() {
     splashBloc.locationPermissionBloc.state.listen(onLocationPermissionResult);
     
-    validationSubscription = Observable.combineLatest2(
-      Connectivity().onConnectivityChanged,
-      splashBloc.locationPermissionBloc.state,
-      validateConnectivityAndPermissions
-    ).listen((valid) => print(valid));
+    validationSubscription = splashBloc.splashValidation.listen(onValidation);
   }
 
   onLocationPermissionResult(bool decision) {
@@ -72,8 +67,8 @@ class SplashPageState extends State<SplashPage> {
     }
   }
 
-  validateConnectivityAndPermissions(connectivityResult, locationPermissionResult) {
-    if (connectivityResult != ConnectivityResult.none && locationPermissionResult) {
+  onValidation(valid) {
+    if (valid) {
       Timer(Duration(seconds: 3), () {
         Navigator.pushReplacement(
           context,
@@ -81,19 +76,6 @@ class SplashPageState extends State<SplashPage> {
         );
       });
     }
-
-    return true;
-  }
-
-  requestLocationPermission() async {
-    var location = Location();
-    var permission = await location.hasPermission();
-
-    if (!permission) {
-      permission = await location.requestPermission();
-    }
-
-    splashBloc.locationPermissionBloc.dispatch(permission);
   }
 
   @override
