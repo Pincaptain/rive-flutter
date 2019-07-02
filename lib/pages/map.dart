@@ -23,7 +23,7 @@ class MapPageState extends State<MapPage> {
       appBar: AppBar(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(30),
+            bottom: Radius.circular(20),
           ),
         ),
         title: Text(
