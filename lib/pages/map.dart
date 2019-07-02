@@ -12,7 +12,7 @@ class MapPage extends StatefulWidget {
 class MapPageState extends State<MapPage> {
 
   static final CameraPosition initialLocation = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
+    target: LatLng(41.995921, 21.431442),
     zoom: 14.4746,
   );
 
@@ -21,6 +21,11 @@ class MapPageState extends State<MapPage> {
     return Scaffold(
       drawer: Drawer(),
       appBar: AppBar(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(30),
+          ),
+        ),
         title: Text(
           'Rive'
         ),
@@ -28,6 +33,7 @@ class MapPageState extends State<MapPage> {
       body: GoogleMap(
         mapType: MapType.normal,
         initialCameraPosition: initialLocation,
+        myLocationEnabled: true,
       ),
       floatingActionButton: Container(
         height: 45,
@@ -36,7 +42,7 @@ class MapPageState extends State<MapPage> {
         child: RaisedButton(
           onPressed: () {},
           child: Text(
-            'Ride',
+            'Drive',
             style: TextStyle(
               fontSize: 16,
             ),
