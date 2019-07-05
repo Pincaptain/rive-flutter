@@ -12,7 +12,6 @@ main() {
 }
 
 class RiveApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,5 +26,4 @@ class RiveApp extends StatelessWidget {
       home: SplashPage(),
     );
   }
-  
 }

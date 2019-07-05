@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 
 class BaseBlocDelegate extends BlocDelegate {
-
   @override
   void onEvent(Bloc bloc, Object event) {
     super.onEvent(bloc, event);
@@ -22,5 +21,4 @@ class BaseBlocDelegate extends BlocDelegate {
 
     print('BLoC: ${bloc.runtimeType}, Error: $error');
   }
-  
 }

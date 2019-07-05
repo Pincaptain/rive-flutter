@@ -7,7 +7,6 @@ import 'package:location/location.dart';
 import 'package:connectivity/connectivity.dart';
 
 class LocationPermissionBloc extends Bloc<bool, bool> {
-
   @override
   bool get initialState => false;
 
@@ -26,11 +25,9 @@ class LocationPermissionBloc extends Bloc<bool, bool> {
 
     dispatch(permission);
   }
-
 }
 
 class SplashBloc {
-
   LocationPermissionBloc locationPermissionBloc;
 
   Stream splashValidation;
@@ -52,5 +49,4 @@ class SplashBloc {
   dispose() {
     locationPermissionBloc.dispose();
   }
-
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:connectivity/connectivity.dart';
@@ -11,14 +10,11 @@ import 'package:rive_flutter/blocs/splash_bloc.dart';
 import 'package:rive_flutter/pages/map.dart';
 
 class SplashPage extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => SplashPageState();
-
 }
 
 class SplashPageState extends State<SplashPage> {
-
   SplashBloc splashBloc;
 
   Flushbar locationPermissionFlushbar;
@@ -111,5 +107,4 @@ class SplashPageState extends State<SplashPage> {
     splashBloc.dispose();
     validationSubscription.cancel();
   }
-  
 }
