@@ -5,7 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:rive_flutter/pages/splash.dart';
 import 'package:rive_flutter/blocs/delegates/base_delegate.dart';
 
-main() {
+void main() {
   BlocSupervisor.delegate = BaseBlocDelegate();
 
   runApp(RiveApp());

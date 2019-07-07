@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/models/auth.dart';
+import 'package:rive_flutter/blocs/splash_bloc.dart';
 
 abstract class ScooterEvent {
   Future<List<Scooter>> onEvent();
@@ -45,15 +46,17 @@ class ScooterBloc extends Bloc<ScooterEvent, List<Scooter>> {
 
 class MapBloc {
   ScooterBloc scooterBloc;
+  LocationPermissionBloc locationPermissionBloc;
 
   Timer scooterGetTimer;
 
   MapBloc() {
     scooterBloc = ScooterBloc();
+    locationPermissionBloc = LocationPermissionBloc();
     scooterGetTimer = Timer.periodic(Duration(seconds: 10), getScooters);
   }
 
-  getScooters(timer) {
+  void getScooters(timer) {
     scooterBloc.dispatch(ListScooterEvent());
   }
 
@@ -69,8 +72,9 @@ class MapBloc {
     )).toSet();
   }
 
-  dispose() {
+  void dispose() {
     scooterBloc.dispose();
+    locationPermissionBloc.dispose();
     scooterGetTimer.cancel();
   }
 }

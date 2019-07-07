@@ -1,7 +1,11 @@
+import 'dart:async';
+
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flushbar/flushbar.dart';
 
 import 'package:rive_flutter/blocs/map_bloc.dart';
 import 'package:rive_flutter/models/core.dart';
@@ -14,7 +18,12 @@ class MapPage extends StatefulWidget {
 class MapPageState extends State<MapPage> {
   MapBloc mapBloc;
 
-  static final CameraPosition initialLocation = CameraPosition(
+  Flushbar locationPermissionFlushbar;
+  Flushbar connectivityFlushbar;
+
+  StreamSubscription connectivitySubscription;
+
+  final CameraPosition initialLocation = CameraPosition(
     target: LatLng(41.995921, 21.431442),
     zoom: 14.4746,
   );
@@ -24,7 +33,66 @@ class MapPageState extends State<MapPage> {
     super.initState();
 
     mapBloc = MapBloc();
+    locationPermissionFlushbar = Flushbar(
+      messageText: Text(
+        'We need your location permission to show scooters on map.',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      isDismissible: false,
+      icon: Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+      aroundPadding: EdgeInsets.all(8),
+      borderRadius: 8,
+    );
+    connectivityFlushbar = Flushbar(
+      messageText: Text(
+        'Internet connection is required to show scooters on map.',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      isDismissible: false,
+      icon: Icon(
+        Icons.warning,
+        color: Colors.white,
+      ),
+      aroundPadding: EdgeInsets.all(8),
+      borderRadius: 8,
+    );
+
+    initStreams();
   }
+
+  void initStreams() {
+    mapBloc.locationPermissionBloc.state.listen(onLocationPermissionResult);
+    connectivitySubscription = Connectivity().onConnectivityChanged.listen(onConnectivityResult);
+  }
+
+  void onLocationPermissionResult(bool permission) {
+    if (!permission) {
+      locationPermissionFlushbar.show(context);
+    } else {
+      if (locationPermissionFlushbar != null) {
+        locationPermissionFlushbar.dismiss(context);
+      }
+    }
+  }
+
+  void onConnectivityResult(ConnectivityResult result) {
+    if (result == ConnectivityResult.none) {
+      connectivityFlushbar.show(context);
+    } else {
+      if (connectivityFlushbar != null) {
+        connectivityFlushbar.dismiss(context);
+      }
+    }
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -93,5 +161,6 @@ class MapPageState extends State<MapPage> {
   void dispose() {
     super.dispose();
     mapBloc.dispose();
+    connectivitySubscription.cancel();
   }
 }

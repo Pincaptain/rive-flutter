@@ -10,12 +10,18 @@ class LocationPermissionBloc extends Bloc<bool, bool> {
   @override
   bool get initialState => false;
 
+  Timer locationPermissionTimer;
+
+  LocationPermissionBloc() {
+    locationPermissionTimer = Timer.periodic(Duration(seconds: 1), requestLocationPermission);
+  }
+
   @override
   Stream<bool> mapEventToState(bool event) async* {
     yield event;
   }
 
-  requestLocationPermission() async {
+  void requestLocationPermission(timer) async {
     var location = Location();
     var permission = await location.hasPermission();
 
@@ -24,6 +30,12 @@ class LocationPermissionBloc extends Bloc<bool, bool> {
     }
 
     dispatch(permission);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    locationPermissionTimer.cancel();
   }
 }
 
@@ -42,11 +54,11 @@ class SplashBloc {
     );
   }
 
-  validateConnectivityAndPermissions(connectivityResult, locationPermissionResult) {
+  bool validateConnectivityAndPermissions(connectivityResult, locationPermissionResult) {
     return connectivityResult != ConnectivityResult.none && locationPermissionResult;
   }
 
-  dispose() {
+  void dispose() {
     locationPermissionBloc.dispose();
   }
 }

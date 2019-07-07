@@ -44,17 +44,15 @@ class SplashPageState extends State<SplashPage> {
     );
 
     initStreams();
-    splashBloc.locationPermissionBloc.requestLocationPermission();
   }
 
-  initStreams() {
+  void initStreams() {
     splashBloc.locationPermissionBloc.state.listen(onLocationPermissionResult);
-    
     validationSubscription = splashBloc.splashValidation.listen(onValidation);
   }
 
-  onLocationPermissionResult(bool decision) {
-    if (!decision) {
+  void onLocationPermissionResult(bool permission) {
+    if (!permission) {
       locationPermissionFlushbar.show(context);
     } else {
       if (locationPermissionFlushbar != null) {
@@ -63,7 +61,7 @@ class SplashPageState extends State<SplashPage> {
     }
   }
 
-  onValidation(valid) {
+  void onValidation(valid) {
     if (valid) {
       Timer(Duration(seconds: 3), () {
         Navigator.pushReplacement(
