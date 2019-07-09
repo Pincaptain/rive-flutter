@@ -1,11 +1,13 @@
 import 'dart:async';
 
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flushbar/flushbar.dart';
+import 'package:barcode_scan/barcode_scan.dart';
 
 import 'package:rive_flutter/blocs/map_bloc.dart';
 import 'package:rive_flutter/models/core.dart';
@@ -20,6 +22,9 @@ class MapPageState extends State<MapPage> {
 
   Flushbar locationPermissionFlushbar;
   Flushbar connectivityFlushbar;
+  Flushbar scannerPlatformFlushbar;
+  Flushbar scannerFormatFlushbar;
+  Flushbar scannerUnknownFlushbar;
 
   StreamSubscription connectivitySubscription;
 
@@ -65,6 +70,54 @@ class MapPageState extends State<MapPage> {
       aroundPadding: EdgeInsets.all(8),
       borderRadius: 8,
     );
+    scannerPlatformFlushbar = Flushbar(
+      messageText: Text(
+        'Camera permission is required to scan the QR code.',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      icon: Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+      aroundPadding: EdgeInsets.all(8),
+      borderRadius: 8,
+      duration: Duration(seconds: 3),
+    );
+    scannerFormatFlushbar = Flushbar(
+      messageText: Text(
+        'Incorrect format or nothing was detected. Please try again!',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      icon: Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+      aroundPadding: EdgeInsets.all(8),
+      borderRadius: 8,
+      duration: Duration(seconds: 3),
+    );
+    scannerUnknownFlushbar = Flushbar(
+      messageText: Text(
+        'Unknown exception. Please contact the developers!',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      icon: Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+      aroundPadding: EdgeInsets.all(8),
+      borderRadius: 8,
+      duration: Duration(seconds: 3),
+    );
 
     initStreams();
   }
@@ -92,7 +145,23 @@ class MapPageState extends State<MapPage> {
         connectivityFlushbar.dismiss(context);
       }
     }
-  } 
+  }
+
+  void onDrive() async {
+    String qr;
+
+    try {
+      qr = await BarcodeScanner.scan();
+    } on PlatformException {
+      scannerPlatformFlushbar.show(context);
+    } on FormatException {
+      scannerFormatFlushbar.show(context);
+    } catch(exception) {
+      scannerUnknownFlushbar.show(context);
+    }
+
+    print(qr);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +209,7 @@ class MapPageState extends State<MapPage> {
         width: double.infinity,
         margin: EdgeInsets.only(left: 30),
         child: RaisedButton(
-          onPressed: () {},
+          onPressed: onDrive,
           child: Text(
             'Drive',
             style: TextStyle(
