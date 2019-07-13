@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
 
 import 'package:rive_flutter/blocs/map_bloc.dart';
 import 'package:rive_flutter/models/core.dart';
@@ -26,6 +27,8 @@ class MapPageState extends State<MapPage> {
   Flushbar scannerFormatFlushbar;
   Flushbar scannerUnknownFlushbar;
 
+  FlareGiffyDialog driveDialog;
+
   StreamSubscription connectivitySubscription;
 
   final CameraPosition initialLocation = CameraPosition(
@@ -38,6 +41,7 @@ class MapPageState extends State<MapPage> {
     super.initState();
 
     mapBloc = MapBloc();
+
     locationPermissionFlushbar = Flushbar(
       messageText: Text(
         'We need your location permission to show scooters on map.',
@@ -119,6 +123,27 @@ class MapPageState extends State<MapPage> {
       duration: Duration(seconds: 3),
     );
 
+    driveDialog = FlareGiffyDialog(
+      flarePath: 'assets/images/Barcode.flr',
+      flareAnimation: 'scan',
+      title: Text(
+        'Scan Successful',
+        style: TextStyle(
+          fontSize: 22.0,
+          fontWeight: FontWeight.w600
+        ),
+      ),
+      description: Text(
+        'You have successfully scanned a scooters QR code. Are you sure you want to drive it?',
+        textAlign: TextAlign.center,
+      ),
+      onOkButtonPressed: () {},
+      buttonOkColor: Colors.teal[400],
+      buttonOkText: Text(
+        'Drive'
+      ),
+    );
+
     initStreams();
   }
 
@@ -160,7 +185,10 @@ class MapPageState extends State<MapPage> {
       scannerUnknownFlushbar.show(context);
     }
 
-    print(qr);
+    showDialog(
+      context: context,
+      builder: (_) => driveDialog
+    );
   }
 
   @override
@@ -173,7 +201,7 @@ class MapPageState extends State<MapPage> {
             DrawerHeader(
               child: Center(
                 child: FlareActor(
-                    'assets/images/Scooter.flr'
+                  'assets/images/Scooter.flr'
                 ),
               ),
               decoration: BoxDecoration(
