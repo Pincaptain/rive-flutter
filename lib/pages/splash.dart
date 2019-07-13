@@ -66,7 +66,9 @@ class SplashPageState extends State<SplashPage> {
       Timer(Duration(seconds: 3), () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => MapPage()),
+          MaterialPageRoute(
+            builder: (context) => MapPage()
+          ),
         );
       });
     }

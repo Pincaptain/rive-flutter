@@ -12,6 +12,7 @@ import 'package:giffy_dialog/giffy_dialog.dart';
 
 import 'package:rive_flutter/blocs/map_bloc.dart';
 import 'package:rive_flutter/models/core.dart';
+import 'package:rive_flutter/pages/ride.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -27,7 +28,7 @@ class MapPageState extends State<MapPage> {
   Flushbar scannerFormatFlushbar;
   Flushbar scannerUnknownFlushbar;
 
-  FlareGiffyDialog driveDialog;
+  FlareGiffyDialog rideDialog;
 
   StreamSubscription connectivitySubscription;
 
@@ -123,9 +124,9 @@ class MapPageState extends State<MapPage> {
       duration: Duration(seconds: 3),
     );
 
-    driveDialog = FlareGiffyDialog(
+    rideDialog = FlareGiffyDialog(
       flarePath: 'assets/images/Barcode.flr',
-      flareAnimation: 'scan',
+      flareAnimation: 'barcode',
       title: Text(
         'Scan Successful',
         style: TextStyle(
@@ -134,13 +135,16 @@ class MapPageState extends State<MapPage> {
         ),
       ),
       description: Text(
-        'You have successfully scanned a scooters QR code. Are you sure you want to drive it?',
+        'You have successfully scanned a scooters QR code. Are you sure you want to ride it?',
         textAlign: TextAlign.center,
       ),
-      onOkButtonPressed: () {},
+      onOkButtonPressed: onRideAccepted,
       buttonOkColor: Colors.teal[400],
       buttonOkText: Text(
-        'Drive'
+        'Ride',
+        style: TextStyle(
+          color: Colors.white,
+        ),
       ),
     );
 
@@ -172,7 +176,7 @@ class MapPageState extends State<MapPage> {
     }
   }
 
-  void onDrive() async {
+  void onRide() async {
     String qr;
 
     try {
@@ -185,9 +189,20 @@ class MapPageState extends State<MapPage> {
       scannerUnknownFlushbar.show(context);
     }
 
-    showDialog(
-      context: context,
-      builder: (_) => driveDialog
+    if (qr != null) {
+      showDialog(
+        context: context,
+        builder: (_) => rideDialog,
+      );
+    }
+  }
+
+  void onRideAccepted() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RidePage(),
+      ),
     );
   }
 
@@ -237,9 +252,9 @@ class MapPageState extends State<MapPage> {
         width: double.infinity,
         margin: EdgeInsets.only(left: 30),
         child: RaisedButton(
-          onPressed: onDrive,
+          onPressed: onRide,
           child: Text(
-            'Drive',
+            'Ride',
             style: TextStyle(
               fontSize: 16,
             ),

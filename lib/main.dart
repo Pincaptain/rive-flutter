@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/services.dart';
 
 import 'package:rive_flutter/pages/splash.dart';
 import 'package:rive_flutter/blocs/delegates/base_delegate.dart';
@@ -8,7 +9,10 @@ import 'package:rive_flutter/blocs/delegates/base_delegate.dart';
 void main() {
   BlocSupervisor.delegate = BaseBlocDelegate();
 
-  runApp(RiveApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
+    .then((_) {
+      runApp(RiveApp());
+    });
 }
 
 class RiveApp extends StatelessWidget {
