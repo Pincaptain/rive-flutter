@@ -17,9 +17,9 @@ class RidePageState extends State<RidePage> {
           ),
         ),
         title: Text(
-          'Rive'
+          'Rive',
         ),
       ),
     );
-  }  
+  }
 }

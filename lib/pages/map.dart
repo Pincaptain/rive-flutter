@@ -56,7 +56,7 @@ class MapPageState extends State<MapPage> {
         Icons.error,
         color: Colors.white,
       ),
-      aroundPadding: EdgeInsets.all(8),
+      margin: EdgeInsets.all(8),
       borderRadius: 8,
     );
     connectivityFlushbar = Flushbar(
@@ -72,7 +72,7 @@ class MapPageState extends State<MapPage> {
         Icons.warning,
         color: Colors.white,
       ),
-      aroundPadding: EdgeInsets.all(8),
+      margin: EdgeInsets.all(8),
       borderRadius: 8,
     );
     scannerPlatformFlushbar = Flushbar(
@@ -87,7 +87,7 @@ class MapPageState extends State<MapPage> {
         Icons.error,
         color: Colors.white,
       ),
-      aroundPadding: EdgeInsets.all(8),
+      margin: EdgeInsets.all(8),
       borderRadius: 8,
       duration: Duration(seconds: 3),
     );
@@ -103,7 +103,7 @@ class MapPageState extends State<MapPage> {
         Icons.error,
         color: Colors.white,
       ),
-      aroundPadding: EdgeInsets.all(8),
+      margin: EdgeInsets.all(8),
       borderRadius: 8,
       duration: Duration(seconds: 3),
     );
@@ -119,23 +119,23 @@ class MapPageState extends State<MapPage> {
         Icons.error,
         color: Colors.white,
       ),
-      aroundPadding: EdgeInsets.all(8),
+      margin: EdgeInsets.all(8),
       borderRadius: 8,
       duration: Duration(seconds: 3),
     );
 
     rideDialog = FlareGiffyDialog(
       flarePath: 'assets/images/Barcode.flr',
-      flareAnimation: 'barcode',
+      flareAnimation: 'scan',
       title: Text(
-        'Scan Successful',
+        'Success',
         style: TextStyle(
           fontSize: 22.0,
           fontWeight: FontWeight.w600
         ),
       ),
       description: Text(
-        'You have successfully scanned a scooters QR code. Are you sure you want to ride it?',
+        'Make sure you want to ride this scooter proceed by pressing ride. Otherwise press cancel to cancel the ride!',
         textAlign: TextAlign.center,
       ),
       onOkButtonPressed: onRideAccepted,

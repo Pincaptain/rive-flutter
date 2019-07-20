@@ -39,7 +39,7 @@ class SplashPageState extends State<SplashPage> {
         Icons.error,
         color: Colors.white,
       ),
-      aroundPadding: EdgeInsets.all(8),
+      margin: EdgeInsets.all(8),
       borderRadius: 8,
     );
 

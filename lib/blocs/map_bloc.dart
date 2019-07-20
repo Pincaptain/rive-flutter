@@ -67,7 +67,7 @@ class MapBloc {
       icon: BitmapDescriptor.defaultMarkerWithHue(scooter.battery.toDouble()),
       infoWindow: InfoWindow(
         title: 'Scooter: ${scooter.pk}',
-        snippet: 'Battery: ${scooter.battery}', 
+        snippet: 'Battery: ${scooter.battery} %', 
       ),
     )).toSet();
   }
