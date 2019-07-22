@@ -20,6 +20,9 @@ class RidePageState extends State<RidePage> {
           'Rive',
         ),
       ),
+      body: Center(
+        child: Container(),
+      ),
     );
   }
 }
