@@ -44,15 +44,59 @@ class ScooterBloc extends Bloc<ScooterEvent, List<Scooter>> {
   }
 }
 
+class RideData {
+  Scooter scooter;
+
+  bool isSuccessful() {
+    return scooter != null;
+  }
+}
+
+class BeginRideBloc extends Bloc<String, RideData> {
+  @override
+  RideData get initialState => RideData();
+
+  @override
+  Stream<RideData> mapEventToState(String event) {
+    return getRideData(event).asStream();
+  }
+
+  Future<RideData> getRideData(String id) async {
+    var rideData = RideData();
+
+    rideData.scooter = await getScooter(id);
+
+    return rideData;
+  }
+
+  Future<Scooter> getScooter(String id) async {
+    var response = await http.get(
+      Uri.encodeFull(Client.client + 'api/scooters/' + id),
+    );
+
+    if (response.statusCode != 200) {
+      return null;
+    }
+
+    var jsonString = utf8.decode(response.bodyBytes);
+    var jsonData = json.decode(jsonString);
+    var scooter = Scooter.fromJson(jsonData);
+
+    return scooter;
+  }
+}
+
 class MapBloc {
   ScooterBloc scooterBloc;
   LocationPermissionBloc locationPermissionBloc;
+  BeginRideBloc beginRideBloc;
 
   Timer scooterGetTimer;
 
   MapBloc() {
     scooterBloc = ScooterBloc();
     locationPermissionBloc = LocationPermissionBloc();
+    beginRideBloc = BeginRideBloc();
     scooterGetTimer = Timer.periodic(Duration(seconds: 10), getScooters);
   }
 
@@ -75,6 +119,7 @@ class MapBloc {
   void dispose() {
     scooterBloc.dispose();
     locationPermissionBloc.dispose();
+    beginRideBloc.dispose();
     scooterGetTimer.cancel();
   }
 }

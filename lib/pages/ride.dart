@@ -1,15 +1,30 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:rive_flutter/blocs/ride_bloc.dart';
+import 'package:rive_flutter/blocs/map_bloc.dart';
 
 class RidePage extends StatefulWidget {
+  final RideData rideData;
+
+  RidePage(this.rideData);
+
   @override
-  State<StatefulWidget> createState() => RidePageState();
+  State<StatefulWidget> createState() => RidePageState(rideData);
 }
 
 class RidePageState extends State<RidePage> {
+  final RideData rideData;
+
   RideBloc rideBloc;
+
+  final CameraPosition initialLocation = CameraPosition(
+    target: LatLng(41.995921, 21.431442),
+    zoom: 14.4746,
+  );
+
+  RidePageState(this.rideData);
 
   @override
   void initState() {
@@ -31,18 +46,14 @@ class RidePageState extends State<RidePage> {
           'Rive',
         ),
       ),
-      body: Center(
-        child: StreamBuilder<Object>(
-          stream: rideBloc.speedBloc.state,
-          builder: (context, snapshot) {
-            return Text(
-              snapshot.data.toString(),
-              style: TextStyle(
-                fontSize: 22,
-              ),
-            );
-          }
-        ),
+      body: Stack(
+        children: <Widget>[
+          GoogleMap(
+            initialCameraPosition: initialLocation,
+            myLocationButtonEnabled: true,
+            myLocationEnabled: true,
+          ),
+        ],
       ),
     );
   }

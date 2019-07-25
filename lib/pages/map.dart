@@ -32,6 +32,8 @@ class MapPageState extends State<MapPage> {
 
   StreamSubscription connectivitySubscription;
 
+  RideData rideData;
+
   final CameraPosition initialLocation = CameraPosition(
     target: LatLng(41.995921, 21.431442),
     zoom: 14.4746,
@@ -135,7 +137,7 @@ class MapPageState extends State<MapPage> {
         ),
       ),
       description: Text(
-        'Make sure you want to ride this scooter proceed by pressing ride. Otherwise press cancel to cancel the ride!',
+        'Make sure you want to ride this scooter and proceed by pressing ride. Otherwise press cancel to cancel the ride!',
         textAlign: TextAlign.center,
       ),
       onOkButtonPressed: onRideAccepted,
@@ -154,6 +156,7 @@ class MapPageState extends State<MapPage> {
   void initStreams() {
     mapBloc.locationPermissionBloc.state.listen(onLocationPermissionResult);
     connectivitySubscription = Connectivity().onConnectivityChanged.listen(onConnectivityResult);
+    mapBloc.beginRideBloc.state.listen(onBeginRideResult);
   }
 
   void onLocationPermissionResult(bool permission) {
@@ -176,6 +179,17 @@ class MapPageState extends State<MapPage> {
     }
   }
 
+  void onBeginRideResult(RideData rideData) {
+    if (rideData.isSuccessful()) {
+      this.rideData = rideData;
+
+      showDialog(
+        context: context,
+        builder: (_) => rideDialog,
+      );
+    }
+  }
+
   void onRide() async {
     String qr;
 
@@ -190,10 +204,7 @@ class MapPageState extends State<MapPage> {
     }
 
     if (qr != null) {
-      showDialog(
-        context: context,
-        builder: (_) => rideDialog,
-      );
+      mapBloc.beginRideBloc.dispatch(qr);
     }
   }
 
@@ -201,7 +212,7 @@ class MapPageState extends State<MapPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => RidePage(),
+        builder: (context) => RidePage(rideData),
       ),
     );
   }
