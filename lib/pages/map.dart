@@ -27,6 +27,7 @@ class MapPageState extends State<MapPage> {
   Flushbar scannerPlatformFlushbar;
   Flushbar scannerFormatFlushbar;
   Flushbar scannerUnknownFlushbar;
+  Flushbar invalidQrFlushbar;
 
   FlareGiffyDialog rideDialog;
 
@@ -125,6 +126,22 @@ class MapPageState extends State<MapPage> {
       borderRadius: 8,
       duration: Duration(seconds: 3),
     );
+    invalidQrFlushbar = Flushbar(
+      messageText: Text(
+        'Invalid scooter identification code. Please try again!',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      icon: Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+      margin: EdgeInsets.all(8),
+      borderRadius: 8,
+      duration: Duration(seconds: 3),
+    );
 
     rideDialog = FlareGiffyDialog(
       flarePath: 'assets/images/Barcode.flr',
@@ -187,6 +204,8 @@ class MapPageState extends State<MapPage> {
         context: context,
         builder: (_) => rideDialog,
       );
+    } else {
+      invalidQrFlushbar.show(context);
     }
   }
 
