@@ -35,12 +35,28 @@ class ListScooterEvent extends ScooterEvent {
 }
 
 class ScooterBloc extends Bloc<ScooterEvent, List<Scooter>> {
+  ScooterBloc() {
+    scootersTimer = Timer.periodic(Duration(seconds: 10), getScooters);
+  }
+
   @override
   List<Scooter> get initialState => List<Scooter>();
+
+  Timer scootersTimer;
 
   @override
   Stream<List<Scooter>> mapEventToState(ScooterEvent event) {
     return event.onEvent().asStream();
+  }
+
+  void getScooters(timer) {
+    dispatch(ListScooterEvent());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    scootersTimer.cancel();
   }
 }
 
@@ -136,18 +152,11 @@ class MapBloc {
   ValidateRideBloc validateRideBloc;
   BeginRideBloc beginRideBloc;
 
-  Timer scooterGetTimer;
-
   MapBloc() {
     scooterBloc = ScooterBloc();
     locationPermissionBloc = LocationPermissionBloc();
     validateRideBloc = ValidateRideBloc();
     beginRideBloc = BeginRideBloc();
-    scooterGetTimer = Timer.periodic(Duration(seconds: 10), getScooters);
-  }
-
-  void getScooters(timer) {
-    scooterBloc.dispatch(ListScooterEvent());
   }
 
   Set<Marker> toMarkers(List<Scooter> scooters) {
@@ -167,6 +176,5 @@ class MapBloc {
     locationPermissionBloc.dispose();
     validateRideBloc.dispose();
     beginRideBloc.dispose();
-    scooterGetTimer.cancel();
   }
 }
