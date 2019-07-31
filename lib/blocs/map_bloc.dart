@@ -46,32 +46,37 @@ class ScooterBloc extends Bloc<ScooterEvent, List<Scooter>> {
 
 class RideData {
   Scooter scooter;
+  User user;
 
-  bool isSuccessful() {
+  bool valid() {
     return scooter != null;
+  }
+
+  bool successful() {
+    return scooter != null && user != null;
   }
 }
 
-class BeginRideBloc extends Bloc<String, RideData> {
+class ValidateRideBloc extends Bloc<String, RideData> {
   @override
   RideData get initialState => RideData();
 
   @override
-  Stream<RideData> mapEventToState(String event) {
-    return getRideData(event).asStream();
+  Stream<RideData> mapEventToState(String qr) {
+    return getRideData(qr).asStream();
   }
 
-  Future<RideData> getRideData(String id) async {
+  Future<RideData> getRideData(String qr) async {
     var rideData = RideData();
 
-    rideData.scooter = await getScooter(id);
+    rideData.scooter = await getScooter(qr);
 
     return rideData;
   }
 
-  Future<Scooter> getScooter(String id) async {
+  Future<Scooter> getScooter(String qr) async {
     var response = await http.get(
-      Uri.encodeFull(Client.client + 'api/scooters/' + id),
+      Uri.encodeFull(Client.client + 'api/scooters/' + qr),
     );
 
     if (response.statusCode != 200) {
@@ -82,13 +87,53 @@ class BeginRideBloc extends Bloc<String, RideData> {
     var jsonData = json.decode(jsonString);
     var scooter = Scooter.fromJson(jsonData);
 
+    if (scooter.isRented) {
+      return null;
+    }
+
     return scooter;
+  }
+}
+
+class BeginRideBloc extends Bloc<RideData, RideData> {
+  @override
+  RideData get initialState => RideData();
+
+  @override
+  Stream<RideData> mapEventToState(RideData rideData) {
+    return getRideData(rideData).asStream();
+  }
+
+  Future<RideData> getRideData(RideData rideData) async {
+    rideData.user = await getUser();
+
+    return rideData;
+  }
+
+  Future<User> getUser() async {
+    var response = await http.get(
+      Uri.encodeFull(Client.client + 'api/users/self'),
+      headers: {
+        'Authorization': Token.getHeaderToken()
+      },
+    );
+
+    if (response.statusCode != 200) {
+      return null;
+    }
+
+    var jsonString = utf8.decode(response.bodyBytes);
+    var jsonData = json.decode(jsonString);
+    var user = User.fromJson(jsonData);
+
+    return user;
   }
 }
 
 class MapBloc {
   ScooterBloc scooterBloc;
   LocationPermissionBloc locationPermissionBloc;
+  ValidateRideBloc validateRideBloc;
   BeginRideBloc beginRideBloc;
 
   Timer scooterGetTimer;
@@ -96,6 +141,7 @@ class MapBloc {
   MapBloc() {
     scooterBloc = ScooterBloc();
     locationPermissionBloc = LocationPermissionBloc();
+    validateRideBloc = ValidateRideBloc();
     beginRideBloc = BeginRideBloc();
     scooterGetTimer = Timer.periodic(Duration(seconds: 10), getScooters);
   }
@@ -119,6 +165,7 @@ class MapBloc {
   void dispose() {
     scooterBloc.dispose();
     locationPermissionBloc.dispose();
+    validateRideBloc.dispose();
     beginRideBloc.dispose();
     scooterGetTimer.cancel();
   }

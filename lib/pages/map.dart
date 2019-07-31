@@ -28,6 +28,7 @@ class MapPageState extends State<MapPage> {
   Flushbar scannerFormatFlushbar;
   Flushbar scannerUnknownFlushbar;
   Flushbar invalidQrFlushbar;
+  Flushbar invalidUserFlushbar;
 
   FlareGiffyDialog rideDialog;
 
@@ -128,7 +129,7 @@ class MapPageState extends State<MapPage> {
     );
     invalidQrFlushbar = Flushbar(
       messageText: Text(
-        'Invalid scooter identification code. Please try again!',
+        'Invalid scooter identification code or scooter already rented. Please try again!',
         style: TextStyle(
           color: Colors.white,
         ),
@@ -141,6 +142,31 @@ class MapPageState extends State<MapPage> {
       margin: EdgeInsets.all(8),
       borderRadius: 8,
       duration: Duration(seconds: 3),
+    );
+    invalidUserFlushbar = Flushbar(
+      messageText: Text(
+        'You need an active account to begin a ride.',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      icon: Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+      margin: EdgeInsets.all(8),
+      borderRadius: 8,
+      duration: Duration(seconds: 3),
+      mainButton: FlatButton(
+        child: Text(
+          'Register Now',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        onPressed: () {},
+      ),
     );
 
     rideDialog = FlareGiffyDialog(
@@ -173,7 +199,7 @@ class MapPageState extends State<MapPage> {
   void initStreams() {
     mapBloc.locationPermissionBloc.state.listen(onLocationPermissionResult);
     connectivitySubscription = Connectivity().onConnectivityChanged.listen(onConnectivityResult);
-    mapBloc.beginRideBloc.state.listen(onBeginRideResult);
+    mapBloc.validateRideBloc.state.listen(onValidateRideResult);
   }
 
   void onLocationPermissionResult(bool permission) {
@@ -196,8 +222,8 @@ class MapPageState extends State<MapPage> {
     }
   }
 
-  void onBeginRideResult(RideData rideData) {
-    if (rideData.isSuccessful()) {
+  void onValidateRideResult(RideData rideData) {
+    if (rideData.valid()) {
       this.rideData = rideData;
 
       showDialog(
@@ -206,6 +232,19 @@ class MapPageState extends State<MapPage> {
       );
     } else {
       invalidQrFlushbar.show(context);
+    }
+  }
+
+  void onBeginRideResult(RideData rideData) {
+    if (rideData.successful()) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RidePage(rideData),
+        ),
+      );
+    } else {
+      invalidUserFlushbar.show(context);
     }
   }
 
@@ -223,17 +262,12 @@ class MapPageState extends State<MapPage> {
     }
 
     if (qr != null) {
-      mapBloc.beginRideBloc.dispatch(qr);
+      mapBloc.validateRideBloc.dispatch(qr);
     }
   }
 
   void onRideAccepted() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RidePage(rideData),
-      ),
-    );
+    mapBloc.beginRideBloc.dispatch(rideData);
   }
 
   @override
