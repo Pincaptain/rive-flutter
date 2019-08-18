@@ -58,7 +58,7 @@ flutter:
     - assets/images/Scooter.flr
     - assets/images/NoConnection.flr
     - assets/images/Error.flr
-    - assets/images/Barcode.flr
+    - assets/images/BarcodeSuccess.flr
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

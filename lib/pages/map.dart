@@ -38,7 +38,7 @@ class MapPageState extends State<MapPage> {
 
   final CameraPosition initialLocation = CameraPosition(
     target: LatLng(41.995921, 21.431442),
-    zoom: 14.4746,
+    zoom: 16,
   );
 
   @override
@@ -170,8 +170,8 @@ class MapPageState extends State<MapPage> {
     );
 
     rideDialog = FlareGiffyDialog(
-      flarePath: 'assets/images/Barcode.flr',
-      flareAnimation: 'scan',
+      flarePath: 'assets/images/BarcodeSuccess.flr',
+      flareAnimation: 'sucsess',
       title: Text(
         'Success',
         style: TextStyle(
@@ -200,6 +200,7 @@ class MapPageState extends State<MapPage> {
     mapBloc.locationPermissionBloc.state.listen(onLocationPermissionResult);
     connectivitySubscription = Connectivity().onConnectivityChanged.listen(onConnectivityResult);
     mapBloc.validateRideBloc.state.listen(onValidateRideResult);
+    mapBloc.beginRideBloc.state.listen(onBeginRideResult);
   }
 
   void onLocationPermissionResult(bool permission) {
@@ -223,6 +224,10 @@ class MapPageState extends State<MapPage> {
   }
 
   void onValidateRideResult(RideData rideData) {
+    if (rideData.initial) {
+      return;
+    }
+
     if (rideData.valid()) {
       this.rideData = rideData;
 
@@ -236,6 +241,10 @@ class MapPageState extends State<MapPage> {
   }
 
   void onBeginRideResult(RideData rideData) {
+    if (rideData.initial) {
+      return;
+    }
+
     if (rideData.successful()) {
       Navigator.push(
         context,
@@ -244,6 +253,7 @@ class MapPageState extends State<MapPage> {
         ),
       );
     } else {
+      Navigator.of(context).pop();
       invalidUserFlushbar.show(context);
     }
   }
@@ -262,7 +272,7 @@ class MapPageState extends State<MapPage> {
     }
 
     if (qr != null) {
-      mapBloc.validateRideBloc.dispatch(qr);
+      mapBloc.validateRideBloc.dispatch(qr);  
     }
   }
 

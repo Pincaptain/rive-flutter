@@ -63,6 +63,7 @@ class ScooterBloc extends Bloc<ScooterEvent, List<Scooter>> {
 class RideData {
   Scooter scooter;
   User user;
+  bool initial = true;
 
   bool valid() {
     return scooter != null;
@@ -84,6 +85,7 @@ class ValidateRideBloc extends Bloc<String, RideData> {
 
   Future<RideData> getRideData(String qr) async {
     var rideData = RideData();
+    rideData.initial = false;
 
     rideData.scooter = await getScooter(qr);
 
@@ -121,14 +123,14 @@ class BeginRideBloc extends Bloc<RideData, RideData> {
   }
 
   Future<RideData> getRideData(RideData rideData) async {
-    rideData.user = await getUser();
+    rideData.user = await getUser(rideData);
 
     return rideData;
   }
 
-  Future<User> getUser() async {
+  Future<User> getUser(RideData rideData) async {
     var response = await http.get(
-      Uri.encodeFull(Client.client + 'api/users/self'),
+      Uri.encodeFull(Client.client + 'api/scooters/${rideData.scooter.pk}/rent/'),
       headers: {
         'Authorization': Token.getHeaderToken()
       },
