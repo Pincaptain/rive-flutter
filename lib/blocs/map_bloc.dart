@@ -132,7 +132,7 @@ class BeginRideBloc extends Bloc<RideData, RideData> {
     var response = await http.get(
       Uri.encodeFull(Client.client + 'api/scooters/${rideData.scooter.pk}/rent/'),
       headers: {
-        'Authorization': Token.getHeaderToken()
+        'Authorization': Token.getHeaderToken(),
       },
     );
 

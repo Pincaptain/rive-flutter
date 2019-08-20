@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'auth.g.dart';
 
 class Client {
-  static String client = 'http://192.168.100.9:80/';
+  static String client = 'http://192.168.0.34:80/';
 }
 
 class Token {

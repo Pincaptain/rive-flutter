@@ -13,6 +13,7 @@ import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:rive_flutter/blocs/map_bloc.dart';
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/pages/ride.dart';
+import 'package:rive_flutter/models/auth.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -44,6 +45,8 @@ class MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
+
+    Token.token = 'eae6c17f30ca787ac2def3e5d8404fe2b19e892e';
 
     mapBloc = MapBloc();
 
@@ -246,6 +249,7 @@ class MapPageState extends State<MapPage> {
     }
 
     if (rideData.successful()) {
+      Navigator.of(context).pop();
       Navigator.push(
         context,
         MaterialPageRoute(

@@ -31,6 +31,22 @@ class RidePageState extends State<RidePage> {
     super.initState();
 
     rideBloc = RideBloc();
+
+    initStreams();
+  }
+
+  void initStreams() {
+    rideBloc.endRideBloc.state.listen(onEndRideResult);
+  }
+
+  void onEndRide() {
+    rideBloc.endRideBloc.dispatch(rideData);
+  }
+
+  void onEndRideResult(bool rideResult) {
+    if (rideResult) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -60,7 +76,7 @@ class RidePageState extends State<RidePage> {
         width: double.infinity,
         margin: EdgeInsets.only(left: 30),
         child: RaisedButton(
-          onPressed: () {},
+          onPressed: onEndRide,
           child: Text(
             'End Ride',
             style: TextStyle(
