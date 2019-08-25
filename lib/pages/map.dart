@@ -266,7 +266,7 @@ class MapPageState extends State<MapPage> {
     String qr;
 
     try {
-      qr = await BarcodeScanner.scan();
+      qr = await BarcodeScanner.scan(); 
     } on PlatformException {
       scannerPlatformFlushbar.show(context);
     } on FormatException {
