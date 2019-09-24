@@ -122,9 +122,9 @@ class RideBloc {
   DuringRideBloc duringRideBloc;
   EndRideBloc endRideBloc;
 
-  RideBloc() {
+  RideBloc(RideData rideData) {
     speedBloc = SpeedBloc();
-    duringRideBloc = DuringRideBloc();
+    duringRideBloc = DuringRideBloc(rideData);
     endRideBloc = EndRideBloc();
   }
 

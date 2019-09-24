@@ -301,6 +301,61 @@ class MapPageState extends State<MapPage> {
                 color: Colors.white,
               ),
             ),
+            ListTile(
+              title: Text('Account'),
+              trailing: Icon(
+                Icons.account_circle,
+                color: Colors.blue,
+              ),
+              onTap: () {
+              },
+            ),
+            ListTile(
+              title: Text('Wallet'),
+              trailing: Icon(
+                Icons.account_balance_wallet,
+                color: Colors.lightGreen,
+              ),
+              onTap: () {
+              },
+            ),
+            ListTile(
+              title: Text('Histroy'),
+              trailing: Icon(
+                Icons.history,
+                color: Colors.teal,
+                
+              ),
+              onTap: () {
+              },
+            ),
+            ListTile(
+              title: Text('Parked or Not'),
+              trailing: Icon(
+                Icons.local_parking,
+                color: Colors.yellow,
+              ),
+              onTap: () {
+              },
+            ),
+            ListTile(
+              title: Text('Settings'),
+              trailing: Icon(
+                Icons.settings,
+                color: Colors.grey,
+              ),
+              onTap: () {
+              },
+            ),
+            ListTile(
+              title: Text('Help'),
+              trailing: Icon(
+                Icons.help,
+                color: Colors.orange,
+              ),
+              onTap: () {
+              },
+            ),
           ],
         ),
       ),

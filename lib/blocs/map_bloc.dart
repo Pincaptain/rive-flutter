@@ -92,9 +92,9 @@ class ValidateRideBloc extends Bloc<String, RideData> {
     return rideData;
   }
 
-  Future<Scooter> getScooter(String qr) async {
+  Future<Scooter> getScooter(String id) async {
     var response = await http.get(
-      Uri.encodeFull(Client.client + 'api/scooters/' + qr),
+      Uri.encodeFull(Client.client + 'api/scooters/' + id),
     );
 
     if (response.statusCode != 200) {

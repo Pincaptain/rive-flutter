@@ -30,7 +30,7 @@ class RidePageState extends State<RidePage> {
   void initState() {
     super.initState();
 
-    rideBloc = RideBloc();
+    rideBloc = RideBloc(rideData);
 
     initStreams();
   }
