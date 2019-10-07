@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:easy_dialog/easy_dialog.dart';
 
 import 'package:rive_flutter/blocs/ride_bloc.dart';
 import 'package:rive_flutter/blocs/map_bloc.dart';
@@ -24,6 +26,8 @@ class RidePageState extends State<RidePage> {
     zoom: 16,
   );
 
+  EasyDialog reviewDialog;
+
   RidePageState(this.rideData);
 
   @override
@@ -32,15 +36,22 @@ class RidePageState extends State<RidePage> {
 
     rideBloc = RideBloc(rideData);
 
+    reviewDialog = EasyDialog();
+
     initStreams();
   }
 
   void initStreams() {
     rideBloc.endRideBloc.state.listen(onEndRideResult);
+    rideBloc.duringRideBloc.state.listen(onDuringRideResult);
   }
 
   void onEndRide() {
     rideBloc.endRideBloc.dispatch(rideData);
+  }
+
+  void onDuringRideResult(RideData rideData) {
+    print(rideData.scooter.battery);
   }
 
   void onEndRideResult(bool rideResult) {
