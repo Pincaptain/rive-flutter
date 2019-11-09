@@ -6,7 +6,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
 
-import 'package:rive_flutter/blocs/splash_bloc.dart';
+import 'package:rive_flutter/blocs/splash_context.dart';
 import 'package:rive_flutter/pages/map.dart';
 
 class SplashPage extends StatefulWidget {
@@ -15,7 +15,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class SplashPageState extends State<SplashPage> {
-  SplashBloc splashBloc;
+  SplashContext splashBloc;
 
   Flushbar locationPermissionFlushbar;
 
@@ -25,7 +25,7 @@ class SplashPageState extends State<SplashPage> {
   initState() {
     super.initState();
     
-    splashBloc = SplashBloc();
+    splashBloc = SplashContext();
     locationPermissionFlushbar = Flushbar(
       messageText: Text(
         'We need your location permission to show scooters on map.',

@@ -9,11 +9,14 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc.dart';
 
-import 'package:rive_flutter/blocs/map_bloc.dart';
+import 'package:rive_flutter/pages/account.dart';
+import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/pages/ride.dart';
 import 'package:rive_flutter/models/auth.dart';
+import 'package:rive_flutter/blocs/map_context.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -21,21 +24,12 @@ class MapPage extends StatefulWidget {
 }
 
 class MapPageState extends State<MapPage> {
-  MapBloc mapBloc;
+  MapContext mapContext;
 
   Flushbar locationPermissionFlushbar;
   Flushbar connectivityFlushbar;
-  Flushbar scannerPlatformFlushbar;
-  Flushbar scannerFormatFlushbar;
-  Flushbar scannerUnknownFlushbar;
-  Flushbar invalidQrFlushbar;
-  Flushbar invalidUserFlushbar;
-
-  FlareGiffyDialog rideDialog;
 
   StreamSubscription connectivitySubscription;
-
-  RideData rideData;
 
   final CameraPosition initialLocation = CameraPosition(
     target: LatLng(41.995921, 21.431442),
@@ -46,168 +40,22 @@ class MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
 
-    Token.token = 'eae6c17f30ca787ac2def3e5d8404fe2b19e892e';
+    mapContext = MapContext();
 
-    mapBloc = MapBloc();
-
-    locationPermissionFlushbar = Flushbar(
-      messageText: Text(
-        'We need your location permission to show scooters on map.',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      isDismissible: false,
-      icon: Icon(
-        Icons.error,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
-    );
-    connectivityFlushbar = Flushbar(
-      messageText: Text(
-        'Internet connection is required to show scooters on map.',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      isDismissible: false,
-      icon: Icon(
-        Icons.warning,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
-    );
-    scannerPlatformFlushbar = Flushbar(
-      messageText: Text(
-        'Camera permission is required to scan the QR code.',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      icon: Icon(
-        Icons.error,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
-      duration: Duration(seconds: 3),
-    );
-    scannerFormatFlushbar = Flushbar(
-      messageText: Text(
-        'Incorrect format or nothing was detected. Please try again!',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      icon: Icon(
-        Icons.error,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
-      duration: Duration(seconds: 3),
-    );
-    scannerUnknownFlushbar = Flushbar(
-      messageText: Text(
-        'Unknown exception. Please contact the developers!',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      icon: Icon(
-        Icons.error,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
-      duration: Duration(seconds: 3),
-    );
-    invalidQrFlushbar = Flushbar(
-      messageText: Text(
-        'Invalid scooter identification code or scooter already rented. Please try again!',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      icon: Icon(
-        Icons.error,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
-      duration: Duration(seconds: 3),
-    );
-    invalidUserFlushbar = Flushbar(
-      messageText: Text(
-        'You need an active account to begin a ride.',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      icon: Icon(
-        Icons.error,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
-      duration: Duration(seconds: 3),
-      mainButton: FlatButton(
-        child: Text(
-          'Register Now',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-        onPressed: () {},
-      ),
-    );
-
-    rideDialog = FlareGiffyDialog(
-      flarePath: 'assets/images/BarcodeSuccess.flr',
-      flareAnimation: 'sucsess',
-      title: Text(
-        'Success',
-        style: TextStyle(
-          fontSize: 22.0,
-          fontWeight: FontWeight.w600
-        ),
-      ),
-      description: Text(
-        'Make sure you want to ride this scooter and proceed by pressing ride. Otherwise press cancel to cancel the ride!',
-        textAlign: TextAlign.center,
-      ),
-      onOkButtonPressed: onRideAccepted,
-      buttonOkColor: Colors.teal[400],
-      buttonOkText: Text(
-        'Ride',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-    );
+    Token.token = '810bd579147aceffddcdee262a06e45c5ec3830e';
 
     initStreams();
   }
 
   void initStreams() {
-    mapBloc.locationPermissionBloc.state.listen(onLocationPermissionResult);
+    mapContext.locationPermissionBloc.state.listen(onLocationPermissionResult);
     connectivitySubscription = Connectivity().onConnectivityChanged.listen(onConnectivityResult);
-    mapBloc.validateRideBloc.state.listen(onValidateRideResult);
-    mapBloc.beginRideBloc.state.listen(onBeginRideResult);
+    mapContext.beginRideBloc.state.listen(onBeginRideResult);
   }
 
   void onLocationPermissionResult(bool permission) {
     if (!permission) {
+      locationPermissionFlushbar = createWarningFlushbar('We need your location permission to show scooters on map.');
       locationPermissionFlushbar.show(context);
     } else {
       if (locationPermissionFlushbar != null) {
@@ -218,6 +66,7 @@ class MapPageState extends State<MapPage> {
 
   void onConnectivityResult(ConnectivityResult result) {
     if (result == ConnectivityResult.none) {
+      connectivityFlushbar = createWarningFlushbar('Internet connection is required to show scooters on map.');
       connectivityFlushbar.show(context);
     } else {
       if (connectivityFlushbar != null) {
@@ -226,62 +75,82 @@ class MapPageState extends State<MapPage> {
     }
   }
 
-  void onValidateRideResult(RideData rideData) {
-    if (rideData.initial) {
-      return;
-    }
-
-    if (rideData.valid()) {
-      this.rideData = rideData;
-
-      showDialog(
-        context: context,
-        builder: (_) => rideDialog,
-      );
-    } else {
-      invalidQrFlushbar.show(context);
-    }
-  }
-
   void onBeginRideResult(RideData rideData) {
-    if (rideData.initial) {
+    if (rideData.isInitial()) {
       return;
     }
 
-    if (rideData.successful()) {
+    if (rideData.isValid()) {
       Navigator.of(context).pop();
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => RidePage(rideData),
+          builder: (context) => RidePage(),
         ),
       );
     } else {
       Navigator.of(context).pop();
-      invalidUserFlushbar.show(context);
+      switch (rideData.errorType) {
+        case RideErrorType.authentication:
+          createUserErrorFlushbar(rideData.errorMessage).show(context);
+          break;
+
+        default:
+          createErrorFlushbar(rideData.errorMessage).show(context);
+      }
     }
   }
 
   void onRide() async {
-    String qr;
+    String qrCode;
 
     try {
-      qr = await BarcodeScanner.scan(); 
+      qrCode = await BarcodeScanner.scan(); 
     } on PlatformException {
-      scannerPlatformFlushbar.show(context);
+      createErrorFlushbar('Camera permission is required to scan the QR code.').show(context);
     } on FormatException {
-      scannerFormatFlushbar.show(context);
+      createErrorFlushbar('Incorrect format or nothing was detected. Please try again!').show(context);
     } catch(exception) {
-      scannerUnknownFlushbar.show(context);
+      createErrorFlushbar('An unexpected error occurred while using the scanner. If this problem persists contact support!').show(context);
     }
 
-    if (qr != null) {
-      mapBloc.validateRideBloc.dispatch(qr);  
+    if (qrCode != null) {
+      showDialog(
+        context: context,
+        builder: (_) => createBeginRideDialog(qrCode),
+      );
     }
   }
 
-  void onRideAccepted() {
-    mapBloc.beginRideBloc.dispatch(rideData);
+  void onRideAccepted(String qrCode) {
+    mapContext.beginRideBloc.dispatch(qrCode);
+  }
+
+  void onAccount() {
+    if (Token.isAuthenticated()) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AccountPage(),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+    }
+  }
+
+  void onLogin() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginPage(),
+      ),
+    );
   }
 
   @override
@@ -307,8 +176,7 @@ class MapPageState extends State<MapPage> {
                 Icons.account_circle,
                 color: Colors.blue,
               ),
-              onTap: () {
-              },
+              onTap: onAccount,
             ),
             ListTile(
               title: Text('Wallet'),
@@ -370,13 +238,13 @@ class MapPageState extends State<MapPage> {
         ),
       ),
       body: StreamBuilder<List<Scooter>>(
-        stream: mapBloc.scooterBloc.state,
+        stream: mapContext.scootersBloc.state,
         builder: (context, snapshot) {
           return GoogleMap(
             mapType: MapType.normal,
             initialCameraPosition: initialLocation,
             myLocationEnabled: true,
-            markers: mapBloc.toMarkers(snapshot.data),
+            markers: mapContext.scootersBloc.toMarkers(snapshot.data),
           );
         }
       ),
@@ -402,10 +270,104 @@ class MapPageState extends State<MapPage> {
     );
   }
 
+  Flushbar createErrorFlushbar(String errorMessage) {
+    return Flushbar(
+      messageText: Text(
+        errorMessage,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      icon: Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+      margin: EdgeInsets.all(8),
+      borderRadius: 8,
+      duration: Duration(seconds: 3),
+    );
+  }
+
+  Flushbar createWarningFlushbar(String warningMessage) {
+    return Flushbar(
+      messageText: Text(
+        warningMessage,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      isDismissible: false,
+      icon: Icon(
+        Icons.warning,
+        color: Colors.white,
+      ),
+      margin: EdgeInsets.all(8),
+      borderRadius: 8,
+    );
+  }
+
+  Flushbar createUserErrorFlushbar(String errorMessage) {
+    return Flushbar(
+      messageText: Text(
+        errorMessage,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: Colors.teal,
+      icon: Icon(
+        Icons.error,
+        color: Colors.white,
+      ),
+      margin: EdgeInsets.all(8),
+      borderRadius: 8,
+      duration: Duration(seconds: 3),
+      mainButton: FlatButton(
+        child: Text(
+          'Login Now',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        onPressed: onLogin,
+      ),
+    );
+  }
+
+  FlareGiffyDialog createBeginRideDialog(String qrCode) {
+    return FlareGiffyDialog(
+      flarePath: 'assets/images/BarcodeSuccess.flr',
+      flareAnimation: 'sucsess',
+      title: Text(
+        'Success',
+        style: TextStyle(
+          fontSize: 22.0,
+          fontWeight: FontWeight.w600
+        ),
+      ),
+      description: Text(
+        'Make sure you want to ride this scooter and proceed by pressing ride. Otherwise press cancel to cancel the ride!',
+        textAlign: TextAlign.center,
+      ),
+      onOkButtonPressed: () {
+        onRideAccepted(qrCode);
+      },
+      buttonOkColor: Colors.teal[400],
+      buttonOkText: Text(
+        'Ride',
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     super.dispose();
-    mapBloc.dispose();
+    mapContext.dispose();
     connectivitySubscription.cancel();
   }
 }

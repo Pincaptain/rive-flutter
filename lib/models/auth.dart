@@ -3,7 +3,8 @@ import 'package:json_annotation/json_annotation.dart';
 part 'auth.g.dart';
 
 class Client {
-  static String client = 'http://192.168.0.34:80/';
+  static String client = 'https://314e2725.ngrok.io';
+  static String webSocketsClient = 'ws://314e2725.ngrok.io';
 }
 
 class Token {

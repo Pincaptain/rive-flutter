@@ -2,56 +2,46 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:easy_dialog/easy_dialog.dart';
-
-import 'package:rive_flutter/blocs/ride_bloc.dart';
-import 'package:rive_flutter/blocs/map_bloc.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc.dart';
+import 'package:rive_flutter/blocs/ride_context.dart';
 
 class RidePage extends StatefulWidget {
-  final RideData rideData;
-
-  RidePage(this.rideData);
-
   @override
-  State<StatefulWidget> createState() => RidePageState(rideData);
+  State<StatefulWidget> createState() => RidePageState();
 }
 
 class RidePageState extends State<RidePage> {
-  final RideData rideData;
-
-  RideBloc rideBloc;
+  RideContext rideContext;
 
   final CameraPosition initialLocation = CameraPosition(
     target: LatLng(41.995921, 21.431442),
     zoom: 16,
   );
 
-  EasyDialog reviewDialog;
-
-  RidePageState(this.rideData);
-
   @override
   void initState() {
     super.initState();
 
-    rideBloc = RideBloc(rideData);
-
-    reviewDialog = EasyDialog();
+    rideContext = RideContext();
 
     initStreams();
   }
 
   void initStreams() {
-    rideBloc.endRideBloc.state.listen(onEndRideResult);
-    rideBloc.duringRideBloc.state.listen(onDuringRideResult);
+    rideContext.endRideBloc.state.listen(onEndRideResult);
+    rideContext.duringRideBloc.state.listen(onDuringRideResult);
   }
 
   void onEndRide() {
-    rideBloc.endRideBloc.dispatch(rideData);
+    rideContext.endRideBloc.dispatch(RideEvent.end);
   }
 
   void onDuringRideResult(RideData rideData) {
-    print(rideData.scooter.battery);
+    if (rideData.isInitial()) {
+      return;
+    }
+    
+    print(rideData.ride.scooter.battery);
   }
 
   void onEndRideResult(bool rideResult) {
@@ -107,6 +97,6 @@ class RidePageState extends State<RidePage> {
   @override
   void dispose() {
     super.dispose();
-    rideBloc.dispose();
+    rideContext.dispose();
   }
 }
