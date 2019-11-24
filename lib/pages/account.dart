@@ -8,6 +8,18 @@ class AccountPage extends StatefulWidget {
 class AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
-    return null;
+    return Scaffold(
+      appBar: AppBar(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
+        ),
+        title: Text(
+          'Account'
+        ),
+      ),
+      body: Container(),
+    );
   }
 }

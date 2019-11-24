@@ -25,7 +25,7 @@ class RideData {
   }
 
   bool isInitial() {
-    return ride == null && errorMessage.isEmpty && errorType == null;
+    return ride == null && errorMessage == null && errorType == null;
   }
 }
 

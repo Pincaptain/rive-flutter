@@ -9,7 +9,6 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
-import 'package:rive_flutter/blocs/core/ride_bloc.dart';
 
 import 'package:rive_flutter/pages/account.dart';
 import 'package:rive_flutter/pages/login.dart';
@@ -17,6 +16,8 @@ import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/pages/ride.dart';
 import 'package:rive_flutter/models/auth.dart';
 import 'package:rive_flutter/blocs/map_context.dart';
+import 'package:rive_flutter/widgets/builders/flushbar_builders.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -41,8 +42,6 @@ class MapPageState extends State<MapPage> {
     super.initState();
 
     mapContext = MapContext();
-
-    Token.token = '810bd579147aceffddcdee262a06e45c5ec3830e';
 
     initStreams();
   }
@@ -267,44 +266,6 @@ class MapPageState extends State<MapPage> {
           ),
         ),
       ),
-    );
-  }
-
-  Flushbar createErrorFlushbar(String errorMessage) {
-    return Flushbar(
-      messageText: Text(
-        errorMessage,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      icon: Icon(
-        Icons.error,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
-      duration: Duration(seconds: 3),
-    );
-  }
-
-  Flushbar createWarningFlushbar(String warningMessage) {
-    return Flushbar(
-      messageText: Text(
-        warningMessage,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      isDismissible: false,
-      icon: Icon(
-        Icons.warning,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
     );
   }
 
