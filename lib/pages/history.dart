@@ -89,4 +89,3 @@ class HistoryPageState extends State<HistoryPage> {
     );
   }
 }
-
