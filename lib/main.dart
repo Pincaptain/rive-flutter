@@ -5,12 +5,14 @@ import 'package:flutter/services.dart';
 
 import 'package:rive_flutter/pages/splash.dart';
 import 'package:rive_flutter/delegates/base_delegate.dart';
+import 'package:rive_flutter/models/auth.dart';
 
 void main() {
   BlocSupervisor.delegate = BaseBlocDelegate();
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
     .then((_) {
+      Token.tryAuthenticate();
       runApp(RiveApp());
     });
 }

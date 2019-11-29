@@ -194,3 +194,44 @@ class EndRideBloc extends Bloc<RideEvent, bool> {
     return true;
   }
 }
+
+enum HistoryEvent {
+  list,
+}
+
+class HistoryBloc extends Bloc<HistoryEvent, List<Ride>> {
+  @override
+  List<Ride> get initialState => List<Ride>();
+
+  @override
+  Stream<List<Ride>> mapEventToState(HistoryEvent historyEvent) {
+    switch (historyEvent) {
+      case HistoryEvent.list:
+        return getRides().asStream();
+        
+      default:
+        return getRides().asStream();
+    }
+  }
+
+  Future<List<Ride>> getRides() async {
+    var response = await http.get(
+      Uri.encodeFull('${Client.client}/api/rides/'),
+      headers: {
+        'Authorization': Token.getHeaderToken(),
+      },
+    );
+
+    if (response.statusCode != 200) {
+      return List<Ride>();
+    }
+
+    var jsonString = utf8.decode(response.bodyBytes);
+    var jsonData = json.decode(jsonString);
+    var rides = await Stream.fromIterable(jsonData)
+            .map((value) => Ride.fromJson(value))
+            .toList();
+
+    return rides;
+  }
+}

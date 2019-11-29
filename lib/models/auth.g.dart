@@ -42,14 +42,15 @@ Map<String, dynamic> _$LoginModelToJson(LoginModel instance) =>
 
 RegisterModel _$RegisterModelFromJson(Map<String, dynamic> json) {
   return RegisterModel(json['username'] as String, json['email'] as String,
-      json['password'] as String);
+      json['password1'] as String, json['password2'] as String);
 }
 
 Map<String, dynamic> _$RegisterModelToJson(RegisterModel instance) =>
     <String, dynamic>{
       'username': instance.username,
       'email': instance.email,
-      'password': instance.password
+      'password1': instance.password1,
+      'password2': instance.password2
     };
 
 RegisterErrorModel _$RegisterErrorModelFromJson(Map<String, dynamic> json) {
@@ -57,7 +58,8 @@ RegisterErrorModel _$RegisterErrorModelFromJson(Map<String, dynamic> json) {
       (json['username'] as List)?.map((e) => e as String)?.toList(),
       (json['email'] as List)?.map((e) => e as String)?.toList(),
       (json['password1'] as List)?.map((e) => e as String)?.toList(),
-      (json['password2'] as List)?.map((e) => e as String)?.toList());
+      (json['password2'] as List)?.map((e) => e as String)?.toList(),
+      (json['non_field_errors'] as List)?.map((e) => e as String)?.toList());
 }
 
 Map<String, dynamic> _$RegisterErrorModelToJson(RegisterErrorModel instance) =>
@@ -65,5 +67,6 @@ Map<String, dynamic> _$RegisterErrorModelToJson(RegisterErrorModel instance) =>
       'username': instance.usernameErrors,
       'email': instance.emailErrors,
       'password1': instance.password1Errors,
-      'password2': instance.password2Errors
+      'password2': instance.password2Errors,
+      'non_field_errors': instance.nonFieldErrors
     };

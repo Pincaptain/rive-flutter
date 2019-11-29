@@ -17,10 +17,12 @@ enum ScooterEvent {
 class ScootersBloc extends Bloc<ScooterEvent, List<Scooter>> {
   WebSocketChannel scootersChannel;
   StreamSubscription scootersChannelSubscription;
+  Timer scootersTimer;
 
   ScootersBloc() {
     scootersChannel = IOWebSocketChannel.connect('${Client.webSocketsClient}/scooters/');
     scootersChannelSubscription = scootersChannel.stream.listen(onScootersMessage);
+    scootersTimer = Timer.periodic(Duration(seconds: 1), onScooterTick);
 
     dispatch(ScooterEvent.list);
   }
@@ -73,9 +75,14 @@ class ScootersBloc extends Bloc<ScooterEvent, List<Scooter>> {
     dispatch(ScooterEvent.list);
   }
 
+  void onScooterTick(Timer timer) {
+    dispatch(ScooterEvent.list);
+  }
+
   @override
   void dispose() {
     super.dispose();
     scootersChannelSubscription.cancel();
+    scootersTimer.cancel();
   }
 }

@@ -46,12 +46,14 @@ class RegisterPageState extends State<RegisterPage> {
 
       if (registerData.errorsModel.usernameErrors != null) {
         errorMessage = registerData.errorsModel.usernameErrors.first;
-      } else if (registerData.errorsModel != null) {
+      } else if (registerData.errorsModel.emailErrors != null) {
         errorMessage = registerData.errorsModel.emailErrors.first;
       } else if (registerData.errorsModel.password1Errors != null) {
         errorMessage = registerData.errorsModel.password1Errors.first;
       } else if (registerData.errorsModel.password2Errors != null) {
         errorMessage = registerData.errorsModel.password2Errors.first;
+      } else if (registerData.errorsModel.nonFieldErrors != null) {
+        errorMessage = registerData.errorsModel.nonFieldErrors.first;
       } else {
         errorMessage = registerData.errorMessage;
       }
@@ -114,8 +116,7 @@ class RegisterPageState extends State<RegisterPage> {
                     decoration: InputDecoration(labelText: "Username"),
                     validators: [
                       FormBuilderValidators.required(),
-                      FormBuilderValidators.maxLength(70),
-                      FormBuilderValidators.minLength(16),
+                      FormBuilderValidators.maxLength(70)
                     ],
                   ),
                   FormBuilderTextField(
@@ -131,7 +132,8 @@ class RegisterPageState extends State<RegisterPage> {
                     decoration: InputDecoration(labelText: "Password", ),
                     validators: [
                       FormBuilderValidators.required(),
-                      FormBuilderValidators.minLength(16),
+                      FormBuilderValidators.minLength(8),
+                      FormBuilderValidators.maxLength(32)
                     ],
                     obscureText: true,
                   ),
@@ -140,7 +142,8 @@ class RegisterPageState extends State<RegisterPage> {
                     decoration: InputDecoration(labelText: "Verify Password", ),
                     validators: [
                       FormBuilderValidators.required(),
-                      FormBuilderValidators.minLength(16),
+                      FormBuilderValidators.minLength(8),
+                      FormBuilderValidators.maxLength(32)
                     ],
                     obscureText: true,
                   ),

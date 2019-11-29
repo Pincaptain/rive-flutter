@@ -11,6 +11,7 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 
 import 'package:rive_flutter/pages/account.dart';
+import 'package:rive_flutter/pages/history.dart';
 import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/pages/ride.dart';
@@ -152,6 +153,24 @@ class MapPageState extends State<MapPage> {
     );
   }
 
+  void onHistory() {
+    if (Token.isAuthenticated()) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HistoryPage(),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,8 +212,7 @@ class MapPageState extends State<MapPage> {
                 color: Colors.teal,
                 
               ),
-              onTap: () {
-              },
+              onTap: onHistory,
             ),
             ListTile(
               title: Text('Parked or Not'),
