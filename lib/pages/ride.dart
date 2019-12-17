@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +14,8 @@ class RidePage extends StatefulWidget {
 
 class RidePageState extends State<RidePage> {
   RideContext rideContext;
+
+  StreamSubscription<bool> endRideSubscription;
 
   final CameraPosition initialLocation = CameraPosition(
     target: LatLng(41.995921, 21.431442),
@@ -28,20 +32,11 @@ class RidePageState extends State<RidePage> {
   }
 
   void initStreams() {
-    rideContext.endRideBloc.state.listen(onEndRideResult);
-    rideContext.duringRideBloc.state.listen(onDuringRideResult);
+    endRideSubscription = rideContext.endRideBloc.state.listen(onEndRideResult);
   }
 
   void onEndRide() {
     rideContext.endRideBloc.dispatch(RideEvent.end);
-  }
-
-  void onDuringRideResult(RideData rideData) {
-    if (rideData.isInitial()) {
-      return;
-    }
-    
-    print(rideData.ride.scooter.battery);
   }
 
   void onEndRideResult(bool rideResult) {
@@ -63,14 +58,35 @@ class RidePageState extends State<RidePage> {
           'Rive',
         ),
       ),
-      body: Stack(
-        children: <Widget>[
-          GoogleMap(
-            initialCameraPosition: initialLocation,
-            myLocationButtonEnabled: true,
-            myLocationEnabled: true,
-          ),
-        ],
+      body: StreamBuilder<RideData>(
+        stream: rideContext.duringRideBloc.state,
+        builder: (context, snapshot) {
+          return Stack(
+            children: <Widget>[
+              GoogleMap(
+                initialCameraPosition: initialLocation,
+                myLocationButtonEnabled: true,
+                myLocationEnabled: true,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: FloatingActionButton(
+                    onPressed: null,
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                    backgroundColor: Colors.teal[400],
+                    child: Text(
+                      snapshot.hasData ?
+                        snapshot.data.ride.scooter.battery.toString() :
+                        '?'
+                    )
+                  ),
+                ),
+              ),
+            ],
+          );
+        }
       ),
       floatingActionButton: Container(
         height: 45,
@@ -98,5 +114,6 @@ class RidePageState extends State<RidePage> {
   void dispose() {
     super.dispose();
     rideContext.dispose();
+    endRideSubscription.cancel();
   }
 }

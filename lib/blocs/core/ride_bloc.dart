@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/models/auth.dart';
+import 'package:rive_flutter/models/extensions.dart';
 
 enum RideErrorType {
   authentication,
@@ -90,11 +93,17 @@ enum RideEvent {
 class RideBloc extends Bloc<RideEvent, RideData> {
   WebSocketChannel rideChannel;
   StreamSubscription rideChannelSubscription;
+  StreamSubscription locationSubscription;
+  Timer rideTimer;
 
   RideBloc() {
     rideChannel = IOWebSocketChannel.connect('${Client.webSocketsClient}/ride/');
     rideChannel.sink.add(Token.token);
     rideChannelSubscription = rideChannel.stream.listen(onRideMessage);
+    locationSubscription = Location().onLocationChanged().listen(onLocationData);
+    rideTimer = Timer.periodic(Duration(seconds: 10), onRideTick);
+
+    dispatch(RideEvent.check);
   }
 
   @override
@@ -156,10 +165,41 @@ class RideBloc extends Bloc<RideEvent, RideData> {
     dispatch(RideEvent.check);
   }
 
+  void onLocationData(LocationData locationData) async {
+    var locationInfo = LocationInfo(
+      locationData.latitude,
+      locationData.longitude,
+      locationData.altitude,
+      locationData.time,
+      locationData.speed,
+      locationData.heading,
+      locationData.accuracy,
+      locationData.speedAccuracy
+    );
+
+    var response = await http.post(
+      Uri.encodeFull('${Client.client}/api/rides/send_location/'),
+      headers: {
+        'Authorization': Token.getHeaderToken(),
+        HttpHeaders.acceptHeader: 'application/json',
+        HttpHeaders.contentTypeHeader: 'application/json'
+      },
+      body: json.encode(locationInfo.toJson()),
+    );
+
+    print(response.statusCode);
+  }
+
+  void onRideTick(Timer timer) {
+    dispatch(RideEvent.check);
+  }
+
   @override
   void dispose() {
     super.dispose();
     rideChannelSubscription.cancel();
+    locationSubscription.cancel();
+    rideTimer.cancel();
   }
 }
 

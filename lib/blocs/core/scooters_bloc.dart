@@ -22,7 +22,7 @@ class ScootersBloc extends Bloc<ScooterEvent, List<Scooter>> {
   ScootersBloc() {
     scootersChannel = IOWebSocketChannel.connect('${Client.webSocketsClient}/scooters/');
     scootersChannelSubscription = scootersChannel.stream.listen(onScootersMessage);
-    scootersTimer = Timer.periodic(Duration(seconds: 1), onScooterTick);
+    scootersTimer = Timer.periodic(Duration(seconds: 5), onScooterTick);
 
     dispatch(ScooterEvent.list);
   }
