@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'package:flare_flutter/flare_actor.dart';
 
-class AccountPage extends StatefulWidget {
+class WalletPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => AccountPageState();
+  State<StatefulWidget> createState() => WalletPageState();
 }
 
-class AccountPageState extends State<AccountPage> {
+class WalletPageState extends State<WalletPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Account'
+            'Wallet'
         ),
       ),
       body: ListView(

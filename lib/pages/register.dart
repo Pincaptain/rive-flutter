@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
+import 'package:loading_overlay/loading_overlay.dart';
 import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/auth.dart';
 import 'package:rive_flutter/blocs/register_context.dart';
@@ -16,6 +17,8 @@ class RegisterPage extends StatefulWidget {
 
 class RegisterPageState extends State<RegisterPage> {
   RegisterContext registerContext;
+
+  bool isLoading = false;
 
   final GlobalKey<FormBuilderState> registerFormKey = GlobalKey<FormBuilderState>();
 
@@ -60,13 +63,19 @@ class RegisterPageState extends State<RegisterPage> {
 
       createErrorFlushbar(errorMessage).show(context);
     }
+
+    setLoading(false);
   }
 
   void onRegister() {
+    setLoading(true);
+
     if (registerFormKey.currentState.saveAndValidate()) {
       var registerModel = RegisterModel.fromJson(registerFormKey.currentState.value);
       
       registerContext.registerBloc.dispatch(registerModel);
+    } else {
+      setLoading(false);
     }
   }
 
@@ -82,114 +91,123 @@ class RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
+  void setLoading(bool loading) {
+    setState(() {
+      isLoading = loading;
+    });
+  }
   
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
+    return LoadingOverlay(
+      progressIndicator: CircularProgressIndicator(),
+      opacity: 0.3,
+      isLoading: isLoading,
+      color: Colors.teal[400],
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Register'
           ),
         ),
-        title: Text(
-          'Register'
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: <Widget>[
-            FormBuilder(
-              key: registerFormKey,
-              initialValue: {
-                'username': '',
-                'email': '',
-                'password1': '',
-                'password2': '',
-              },
-              autovalidate: true,
-              child: Column(
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            children: <Widget>[
+              FormBuilder(
+                key: registerFormKey,
+                initialValue: {
+                  'username': '',
+                  'email': '',
+                  'password1': '',
+                  'password2': '',
+                },
+                autovalidate: true,
+                child: Column(
+                  children: <Widget>[
+                    FormBuilderTextField(
+                      attribute: "username",
+                      decoration: InputDecoration(labelText: "Username"),
+                      validators: [
+                        FormBuilderValidators.required(),
+                        FormBuilderValidators.maxLength(70)
+                      ],
+                    ),
+                    FormBuilderTextField(
+                      attribute: "email",
+                      decoration: InputDecoration(labelText: "Email"),
+                      validators: [
+                        FormBuilderValidators.required(),
+                        FormBuilderValidators.email(),
+                      ],
+                    ),
+                    FormBuilderTextField(
+                      attribute: "password1",
+                      decoration: InputDecoration(labelText: "Password", ),
+                      validators: [
+                        FormBuilderValidators.required(),
+                        FormBuilderValidators.minLength(8),
+                        FormBuilderValidators.maxLength(32)
+                      ],
+                      obscureText: true,
+                      maxLines: 1,
+                    ),
+                    FormBuilderTextField(
+                      attribute: "password2",
+                      decoration: InputDecoration(labelText: "Verify Password", ),
+                      validators: [
+                        FormBuilderValidators.required(),
+                        FormBuilderValidators.minLength(8),
+                        FormBuilderValidators.maxLength(32)
+                      ],
+                      obscureText: true,
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
                 children: <Widget>[
-                  FormBuilderTextField(
-                    attribute: "username",
-                    decoration: InputDecoration(labelText: "Username"),
-                    validators: [
-                      FormBuilderValidators.required(),
-                      FormBuilderValidators.maxLength(70)
-                    ],
+                  RaisedButton(
+                    onPressed: onRegister,
+                    child: Text("Register"),
+                    textColor: Colors.white,
+                    color: Colors.teal[400],
                   ),
-                  FormBuilderTextField(
-                    attribute: "email",
-                    decoration: InputDecoration(labelText: "Email"),
-                    validators: [
-                      FormBuilderValidators.required(),
-                      FormBuilderValidators.email(),
-                    ],
+                  SizedBox(
+                    width: 20,
                   ),
-                  FormBuilderTextField(
-                    attribute: "password1",
-                    decoration: InputDecoration(labelText: "Password", ),
-                    validators: [
-                      FormBuilderValidators.required(),
-                      FormBuilderValidators.minLength(8),
-                      FormBuilderValidators.maxLength(32)
-                    ],
-                    obscureText: true,
-                  ),
-                  FormBuilderTextField(
-                    attribute: "password2",
-                    decoration: InputDecoration(labelText: "Verify Password", ),
-                    validators: [
-                      FormBuilderValidators.required(),
-                      FormBuilderValidators.minLength(8),
-                      FormBuilderValidators.maxLength(32)
-                    ],
-                    obscureText: true,
+                  RaisedButton(
+                    onPressed: onReset,
+                    child: Text("Reset"),
+                    textColor: Colors.white,
+                    color: Colors.teal[400],
                   ),
                 ],
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: <Widget>[
-                RaisedButton(
-                  onPressed: onRegister,
-                  child: Text("Register"),
-                  textColor: Colors.white,
-                  color: Colors.teal[400],
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                RaisedButton(
-                  onPressed: onReset,
-                  child: Text("Reset"),
-                  textColor: Colors.white,
-                  color: Colors.teal[400],
-                ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Text(
-                  'Already have an accout?'
-                ),
-                FlatButton(
-                  onPressed: onLogin,
-                  child: Text(
-                    'Login now!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.teal,
+              Row(
+                children: <Widget>[
+                  Text(
+                    'Already have an accout?'
+                  ),
+                  FlatButton(
+                    onPressed: onLogin,
+                    child: Text(
+                      'Login now!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.teal,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

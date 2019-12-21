@@ -57,3 +57,14 @@ class Ride extends Object {
 
   Map<String, dynamic> toJson() => _$RideToJson(this);
 }
+
+@JsonSerializable()
+class RideStatus extends Object {
+  final bool status;
+
+  RideStatus(this.status);
+
+  factory RideStatus.fromJson(Map<String, dynamic> json) => _$RideStatusFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RideStatusToJson(this);
+}

@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'package:flare_flutter/flare_actor.dart';
 
-class AccountPage extends StatefulWidget {
+class ParkedOrNotPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => AccountPageState();
+  State<StatefulWidget> createState() => ParkedOrNotPageState();
 }
 
-class AccountPageState extends State<AccountPage> {
+class ParkedOrNotPageState extends State<ParkedOrNotPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Account'
+            'Parked Or Not'
         ),
       ),
       body: ListView(

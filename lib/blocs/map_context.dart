@@ -6,16 +6,19 @@ class MapContext {
   ScootersBloc scootersBloc;
   LocationPermissionBloc locationPermissionBloc;
   BeginRideBloc beginRideBloc;
+  RideStatusBloc rideStatusBloc;
 
   MapContext() {
     scootersBloc = ScootersBloc();
     locationPermissionBloc = LocationPermissionBloc();
     beginRideBloc = BeginRideBloc();
+    rideStatusBloc = RideStatusBloc();
   }
 
   void dispose() {
     scootersBloc.dispose();
     locationPermissionBloc.dispose();
     beginRideBloc.dispose();
+    rideStatusBloc.dispose();
   }
 }

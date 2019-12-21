@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 
 import 'package:flare_flutter/flare_actor.dart';
 
-class AccountPage extends StatefulWidget {
+class HelpPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => AccountPageState();
+  State<StatefulWidget> createState() => HelpPageState();
 }
 
-class AccountPageState extends State<AccountPage> {
+class HelpPageState extends State<HelpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Account'
+            'Help'
         ),
       ),
       body: ListView(

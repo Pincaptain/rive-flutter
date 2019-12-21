@@ -32,6 +32,71 @@ class RideData {
   }
 }
 
+enum RideStatusEvent {
+  check
+}
+
+enum RideStatusResult {
+  unknown,
+  ride,
+  idle
+}
+
+class RideStatusBloc extends Bloc<RideStatusEvent, RideStatusResult> {
+  @override
+  RideStatusResult get initialState => RideStatusResult.unknown;
+  Timer rideStatusTimer;
+
+  RideStatusBloc() {
+    rideStatusTimer = Timer.periodic(Duration(seconds: 10), onRideStatusTick);
+
+    dispatch(RideStatusEvent.check);
+  }
+
+  @override
+  Stream<RideStatusResult> mapEventToState(RideStatusEvent rideStatusEvent) {
+    return getRideStatus().asStream();
+  }
+
+  Future<RideStatusResult> getRideStatus() async {
+    if (!Token.isAuthenticated()) {
+      return RideStatusResult.idle;
+    }
+
+    var response = await http.get(
+      Uri.encodeFull('${Client.client}/api/rides/ride_status/'),
+      headers: {
+        'Authorization': Token.getHeaderToken(),
+      },
+    );
+    var statusCodeClass = (response.statusCode / 100).floor();
+
+    if (statusCodeClass != 2) {
+      return RideStatusResult.unknown;
+    }
+
+    var jsonString = utf8.decode(response.bodyBytes);
+    var jsonData = json.decode(jsonString);
+    var rideStatus = RideStatus.fromJson(jsonData);
+
+    if (rideStatus.status) {
+      return RideStatusResult.ride;
+    } else {
+      return RideStatusResult.idle;
+    }
+  }
+
+  void onRideStatusTick(Timer timer) {
+    dispatch(RideStatusEvent.check);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    rideStatusTimer.cancel();
+  }
+}
+
 class BeginRideBloc extends Bloc<String, RideData> {
   @override
   RideData get initialState => RideData();
