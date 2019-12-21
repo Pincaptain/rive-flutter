@@ -340,3 +340,79 @@ class HistoryBloc extends Bloc<HistoryEvent, List<Ride>> {
     return rides;
   }
 }
+
+enum ReviewErrorType {
+  client,
+  server,
+}
+
+class ReviewResult {
+  bool status;
+  String errorMessage;
+  ReviewErrorType errorType;
+
+  bool isValid() {
+    return status;
+  }
+
+  bool isInitial() {
+    return !status && errorMessage == null && errorType == null;
+  }
+}
+
+class ReviewBloc extends Bloc<ReviewModel, ReviewResult> {
+  @override
+  ReviewResult get initialState => ReviewResult();
+
+  @override
+  Stream<ReviewResult> mapEventToState(ReviewModel reviewModel) {
+    return getReviewResult(reviewModel).asStream();
+  }
+
+  Future<ReviewResult> getReviewResult(ReviewModel reviewModel) async {
+    var reviewResult = ReviewResult();
+
+    if (!Token.isAuthenticated()) {
+      reviewResult.status = false;
+      reviewResult.errorType = ReviewErrorType.client;
+      reviewResult.errorMessage = 'You need an active account to submit a review!';
+
+      return reviewResult;
+    }
+
+    var response = await http.post(
+        Uri.encodeFull('${Client.client}/api/reviews/'),
+        headers: {
+          'Authorization': Token.getHeaderToken(),
+          HttpHeaders.acceptHeader: 'application/json',
+          HttpHeaders.contentTypeHeader: 'application/json'
+        },
+        body: json.encode(reviewModel.toJson()),
+    );
+    var statusCodeClass = (response.statusCode / 100).floor();
+
+    switch (statusCodeClass) {
+      case 4:
+        var jsonString = utf8.decode(response.bodyBytes);
+        var jsonData = json.decode(jsonString);
+        var reviewErrorModel = ReviewErrorModel.fromJson(jsonData);
+
+        reviewResult.errorMessage = reviewErrorModel.errorMessage;
+        reviewResult.errorType = ReviewErrorType.client;
+        reviewResult.status = false;
+
+        return reviewResult;
+
+      case 5:
+        reviewResult.errorMessage = 'An error occurred on the server. This may be due to maintenance. Please try again soon!';
+        reviewResult.errorType = ReviewErrorType.server;
+        reviewResult.status = false;
+
+        return reviewResult;
+    }
+
+    reviewResult.status = true;
+
+    return reviewResult;
+  }
+}

@@ -38,6 +38,30 @@ Map<String, dynamic> _$ReviewToJson(Review instance) => <String, dynamic>{
       'description': instance.comment,
     };
 
+ReviewModel _$ReviewModelFromJson(Map<String, dynamic> json) {
+  return ReviewModel(
+    json['rating'] as int,
+    json['description'] as String,
+  );
+}
+
+Map<String, dynamic> _$ReviewModelToJson(ReviewModel instance) =>
+    <String, dynamic>{
+      'rating': instance.rating,
+      'description': instance.comment,
+    };
+
+ReviewErrorModel _$ReviewErrorModelFromJson(Map<String, dynamic> json) {
+  return ReviewErrorModel(
+    json['error_message'] as String,
+  );
+}
+
+Map<String, dynamic> _$ReviewErrorModelToJson(ReviewErrorModel instance) =>
+    <String, dynamic>{
+      'error_message': instance.errorMessage,
+    };
+
 Ride _$RideFromJson(Map<String, dynamic> json) {
   return Ride(
     json['id'] as int,

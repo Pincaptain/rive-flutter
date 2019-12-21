@@ -22,20 +22,39 @@ Flushbar createErrorFlushbar(String errorMessage) {
 }
 
 Flushbar createWarningFlushbar(String warningMessage) {
-    return Flushbar(
-      messageText: Text(
-        warningMessage,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      isDismissible: false,
-      icon: Icon(
-        Icons.warning,
+  return Flushbar(
+    messageText: Text(
+      warningMessage,
+      style: TextStyle(
         color: Colors.white,
       ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
-    );
-  }
+    ),
+    backgroundColor: Colors.teal,
+    isDismissible: false,
+    icon: Icon(
+      Icons.warning,
+      color: Colors.white,
+    ),
+    margin: EdgeInsets.all(8),
+    borderRadius: 8,
+  );
+}
+
+Flushbar createSuccessFlushbar(String successMessage) {
+  return Flushbar(
+    messageText: Text(
+      successMessage,
+      style: TextStyle(
+        color: Colors.white,
+      ),
+    ),
+    backgroundColor: Colors.teal,
+    isDismissible: false,
+    icon: Icon(
+      Icons.sentiment_satisfied,
+      color: Colors.white,
+    ),
+    margin: EdgeInsets.all(8),
+    borderRadius: 8,
+  );
+}

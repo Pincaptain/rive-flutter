@@ -37,6 +37,31 @@ class Review extends Object {
 }
 
 @JsonSerializable()
+class ReviewModel extends Object {
+  final int rating;
+  @JsonKey(name: 'description')
+  final String comment;
+
+  ReviewModel(this.rating, this.comment);
+
+  factory ReviewModel.fromJson(Map<String, dynamic> json) => _$ReviewModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReviewModelToJson(this);
+}
+
+@JsonSerializable()
+class ReviewErrorModel extends Object {
+  @JsonKey(name: 'error_message')
+  final String errorMessage;
+
+  ReviewErrorModel(this.errorMessage);
+
+  factory ReviewErrorModel.fromJson(Map<String, dynamic> json) => _$ReviewErrorModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReviewErrorModelToJson(this);
+}
+
+@JsonSerializable()
 class Ride extends Object {
   @JsonKey(name: 'id')
   final int pk;
