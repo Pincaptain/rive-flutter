@@ -18,6 +18,7 @@ import 'package:rive_flutter/pages/settings.dart';
 import 'package:rive_flutter/pages/wallet.dart';
 import 'package:rive_flutter/pages/history.dart';
 import 'package:rive_flutter/pages/login.dart';
+import 'package:rive_flutter/pages/invite_friends.dart';
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/pages/ride.dart';
 import 'package:rive_flutter/models/auth.dart';
@@ -231,6 +232,15 @@ class MapPageState extends State<MapPage> {
     );
   }
 
+  void onInviteFriends() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => InviteFriendsPage(),
+      ),
+    );
+  }
+
   void setLoading(bool loading) {
     setState(() {
       isLoading = loading;
@@ -307,6 +317,14 @@ class MapPageState extends State<MapPage> {
                 ),
                 onTap: onHelp,
               ),
+              ListTile(
+                title: Text('Invite a friend'),
+                trailing: Icon(
+                  Icons.person_add,
+                  color: Colors.black,
+                ),
+                onTap: onInviteFriends,
+              )
             ],
           ),
         ),
