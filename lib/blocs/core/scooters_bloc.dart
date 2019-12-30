@@ -1,20 +1,21 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:rive_flutter/locator.dart';
+import 'package:rive_flutter/providers/core/scooters_provider_exceptions.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/models/auth.dart';
+import 'package:rive_flutter/blocs/core/scooters_bloc_events.dart';
+import 'package:rive_flutter/blocs/core/scooters_bloc_states.dart';
+import 'package:rive_flutter/repositories/core/scooters_repository.dart';
 
-enum ScooterEvent {
-  list
-}
+class ScootersBloc extends Bloc<ScootersEvent, ScootersState> {
+  ScootersRepository scootersRepository = getIt<ScootersRepository>();
 
-class ScootersBloc extends Bloc<ScooterEvent, List<Scooter>> {
   WebSocketChannel scootersChannel;
   StreamSubscription scootersChannelSubscription;
   Timer scootersTimer;
@@ -22,41 +23,31 @@ class ScootersBloc extends Bloc<ScooterEvent, List<Scooter>> {
   ScootersBloc() {
     scootersChannel = IOWebSocketChannel.connect('${Client.webSocketsClient}/scooters/');
     scootersChannelSubscription = scootersChannel.stream.listen(onScootersMessage);
-    scootersTimer = Timer.periodic(Duration(seconds: 5), onScooterTick);
-
-    dispatch(ScooterEvent.list);
+    scootersTimer = Timer.periodic(Duration(seconds: 5), onScootersTick);
   }
 
   @override
-  List<Scooter> get initialState => List<Scooter>();
+  ScootersState get initialState => ScootersUninitializedState();
 
   @override
-  Stream<List<Scooter>> mapEventToState(ScooterEvent scooterEvent) {
-    switch (scooterEvent) {
-      case ScooterEvent.list:
-        return getScooters().asStream();
-        
-      default:
-        return getScooters().asStream();
+  Stream<ScootersState> mapEventToState(ScootersEvent event) async* {
+    yield ScootersFetchingState();
+
+    try {
+      var scooters = await scootersRepository.fetchScooters();
+
+      yield ScootersSuccessState(
+        scooters: scooters,
+      );
+    } on ScootersInternalServerException catch (exc) {
+      yield ScootersErrorState(
+        errorMessage: exc.errorMessage,
+      );
+    } on ScootersUnexpectedException catch (exc) {
+      yield ScootersErrorState(
+        errorMessage: exc.errorMessage,
+      );
     }
-  }
-
-  Future<List<Scooter>> getScooters() async {
-    var response = await http.get(
-      Uri.encodeFull('${Client.client}/api/scooters/'),
-    );
-
-    if (response.statusCode != 200) {
-      return List<Scooter>();
-    }
-
-    var jsonString = utf8.decode(response.bodyBytes);
-    var jsonData = json.decode(jsonString);
-    var scooters = await Stream.fromIterable(jsonData)
-            .map((value) => Scooter.fromJson(value))
-            .toList();
-
-    return scooters;
   }
 
   Set<Marker> toMarkers(List<Scooter> scooters) {
@@ -72,17 +63,17 @@ class ScootersBloc extends Bloc<ScooterEvent, List<Scooter>> {
   }
   
   void onScootersMessage(dynamic message) {
-    dispatch(ScooterEvent.list);
+    add(ScootersListEvent());
   }
 
-  void onScooterTick(Timer timer) {
-    dispatch(ScooterEvent.list);
+  void onScootersTick(Timer timer) {
+    add(ScootersListEvent());
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() {
     scootersChannelSubscription.cancel();
     scootersTimer.cancel();
+    return super.close();
   }
 }

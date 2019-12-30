@@ -3,65 +3,82 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:location/location.dart';
 
-class SpeedBloc extends Bloc<LocationData, double> {
+import 'package:rive_flutter/blocs/extensions/location_bloc_events.dart';
+import 'package:rive_flutter/blocs/extensions/location_bloc_states.dart';
+
+class SpeedBloc extends Bloc<SpeedEvent, SpeedState> {
   @override
-  double get initialState => 0;
+  SpeedState get initialState => SpeedUninitializedState();
 
   StreamSubscription locationSubscription;
 
   SpeedBloc() {
-    locationSubscription = Location().onLocationChanged().listen(onLocationData);
+    locationSubscription = Location()
+        .onLocationChanged()
+        .listen(onLocationChanged);
   }
 
   @override
-  Stream<double> mapEventToState(LocationData locationData) async* {
-    if (locationData.speed == 0) {
-      yield 0;
+  Stream<SpeedState> mapEventToState(SpeedEvent event) async* {
+    if (event.locationData.speed == 0) {
+      yield SpeedZeroState();
     }
-    
-    yield locationData.speed * 3600 / 1000;
+
+    final speed = event.locationData.speed * 3600 / 1000;
+
+    yield SpeedNonZeroState(
+      speed: speed,
+    );
   }
 
-  void onLocationData(LocationData locationData) {
-    dispatch(locationData);
+  void onLocationChanged(LocationData locationData) {
+    add(SpeedEvent(
+      locationData: locationData,
+    ));
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() {
     locationSubscription.cancel();
+    return super.close();
   }
 }
 
-class LocationPermissionBloc extends Bloc<bool, bool> {
+class LocationPermissionBloc extends Bloc<LocationPermissionEvent, LocationPermissionState> {
   Timer locationPermissionTimer;
 
   LocationPermissionBloc() {
-    locationPermissionTimer = Timer.periodic(Duration(seconds: 1), getLocationPermission);
+    locationPermissionTimer = Timer.periodic(Duration(seconds: 1), onLocationPermissionTick);
   }
 
   @override
-  bool get initialState => false;
+  LocationPermissionState get initialState => LocationPermissionUninitializedState();
 
   @override
-  Stream<bool> mapEventToState(bool isAllowed) async* {
-    yield isAllowed;
+  Stream<LocationPermissionState> mapEventToState(LocationPermissionEvent event) async* {
+    if (event.permissionAllowed) {
+      yield LocationPermissionAllowedState();
+    } else {
+      LocationPermissionDisallowedState();
+    }
   }
 
-  void getLocationPermission(Timer timer) async {
-    var location = Location();
+  void onLocationPermissionTick(Timer timer) async {
+    final location = Location();
     var permission = await location.hasPermission();
 
     if (!permission) {
       permission = await location.requestPermission();
     }
 
-    dispatch(permission);
+    add(LocationPermissionEvent(
+      permissionAllowed: permission,
+    ));
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() {
     locationPermissionTimer.cancel();
+    return super.close();
   }
 }

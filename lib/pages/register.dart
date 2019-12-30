@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-
 import 'package:loading_overlay/loading_overlay.dart';
+
+import 'package:rive_flutter/blocs/auth/auth_bloc.dart';
+import 'package:rive_flutter/blocs/auth/auth_bloc_events.dart';
+import 'package:rive_flutter/blocs/auth/auth_bloc_states.dart';
 import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/auth.dart';
-import 'package:rive_flutter/blocs/register_context.dart';
-import 'package:rive_flutter/blocs/auth/auth_bloc.dart';
 import 'package:rive_flutter/pages/account.dart';
 import 'package:rive_flutter/widgets/builders/flushbar_builders.dart';
 
@@ -16,52 +17,37 @@ class RegisterPage extends StatefulWidget {
 }
 
 class RegisterPageState extends State<RegisterPage> {
-  RegisterContext registerContext;
+  final registerFormKey = GlobalKey<FormBuilderState>();
 
-  bool isLoading = false;
+  RegisterBloc registerBloc;
 
-  final GlobalKey<FormBuilderState> registerFormKey = GlobalKey<FormBuilderState>();
+  var isLoading = false;
 
-  RegisterPageState() {
-    registerContext = RegisterContext();
+  @override
+  void initState() {
+    super.initState();
+
+    registerBloc = RegisterBloc();
 
     initStreams();
   }
 
   void initStreams() {
-    registerContext.registerBloc.state.listen(onRegisterResult);
+    registerBloc.listen(onRegisterResult);
   }
 
-  void onRegisterResult(RegisterData registerData) {
-    if (registerData.isInitial()) {
+  void onRegisterResult(RegisterState state) {
+    if (state is RegisterUninitializedState || state is RegisterFetchingState) {
       return;
-    }
-
-    if (registerData.isValid()) {
+    } else if (state is RegisterSuccessState) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => AccountPage(),
         ),
       );
-    } else {
-      var errorMessage;
-
-      if (registerData.errorsModel.usernameErrors != null) {
-        errorMessage = registerData.errorsModel.usernameErrors.first;
-      } else if (registerData.errorsModel.emailErrors != null) {
-        errorMessage = registerData.errorsModel.emailErrors.first;
-      } else if (registerData.errorsModel.password1Errors != null) {
-        errorMessage = registerData.errorsModel.password1Errors.first;
-      } else if (registerData.errorsModel.password2Errors != null) {
-        errorMessage = registerData.errorsModel.password2Errors.first;
-      } else if (registerData.errorsModel.nonFieldErrors != null) {
-        errorMessage = registerData.errorsModel.nonFieldErrors.first;
-      } else {
-        errorMessage = registerData.errorMessage;
-      }
-
-      createErrorFlushbar(errorMessage).show(context);
+    } else if (state is RegisterErrorState) {
+      createErrorFlushbar(state.errorMessage).show(context);
     }
 
     setLoading(false);
@@ -71,9 +57,11 @@ class RegisterPageState extends State<RegisterPage> {
     setLoading(true);
 
     if (registerFormKey.currentState.saveAndValidate()) {
-      var registerModel = RegisterModel.fromJson(registerFormKey.currentState.value);
-      
-      registerContext.registerBloc.dispatch(registerModel);
+      final registerModel = RegisterModel.fromJson(registerFormKey.currentState.value);
+
+      registerBloc.add(RegisterEvent(
+        registerModel: registerModel,
+      ));
     } else {
       setLoading(false);
     }
@@ -216,6 +204,6 @@ class RegisterPageState extends State<RegisterPage> {
   @override
   void dispose() {
     super.dispose();
-    registerContext.dispose();
+    registerBloc.close();
   }
 }

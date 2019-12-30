@@ -4,8 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'auth.g.dart';
 
 class Client {
-  static String client = 'http://134.209.229.173';
-  static String webSocketsClient = 'ws://134.209.229.173';
+  static final client = 'http://134.209.229.173';
+  static final webSocketsClient = 'ws://134.209.229.173';
 }
 
 class Token {
@@ -21,21 +21,24 @@ class Token {
   }
 
   static void storeToken(token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
   }
   
   static void tryAuthenticate() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = prefs.getString('token') ?? null;
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? null;
 
     if (token != null) {
       Token.token = token;
     }
   }
 
-  static void forget() {
+  static void forget() async {
     token = null;
+
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('token');
   }
 
   static String getHeaderToken() {
@@ -91,6 +94,23 @@ class LoginModel extends Object {
 }
 
 @JsonSerializable()
+class LoginErrorModel extends Object {
+  @JsonKey(name: 'username')
+  final List<String> usernameErrors;
+  @JsonKey(name: 'password')
+  final List<String> passwordErrors;
+  @JsonKey(name: 'non_field_errors')
+  final List<String> nonFieldErrors;
+
+  LoginErrorModel(this.usernameErrors, this.passwordErrors, this.nonFieldErrors);
+
+  factory LoginErrorModel.fromJson(Map<String, dynamic> json) =>
+      _$LoginErrorModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LoginErrorModelToJson(this);
+}
+
+@JsonSerializable()
 class RegisterModel extends Object {
   final String username;
   final String email;
@@ -99,7 +119,8 @@ class RegisterModel extends Object {
 
   RegisterModel(this.username, this.email, this.password1, this.password2);
 
-  factory RegisterModel.fromJson(Map<String, dynamic> json) => _$RegisterModelFromJson(json);
+  factory RegisterModel.fromJson(Map<String, dynamic> json) =>
+      _$RegisterModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$RegisterModelToJson(this);
 }

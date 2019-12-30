@@ -94,6 +94,17 @@ Map<String, dynamic> _$RideToJson(Ride instance) => <String, dynamic>{
       'user': instance.user,
     };
 
+RideErrorModel _$RideErrorModelFromJson(Map<String, dynamic> json) {
+  return RideErrorModel(
+    json['error_message'] as String,
+  );
+}
+
+Map<String, dynamic> _$RideErrorModelToJson(RideErrorModel instance) =>
+    <String, dynamic>{
+      'error_message': instance.errorMessage,
+    };
+
 RideStatus _$RideStatusFromJson(Map<String, dynamic> json) {
   return RideStatus(
     json['status'] as bool,

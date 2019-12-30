@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
-import 'package:rive_flutter/pages/register.dart';
-import 'package:rive_flutter/blocs/login_context.dart';
-import 'package:rive_flutter/models/auth.dart';
 import 'package:rive_flutter/blocs/auth/auth_bloc.dart';
+import 'package:rive_flutter/blocs/auth/auth_bloc_events.dart';
+import 'package:rive_flutter/blocs/auth/auth_bloc_states.dart';
+import 'package:rive_flutter/pages/register.dart';
+import 'package:rive_flutter/models/auth.dart';
 import 'package:rive_flutter/pages/account.dart';
 import 'package:rive_flutter/widgets/builders/flushbar_builders.dart';
 
@@ -16,36 +17,39 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  LoginContext loginContext;
+  final loginFormKey = GlobalKey<FormBuilderState>();
 
-  bool isLoading = false;
+  LoginBloc loginBloc;
 
-  final GlobalKey<FormBuilderState> loginFormKey = GlobalKey<FormBuilderState>();
+  var isLoading = false;
 
-  LoginPageState() {
-    loginContext = LoginContext();
+  @override
+  void initState() {
+    super.initState();
+
+    loginBloc = LoginBloc();
 
     initStreams();
   }
 
   void initStreams() {
-    loginContext.loginBloc.state.listen(onLoginResult);
+    loginBloc.listen(onLoginResult);
   }
 
-  void onLoginResult(LoginData loginData) {
-    if (loginData.isInitial()) {
+  void onLoginResult(LoginState state) {
+    if (state is LoginUninitializedState || state is LoginFetchingState) {
       return;
     }
 
-    if (loginData.isValid()) {
+    if (state is LoginSuccessState) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => AccountPage(),
         ),
       );
-    } else {
-      createErrorFlushbar(loginData.errorMessage).show(context);
+    } else if (state is LoginErrorState) {
+      createErrorFlushbar(state.errorMessage).show(context);
     }
 
     setLoading(false);
@@ -55,9 +59,11 @@ class LoginPageState extends State<LoginPage> {
     setLoading(true);
 
     if (loginFormKey.currentState.saveAndValidate()) {
-      var loginModel = LoginModel.fromJson(loginFormKey.currentState.value);
+      final loginModel = LoginModel.fromJson(loginFormKey.currentState.value);
       
-      loginContext.loginBloc.dispatch(loginModel);
+      loginBloc.add(LoginEvent(
+        loginModel: loginModel,
+      ));
     } else {
       setLoading(false);
     }
@@ -175,6 +181,6 @@ class LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     super.dispose();
-    loginContext.dispose();
+    loginBloc.close();
   }
 }

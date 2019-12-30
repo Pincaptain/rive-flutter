@@ -84,6 +84,19 @@ class Ride extends Object {
 }
 
 @JsonSerializable()
+class RideErrorModel extends Object {
+  @JsonKey(name: 'error_message')
+  final String errorMessage;
+
+  RideErrorModel(this.errorMessage);
+
+  factory RideErrorModel.fromJson(Map<String, dynamic> json) =>
+      _$RideErrorModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RideErrorModelToJson(this);
+}
+
+@JsonSerializable()
 class RideStatus extends Object {
   final bool status;
 

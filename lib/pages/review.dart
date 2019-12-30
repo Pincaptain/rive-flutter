@@ -4,10 +4,11 @@ import 'package:loading_overlay/loading_overlay.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import 'package:rive_flutter/pages/map.dart';
-import 'package:rive_flutter/blocs/core/ride_bloc.dart';
 import 'package:rive_flutter/models/core.dart';
-import 'package:rive_flutter/blocs/review_context.dart';
 import 'package:rive_flutter/widgets/builders/flushbar_builders.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc_events.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc_states.dart';
 
 class ReviewPage extends StatefulWidget {
   @override
@@ -15,31 +16,34 @@ class ReviewPage extends StatefulWidget {
 }
 
 class ReviewPageState extends State<ReviewPage> {
-  final GlobalKey<FormBuilderState> reviewGlobalKey = GlobalKey<FormBuilderState>();
+  final reviewGlobalKey = GlobalKey<FormBuilderState>();
 
-  bool isLoading = false;
+  ReviewBloc reviewBloc;
 
-  ReviewContext reviewContext;
+  var isLoading = false;
 
-  ReviewPageState() {
-    reviewContext = ReviewContext();
+  @override
+  void initState() {
+    super.initState();
+
+    reviewBloc = ReviewBloc();
 
     initStreams();
   }
 
   void initStreams() {
-    reviewContext.reviewBloc.state.listen(onReviewResult);
+    reviewBloc.listen(onReviewResult);
   }
 
-  void onReviewResult(ReviewResult reviewResult) {
-    if (reviewResult.isInitial()) {
+  void onReviewResult(ReviewState state) {
+    if (state is ReviewUninitializedState || state is ReviewFetchingState) {
       return;
     }
-
-    if (reviewResult.isValid()) {
-      createSuccessFlushbar('Your feedback is highly appreciated!').show(context);
-    } else {
-      createErrorFlushbar(reviewResult.errorMessage).show(context);
+    else if (state is ReviewSuccessState) {
+      createSuccessFlushbar('Your feedback is highly appreciated!')
+          .show(context);
+    } else if (state is ReviewErrorState) {
+      createErrorFlushbar(state.errorMessage).show(context);
     }
 
     setLoading(false);
@@ -64,7 +68,9 @@ class ReviewPageState extends State<ReviewPage> {
     if (reviewGlobalKey.currentState.saveAndValidate()) {
       var reviewModel = ReviewModel.fromJson(reviewGlobalKey.currentState.value);
 
-      reviewContext.reviewBloc.dispatch(reviewModel);
+      reviewBloc.add(ReviewSendEvent(
+        reviewModel: reviewModel,
+      ));
     } else {
       setLoading(false);
     }
@@ -103,8 +109,8 @@ class ReviewPageState extends State<ReviewPage> {
                 child: Column(
                   children: <Widget>[
                     FormBuilderRate(
-                      attribute: "review",
-                      decoration: InputDecoration(labelText: "Review"),
+                      attribute: "rating",
+                      decoration: InputDecoration(labelText: "Rating"),
                       iconSize: 32.0,
                       initialValue: 1,
                       max: 5,
@@ -161,5 +167,11 @@ class ReviewPageState extends State<ReviewPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    reviewBloc.close();
   }
 }

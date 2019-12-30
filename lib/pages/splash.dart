@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:rxdart/rxdart.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
 
-import 'package:rive_flutter/blocs/splash_context.dart';
 import 'package:rive_flutter/pages/map.dart';
+import 'package:rive_flutter/blocs/extensions/location_bloc.dart';
+import 'package:rive_flutter/blocs/extensions/location_bloc_states.dart';
+import 'package:rive_flutter/widgets/builders/flushbar_builders.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -15,44 +18,36 @@ class SplashPage extends StatefulWidget {
 }
 
 class SplashPageState extends State<SplashPage> {
-  SplashContext splashBloc;
+  LocationPermissionBloc locationPermissionBloc;
+  Stream splashValidation;
+  StreamSubscription validationSubscription;
 
   Flushbar locationPermissionFlushbar;
-
-  StreamSubscription validationSubscription;
 
   @override
   initState() {
     super.initState();
-    
-    splashBloc = SplashContext();
-    locationPermissionFlushbar = Flushbar(
-      messageText: Text(
-        'We need your location permission to show scooters on map.',
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
-      backgroundColor: Colors.teal,
-      isDismissible: false,
-      icon: Icon(
-        Icons.error,
-        color: Colors.white,
-      ),
-      margin: EdgeInsets.all(8),
-      borderRadius: 8,
+
+    locationPermissionBloc = LocationPermissionBloc();
+    splashValidation = Observable.combineLatest2(
+        Connectivity().onConnectivityChanged,
+        locationPermissionBloc,
+        onConnectivityAndLocationPermission
     );
+    locationPermissionFlushbar = createLocationPermissionFlushbar();
 
     initStreams();
   }
 
   void initStreams() {
-    splashBloc.locationPermissionBloc.state.listen(onLocationPermissionResult);
-    validationSubscription = splashBloc.splashValidation.listen(onValidation);
+    locationPermissionBloc.listen(onLocationPermissionResult);
+    validationSubscription = splashValidation.listen(onSplashValidationResult);
   }
 
-  void onLocationPermissionResult(bool permission) {
-    if (!permission) {
+  void onLocationPermissionResult(LocationPermissionState locationPermissionState) {
+    if (locationPermissionState is LocationPermissionUninitializedState) {
+      return;
+    } else if (locationPermissionState is LocationPermissionDisallowedState) {
       locationPermissionFlushbar.show(context);
     } else {
       if (locationPermissionFlushbar != null) {
@@ -61,7 +56,7 @@ class SplashPageState extends State<SplashPage> {
     }
   }
 
-  void onValidation(valid) {
+  void onSplashValidationResult(valid) {
     if (valid) {
       Timer(Duration(seconds: 3), () {
         Navigator.pushReplacement(
@@ -72,6 +67,12 @@ class SplashPageState extends State<SplashPage> {
         );
       });
     }
+  }
+
+  bool onConnectivityAndLocationPermission(ConnectivityResult connectivityResult,
+      LocationPermissionState locationPermissionResult) {
+    return connectivityResult != ConnectivityResult.none &&
+        locationPermissionResult is LocationPermissionAllowedState;
   }
 
   @override
@@ -104,7 +105,7 @@ class SplashPageState extends State<SplashPage> {
   @override
   void dispose() {
     super.dispose();
-    splashBloc.dispose();
+    locationPermissionBloc.close();
     validationSubscription.cancel();
   }
 }

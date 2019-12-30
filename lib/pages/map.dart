@@ -2,28 +2,27 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 
-import 'package:rive_flutter/pages/account.dart';
-import 'package:rive_flutter/pages/help.dart';
-import 'package:rive_flutter/pages/parked_or_not.dart';
-import 'package:rive_flutter/pages/settings.dart';
-import 'package:rive_flutter/pages/wallet.dart';
-import 'package:rive_flutter/pages/history.dart';
 import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/pages/ride.dart';
-import 'package:rive_flutter/models/auth.dart';
-import 'package:rive_flutter/blocs/map_context.dart';
 import 'package:rive_flutter/widgets/builders/flushbar_builders.dart';
+import 'package:rive_flutter/widgets/extensions/drawer.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc_events.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc_states.dart';
+import 'package:rive_flutter/blocs/core/scooters_bloc.dart';
+import 'package:rive_flutter/blocs/core/scooters_bloc_states.dart';
+import 'package:rive_flutter/blocs/extensions/location_bloc.dart';
+import 'package:rive_flutter/blocs/extensions/location_bloc_states.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -31,56 +30,39 @@ class MapPage extends StatefulWidget {
 }
 
 class MapPageState extends State<MapPage> {
-  MapContext mapContext;
+  final initialLocation = CameraPosition(
+    target: LatLng(41.995921, 21.431442),
+    zoom: 16,
+  );
+
+  LocationPermissionBloc locationPermissionBloc;
+  BeginRideBloc beginRideBloc;
+  RideStatusBloc rideStatusBloc;
+  ScootersBloc scootersBloc;
+  StreamSubscription connectivitySubscription;
 
   Flushbar locationPermissionFlushbar;
   Flushbar connectivityFlushbar;
 
-  StreamSubscription connectivitySubscription;
-
-  bool isLoading = false;
-
-  final CameraPosition initialLocation = CameraPosition(
-    target: LatLng(41.995921, 21.431442),
-    zoom: 16,
-  );
+  var isLoading = false;
 
   @override
   void initState() {
     super.initState();
 
-    mapContext = MapContext();
+    locationPermissionBloc = LocationPermissionBloc();
+    beginRideBloc = BeginRideBloc();
+    rideStatusBloc = RideStatusBloc();
+    scootersBloc = ScootersBloc();
 
     initStreams();
   }
 
   void initStreams() {
-    mapContext.locationPermissionBloc.state.listen(onLocationPermissionResult);
     connectivitySubscription = Connectivity().onConnectivityChanged.listen(onConnectivityResult);
-    mapContext.beginRideBloc.state.listen(onBeginRideResult);
-    mapContext.rideStatusBloc.state.listen(onRideStatusResult);
-  }
-
-  void onRideStatusResult(RideStatusResult rideStatusResult) {
-    if (rideStatusResult == RideStatusResult.ride) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RidePage(),
-        ),
-      );
-    }
-  }
-
-  void onLocationPermissionResult(bool permission) {
-    if (!permission) {
-      locationPermissionFlushbar = createWarningFlushbar('We need your location permission to show scooters on map.');
-      locationPermissionFlushbar.show(context);
-    } else {
-      if (locationPermissionFlushbar != null) {
-        locationPermissionFlushbar.dismiss(context);
-      }
-    }
+    locationPermissionBloc.listen(onLocationPermissionResult);
+    beginRideBloc.listen(onBeginRideResult);
+    rideStatusBloc.listen(onRideStatusResult);
   }
 
   void onConnectivityResult(ConnectivityResult result) {
@@ -94,30 +76,48 @@ class MapPageState extends State<MapPage> {
     }
   }
 
-  void onBeginRideResult(RideData rideData) {
-    if (rideData.isInitial()) {
+  void onLocationPermissionResult(LocationPermissionState state) {
+    if (state is LocationPermissionDisallowedState) {
+      locationPermissionFlushbar =
+          createWarningFlushbar('We need your location permission to show scooters on map.');
+      locationPermissionFlushbar.show(context);
+    } else {
+      if (locationPermissionFlushbar != null) {
+        locationPermissionFlushbar.dismiss(context);
+      }
+    }
+  }
+
+  void onBeginRideResult(BeginRideState state) {
+    if (state is BeginRideUninitializedState || state is BeginRideFetchingState) {
       return;
     }
 
-    if (rideData.isValid()) {
+    if (state is BeginRideSuccessState) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => RidePage(),
         ),
       );
-    } else {
-      switch (rideData.errorType) {
-        case RideErrorType.authentication:
-          createUserErrorFlushbar(rideData.errorMessage).show(context);
-          break;
-
-        default:
-          createErrorFlushbar(rideData.errorMessage).show(context);
-      }
+    } else if (state is BeginRideUnauthorizedState) {
+      createUserErrorFlushbar(state.errorMessage).show(context);
+    } else if (state is BeginRideErrorState) {
+      createErrorFlushbar(state.errorMessage).show(context);
     }
 
     setLoading(false);
+  }
+
+  void onRideStatusResult(RideStatusState state) {
+    if (state is RideStatusInRideState) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RidePage(),
+        ),
+      );
+    }
   }
 
   void onRide() async {
@@ -147,25 +147,9 @@ class MapPageState extends State<MapPage> {
   void onRideAccepted(String qrCode) {
     setLoading(true);
     Navigator.of(context).pop();
-    mapContext.beginRideBloc.dispatch(qrCode);
-  }
-
-  void onAccount() {
-    if (Token.isAuthenticated()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AccountPage(),
-        ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginPage(),
-        ),
-      );
-    }
+    beginRideBloc.add(BeginRideEvent(
+      qrCode: qrCode,
+    ));
   }
 
   void onLogin() {
@@ -173,60 +157,6 @@ class MapPageState extends State<MapPage> {
       context,
       MaterialPageRoute(
         builder: (context) => LoginPage(),
-      ),
-    );
-  }
-
-  void onHistory() {
-    if (Token.isAuthenticated()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HistoryPage(),
-        ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginPage(),
-        ),
-      );
-    }
-  }
-
-  void onHelp() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HelpPage(),
-      ),
-    );
-  }
-
-  void onParkedOrNot() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ParkedOrNotPage(),
-      ),
-    );
-  }
-
-  void onSettings() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SettingsPage(),
-      ),
-    );
-  }
-
-  void onWallet() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => WalletPage(),
       ),
     );
   }
@@ -239,113 +169,61 @@ class MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LoadingOverlay(
-      progressIndicator: CircularProgressIndicator(),
-      color: Colors.teal[400],
-      opacity: 0.3,
-      isLoading: isLoading,
-      child: Scaffold(
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                child: Center(
-                  child: FlareActor(
-                    'assets/images/Scooter.flr'
-                  ),
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                ),
-              ),
-              ListTile(
-                title: Text('Account'),
-                trailing: Icon(
-                  Icons.account_circle,
-                  color: Colors.blue,
-                ),
-                onTap: onAccount,
-              ),
-              ListTile(
-                title: Text('Wallet'),
-                trailing: Icon(
-                  Icons.account_balance_wallet,
-                  color: Colors.lightGreen,
-                ),
-                onTap: onWallet,
-              ),
-              ListTile(
-                title: Text('Histroy'),
-                trailing: Icon(
-                  Icons.history,
-                  color: Colors.teal,
-                ),
-                onTap: onHistory,
-              ),
-              ListTile(
-                title: Text('Parked or Not'),
-                trailing: Icon(
-                  Icons.local_parking,
-                  color: Colors.yellow,
-                ),
-                onTap: onParkedOrNot,
-              ),
-              ListTile(
-                title: Text('Settings'),
-                trailing: Icon(
-                  Icons.settings,
-                  color: Colors.grey,
-                ),
-                onTap: onSettings,
-              ),
-              ListTile(
-                title: Text('Help'),
-                trailing: Icon(
-                  Icons.help,
-                  color: Colors.orange,
-                ),
-                onTap: onHelp,
-              ),
-            ],
-          ),
-        ),
-        appBar: AppBar(
-          title: Text(
-            'Rive'
-          ),
-        ),
-        body: StreamBuilder<List<Scooter>>(
-          stream: mapContext.scootersBloc.state,
-          builder: (context, snapshot) {
-            return GoogleMap(
-              mapType: MapType.normal,
-              initialCameraPosition: initialLocation,
-              myLocationEnabled: true,
-              markers: mapContext.scootersBloc.toMarkers(snapshot.data),
-            );
-          }
-        ),
-        floatingActionButton: Container(
-          height: 45,
-          width: double.infinity,
-          margin: EdgeInsets.only(left: 30),
-          child: RaisedButton(
-            onPressed: onRide,
-            child: Text(
-              'Ride',
-              style: TextStyle(
-                fontSize: 16,
-              ),
+    return BlocProvider<ScootersBloc>(
+      create: (context) => scootersBloc,
+      child: LoadingOverlay(
+        progressIndicator: CircularProgressIndicator(),
+        color: Colors.teal[400],
+        opacity: 0.3,
+        isLoading: isLoading,
+        child: Scaffold(
+          drawer: DrawerWidget(context),
+          appBar: AppBar(
+            title: Text(
+              'Rive'
             ),
-            color: Colors.teal[400],
-            textColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
+          ),
+          body: BlocBuilder<ScootersBloc, ScootersState>(
+            builder: (context, state) {
+              return createGoogleMap(state);
+            }
+          ),
+          floatingActionButton: Container(
+            height: 45,
+            width: double.infinity,
+            margin: EdgeInsets.only(left: 30),
+            child: RaisedButton(
+              onPressed: onRide,
+              child: Text(
+                'Ride',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              color: Colors.teal[400],
+              textColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget createGoogleMap(ScootersState state) {
+    var scooters = List<Scooter>();
+
+    if (state is ScootersSuccessState) {
+      scooters = state.scooters;
+    }
+
+    return GoogleMap(
+      mapType: MapType.normal,
+      initialCameraPosition: initialLocation,
+      myLocationEnabled: true,
+      markers: scootersBloc.toMarkers(scooters),
     );
   }
 
@@ -408,7 +286,10 @@ class MapPageState extends State<MapPage> {
   @override
   void dispose() {
     super.dispose();
-    mapContext.dispose();
+    locationPermissionBloc.close();
+    beginRideBloc.close();
+    rideStatusBloc.close();
+    scootersBloc.close();
     connectivitySubscription.cancel();
   }
 }
