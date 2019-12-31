@@ -112,6 +112,18 @@ class HistorySuccessState extends HistoryState {
   });
 }
 
+class HistoryPaginatedFinishedState extends HistoryState {}
+
+class HistoryPaginatedSuccessState extends HistoryState {
+  final List<Ride> history;
+  final int page;
+
+  HistoryPaginatedSuccessState({
+    @required this.history,
+    @required this.page,
+  });
+}
+
 abstract class ReviewState extends RideState {}
 
 class ReviewUninitializedState extends ReviewState {}

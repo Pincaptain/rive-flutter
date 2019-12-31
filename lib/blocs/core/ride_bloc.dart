@@ -5,7 +5,6 @@ import 'package:location/location.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/models/auth.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc_events.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc_states.dart';
@@ -204,22 +203,38 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   @override
   HistoryState get initialState => HistoryUninitializedState();
 
+  HistoryPaginatedSuccessState currentState;
+
   @override
   Stream<HistoryState> mapEventToState(HistoryEvent event) async* {
     yield HistoryFetchingState();
 
     try {
-      var history = List<Ride>();
-
       if (event is HistoryListEvent) {
-        history = await rideRepository.fetchHistory();
-      } else if (event is HistoryPaginatedEvent) {
-        history = await rideRepository.fetchHistoryPaginated(event.page);
-      }
+        final history = await rideRepository.fetchHistory();
 
-      yield HistorySuccessState(
-        history: history,
-      );
+        yield HistorySuccessState(
+          history: history,
+        );
+      } else if (event is HistoryPaginatedEvent) {
+        if (currentState != null) {
+          final history = await rideRepository.fetchHistoryPaginated(currentState.page + 1);
+          currentState = HistoryPaginatedSuccessState(
+            history: currentState.history + history,
+            page: currentState.page + 1,
+          );
+
+          yield currentState;
+        } else {
+          final history = await rideRepository.fetchHistoryPaginated(1);
+          currentState = HistoryPaginatedSuccessState(
+            history: history,
+            page: 1,
+          );
+
+          yield currentState;
+        }
+      }
     } on HistoryBadRequestException catch (exc) {
       yield HistoryErrorState(
         errorMessage: exc.errorMessage,
@@ -228,6 +243,8 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       yield HistoryErrorState(
         errorMessage: exc.errorMessage,
       );
+    } on HistoryPageNotFoundException {
+      yield HistoryPaginatedFinishedState();
     } on HistoryInternalServerException catch (exc) {
       yield HistoryErrorState(
         errorMessage: exc.errorMessage,

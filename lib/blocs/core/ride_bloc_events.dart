@@ -24,13 +24,7 @@ abstract class HistoryEvent extends RideEvent {}
 
 class HistoryListEvent extends HistoryEvent {}
 
-class HistoryPaginatedEvent extends HistoryEvent {
-  final int page;
-
-  HistoryPaginatedEvent({
-    @required this.page,
-  });
-}
+class HistoryPaginatedEvent extends HistoryEvent {}
 
 abstract class ReviewEvent extends RideEvent {}
 

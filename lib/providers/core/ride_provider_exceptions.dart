@@ -128,6 +128,14 @@ class HistoryUnauthorizedException implements Exception {
   });
 }
 
+class HistoryPageNotFoundException implements Exception {
+  final String errorMessage;
+
+  HistoryPageNotFoundException({
+    @required this.errorMessage,
+  });
+}
+
 class HistoryInternalServerException implements Exception {
   final String errorMessage;
 
