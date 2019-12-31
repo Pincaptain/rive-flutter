@@ -6,8 +6,8 @@ part of 'extensions.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-LocationInfo _$LocationInfoFromJson(Map<String, dynamic> json) {
-  return LocationInfo(
+LocationModel _$LocationModelFromJson(Map<String, dynamic> json) {
+  return LocationModel(
     (json['lat'] as num)?.toDouble(),
     (json['lon'] as num)?.toDouble(),
     (json['alt'] as num)?.toDouble(),
@@ -19,7 +19,7 @@ LocationInfo _$LocationInfoFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$LocationInfoToJson(LocationInfo instance) =>
+Map<String, dynamic> _$LocationModelToJson(LocationModel instance) =>
     <String, dynamic>{
       'lat': instance.lat,
       'lon': instance.lon,

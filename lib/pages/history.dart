@@ -1,11 +1,14 @@
 import 'package:intl/intl.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:rive_flutter/blocs/history_context.dart';
-import 'package:rive_flutter/blocs/core/ride_bloc.dart';
 import 'package:rive_flutter/models/core.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc_events.dart';
+import 'package:rive_flutter/blocs/core/ride_bloc_states.dart';
 
 class HistoryPage extends StatefulWidget {
   @override
@@ -13,53 +16,87 @@ class HistoryPage extends StatefulWidget {
 }
 
 class HistoryPageState extends State<HistoryPage> {
-  HistoryContext historyContext;
+  HistoryBloc historyBloc;
 
-  HistoryPageState() {
-    historyContext = HistoryContext();
+  final scrollController = ScrollController();
 
-    historyContext.historyBloc.dispatch(HistoryEvent.list);
+  @override
+  void initState() {
+    super.initState();
+
+    historyBloc = HistoryBloc();
+    historyBloc.add(HistoryPaginatedEvent());
+
+    initListeners();
+  }
+
+  void initListeners() {
+    scrollController.addListener(onScrollControllerChanged);
+  }
+
+  void onScrollControllerChanged() {
+    if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+      historyBloc.add(HistoryPaginatedEvent());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'History'
+    return BlocProvider<HistoryBloc>(
+      create: (context) => historyBloc,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'History'
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: StreamBuilder<List<Ride>>(
-          stream: historyContext.historyBloc.state,
-          builder: (context, snapshot) {
-            return AnimationLimiter(
-              child: ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 375),
-                    child: SlideAnimation(
-                      verticalOffset: 50.0,
-                      child: FadeInAnimation(
-                        child: Container(
-                          child: createHistoryCard(snapshot.data[index])
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: BlocBuilder<HistoryBloc, HistoryState>(
+            condition: (prevState, state) {
+              return !(state is HistoryPaginatedFinishedState || state is HistoryFetchingState);
+            },
+            builder: (context, state) {
+              return createHistoryList(state);
+            }
+          ),
         ),
       ),
     );
   }
 
-  Card createHistoryCard(Ride ride) {
+  Widget createHistoryList(HistoryState state) {
+    var history = List<Ride>();
+
+    if (state is HistorySuccessState) {
+      history = state.history;
+    } else if (state is HistoryPaginatedSuccessState) {
+      history = state.history;
+    }
+
+    return AnimationLimiter(
+      child: ListView.builder(
+        controller: scrollController,
+        itemCount: history.length,
+        itemBuilder: (BuildContext context, int index) {
+          return AnimationConfiguration.staggeredList(
+            position: index,
+            duration: const Duration(milliseconds: 375),
+            child: SlideAnimation(
+              verticalOffset: 50.0,
+              child: FadeInAnimation(
+                child: Container(
+                    child: createHistoryCard(history[index])
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget createHistoryCard(Ride ride) {
     final dateTimeFormat = DateFormat('yyyy-mm-dd hh:mm');
 
     return Card(
@@ -82,5 +119,25 @@ class HistoryPageState extends State<HistoryPage> {
         ],
       ),
     );
+  }
+
+  Widget createHistoryLoadingIndicator(HistoryState state) {
+    if (state is HistoryFetchingState) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    historyBloc.close();
+    scrollController.dispose();
   }
 }

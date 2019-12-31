@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/services.dart';
 
 import 'package:rive_flutter/pages/splash.dart';
 import 'package:rive_flutter/delegates/base_delegate.dart';
 import 'package:rive_flutter/models/auth.dart';
+import 'package:rive_flutter/locator.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  setupGetIt();
   BlocSupervisor.delegate = BaseBlocDelegate();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
     .then((_) {
