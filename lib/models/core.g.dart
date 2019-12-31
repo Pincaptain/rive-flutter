@@ -94,6 +94,26 @@ Map<String, dynamic> _$RideToJson(Ride instance) => <String, dynamic>{
       'user': instance.user,
     };
 
+HistoryPaginated _$HistoryPaginatedFromJson(Map<String, dynamic> json) {
+  return HistoryPaginated(
+    json['count'] as int,
+    json['next'] as String,
+    json['previous'] as String,
+    (json['results'] as List)
+        ?.map(
+            (e) => e == null ? null : Ride.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+  );
+}
+
+Map<String, dynamic> _$HistoryPaginatedToJson(HistoryPaginated instance) =>
+    <String, dynamic>{
+      'count': instance.count,
+      'next': instance.nextPage,
+      'previous': instance.previousPage,
+      'results': instance.history,
+    };
+
 RideErrorModel _$RideErrorModelFromJson(Map<String, dynamic> json) {
   return RideErrorModel(
     json['error_message'] as String,

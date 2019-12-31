@@ -18,12 +18,26 @@ class HistoryPage extends StatefulWidget {
 class HistoryPageState extends State<HistoryPage> {
   HistoryBloc historyBloc;
 
+  final scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
 
     historyBloc = HistoryBloc();
-    historyBloc.add(HistoryListEvent());
+    historyBloc.add(HistoryPaginatedEvent());
+
+    initListeners();
+  }
+
+  void initListeners() {
+    scrollController.addListener(onScrollControllerChanged);
+  }
+
+  void onScrollControllerChanged() {
+    if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+      historyBloc.add(HistoryPaginatedEvent());
+    }
   }
 
   @override
@@ -39,6 +53,9 @@ class HistoryPageState extends State<HistoryPage> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: BlocBuilder<HistoryBloc, HistoryState>(
+            condition: (prevState, state) {
+              return !(state is HistoryPaginatedFinishedState || state is HistoryFetchingState);
+            },
             builder: (context, state) {
               return createHistoryList(state);
             }
@@ -53,10 +70,13 @@ class HistoryPageState extends State<HistoryPage> {
 
     if (state is HistorySuccessState) {
       history = state.history;
+    } else if (state is HistoryPaginatedSuccessState) {
+      history = state.history;
     }
 
     return AnimationLimiter(
       child: ListView.builder(
+        controller: scrollController,
         itemCount: history.length,
         itemBuilder: (BuildContext context, int index) {
           return AnimationConfiguration.staggeredList(
@@ -101,9 +121,23 @@ class HistoryPageState extends State<HistoryPage> {
     );
   }
 
+  Widget createHistoryLoadingIndicator(HistoryState state) {
+    if (state is HistoryFetchingState) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+
   @override
   void dispose() {
     super.dispose();
     historyBloc.close();
+    scrollController.dispose();
   }
 }

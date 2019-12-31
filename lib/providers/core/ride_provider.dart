@@ -232,11 +232,9 @@ class RideApiProvider {
       case 200:
         var jsonString = utf8.decode(response.bodyBytes);
         var jsonData = json.decode(jsonString);
-        var history = await Stream.fromIterable(jsonData)
-            .map((value) => Ride.fromJson(value))
-            .toList();
+        var historyPaginated = HistoryPaginated.fromJson(jsonData);
 
-        return history;
+        return historyPaginated.history;
 
       case 400:
         throw HistoryBadRequestException(
@@ -247,6 +245,11 @@ class RideApiProvider {
       case 401:
         throw HistoryUnauthorizedException(
           errorMessage: 'Only authenticated users can view their ride history!',
+        );
+
+      case 404:
+        throw HistoryPageNotFoundException(
+          errorMessage: 'You already reached your end of history.',
         );
 
       case 500:
