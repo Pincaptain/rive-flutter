@@ -72,6 +72,7 @@ flutter:
     - assets/images/NoConnection.flr
     - assets/images/Error.flr
     - assets/images/BarcodeSuccess.flr
+    - assets/images/Giftbox.flr
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.

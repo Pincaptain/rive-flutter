@@ -10,6 +10,7 @@ import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/pages/parked_or_not.dart';
 import 'package:rive_flutter/pages/settings.dart';
 import 'package:rive_flutter/pages/wallet.dart';
+import 'package:rive_flutter/pages/invite_friends.dart';
 import 'package:rive_flutter/models/auth.dart';
 
 class DrawerWidget extends Drawer {
@@ -89,6 +90,15 @@ class DrawerWidget extends Drawer {
     );
   }
 
+  void onInviteFriends() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => InviteFriendsPage(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -153,6 +163,14 @@ class DrawerWidget extends Drawer {
             ),
             onTap: onHelp,
           ),
+          ListTile(
+            title: Text('Invite a friend'),
+            trailing: Icon(
+              Icons.person_add,
+              color: Colors.black,
+            ),
+            onTap: onInviteFriends,
+          )
         ],
       ),
     );

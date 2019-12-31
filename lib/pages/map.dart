@@ -12,7 +12,6 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 
 import 'package:rive_flutter/pages/login.dart';
-import 'package:rive_flutter/pages/invite_friends.dart';
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/pages/ride.dart';
 import 'package:rive_flutter/widgets/builders/flushbar_builders.dart';
