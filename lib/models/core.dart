@@ -123,3 +123,15 @@ class RideStatus extends Object {
 
   Map<String, dynamic> toJson() => _$RideStatusToJson(this);
 }
+
+@JsonSerializable()
+class ShareCode extends Object{
+  final String code;
+
+  ShareCode(this.code);
+
+  factory ShareCode.fromJson(Map<String, dynamic> json) => _$ShareCodeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ShareCodeToJson(this);
+
+}
