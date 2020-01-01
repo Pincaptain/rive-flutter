@@ -133,5 +133,15 @@ class ShareCode extends Object{
   factory ShareCode.fromJson(Map<String, dynamic> json) => _$ShareCodeFromJson(json);
 
   Map<String, dynamic> toJson() => _$ShareCodeToJson(this);
+}
 
+@JsonSerializable()
+class ShareCodeErrorModel extends Object{
+  final String errorMessage;
+
+  ShareCodeErrorModel(this.errorMessage);
+
+  factory ShareCodeErrorModel.fromJson(Map<String, dynamic> json) => _$ShareCodeErrorModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ShareCodeErrorModelToJson(this);
 }

@@ -1,9 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-
-abstract class InviteFriendsState {}
-
-abstract class ShareCodeState extends InviteFriendsState{}
+abstract class ShareCodeState {}
 
 class ShareCodeUninitializedState extends ShareCodeState {}
 

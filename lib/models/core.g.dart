@@ -145,3 +145,15 @@ ShareCode _$ShareCodeFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$ShareCodeToJson(ShareCode instance) => <String, dynamic>{
       'code': instance.code,
     };
+
+ShareCodeErrorModel _$ShareCodeErrorModelFromJson(Map<String, dynamic> json) {
+  return ShareCodeErrorModel(
+    json['errorMessage'] as String,
+  );
+}
+
+Map<String, dynamic> _$ShareCodeErrorModelToJson(
+        ShareCodeErrorModel instance) =>
+    <String, dynamic>{
+      'errorMessage': instance.errorMessage,
+    };
