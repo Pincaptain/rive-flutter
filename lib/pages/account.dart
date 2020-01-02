@@ -9,21 +9,12 @@ class AccountPage extends StatefulWidget {
 }
 
 class AccountPageState extends State<AccountPage> {
-  AppLocalizations dict;
-
-  @override
-  void initState() {
-    super.initState();
-
-    dict = AppLocalizations.of(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          dict.tr('account.title'),
+          AppLocalizations.of(context).tr('account.title'),
         ),
       ),
       body: ListView(
@@ -39,7 +30,7 @@ class AccountPageState extends State<AccountPage> {
           ),
           Center(
             child: Text(
-              dict.tr('account.development_title'),
+              AppLocalizations.of(context).tr('account.development_title'),
               style: TextStyle(
                 color: Colors.teal[400],
                 fontSize: 32,
@@ -57,7 +48,7 @@ class AccountPageState extends State<AccountPage> {
                 horizontal: 10,
               ),
               child: Text(
-                dict.tr('account.development_description'),
+                AppLocalizations.of(context).tr('account.development_description'),
                 style: TextStyle(
                   color: Colors.teal[400],
                 ),

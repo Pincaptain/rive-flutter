@@ -9,21 +9,12 @@ class ParkedOrNotPage extends StatefulWidget {
 }
 
 class ParkedOrNotPageState extends State<ParkedOrNotPage> {
-  AppLocalizations dict;
-
-  @override
-  void initState() {
-    super.initState();
-
-    dict = AppLocalizations.of(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          dict.tr('parked_or_not.title'),
+          AppLocalizations.of(context).tr('parked_or_not.title'),
         ),
       ),
       body: ListView(
@@ -39,7 +30,7 @@ class ParkedOrNotPageState extends State<ParkedOrNotPage> {
           ),
           Center(
             child: Text(
-              dict.tr('parked_or_not.development_title'),
+              AppLocalizations.of(context).tr('parked_or_not.development_title'),
               style: TextStyle(
                 color: Colors.teal[400],
                 fontSize: 32,
@@ -57,7 +48,7 @@ class ParkedOrNotPageState extends State<ParkedOrNotPage> {
                 horizontal: 10,
               ),
               child: Text(
-                dict.tr('parked_or_not.development_description'),
+                AppLocalizations.of(context).tr('parked_or_not.development_description'),
                 style: TextStyle(
                   color: Colors.teal[400],
                 ),

@@ -9,21 +9,12 @@ class WalletPage extends StatefulWidget {
 }
 
 class WalletPageState extends State<WalletPage> {
-  AppLocalizations dict;
-
-  @override
-  void initState() {
-    super.initState();
-
-    dict = AppLocalizations.of(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          dict.tr('wallet.title'),
+          AppLocalizations.of(context).tr('wallet.title'),
         ),
       ),
       body: ListView(
@@ -39,7 +30,7 @@ class WalletPageState extends State<WalletPage> {
           ),
           Center(
             child: Text(
-              dict.tr('wallet.development_title'),
+              AppLocalizations.of(context).tr('wallet.development_title'),
               style: TextStyle(
                 color: Colors.teal[400],
                 fontSize: 32,
@@ -57,7 +48,7 @@ class WalletPageState extends State<WalletPage> {
                 horizontal: 10,
               ),
               child: Text(
-                dict.tr('wallet.development_description'),
+                AppLocalizations.of(context).tr('wallet.development_description'),
                 style: TextStyle(
                   color: Colors.teal[400],
                 ),

@@ -19,8 +19,6 @@ class SplashPage extends StatefulWidget {
 }
 
 class SplashPageState extends State<SplashPage> {
-  AppLocalizations dict;
-
   LocationPermissionBloc locationPermissionBloc;
   Stream splashValidation;
   StreamSubscription validationSubscription;
@@ -31,15 +29,13 @@ class SplashPageState extends State<SplashPage> {
   initState() {
     super.initState();
 
-    dict = AppLocalizations.of(context);
-
     locationPermissionBloc = LocationPermissionBloc();
     splashValidation = Observable.combineLatest2(
         Connectivity().onConnectivityChanged,
         locationPermissionBloc,
         onConnectivityAndLocationPermission
     );
-    locationPermissionFlushbar = createErrorFlushbar(dict.tr('splash.location_permission_required'));
+    locationPermissionFlushbar = createErrorFlushbar(AppLocalizations.of(context).tr('splash.location_permission_required'));
 
     initStreams();
   }

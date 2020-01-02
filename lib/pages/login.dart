@@ -20,8 +20,6 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final loginFormKey = GlobalKey<FormBuilderState>();
 
-  AppLocalizations dict;
-
   LoginBloc loginBloc;
 
   var isLoading = false;
@@ -30,8 +28,6 @@ class LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
 
-    dict = AppLocalizations.of(context);
-    
     loginBloc = LoginBloc();
 
     initStreams();
@@ -102,7 +98,7 @@ class LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            dict.tr('login.title'),
+            AppLocalizations.of(context).tr('login.title'),
           ),
         ),
         body: Padding(
@@ -120,14 +116,14 @@ class LoginPageState extends State<LoginPage> {
                   children: <Widget>[
                     FormBuilderTextField(
                       attribute: "username",
-                      decoration: InputDecoration(labelText: dict.tr('login.username_label'), ),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('login.username_label'), ),
                       validators: [
                         FormBuilderValidators.required(),
                       ],
                     ),
                     FormBuilderTextField(
                       attribute: "password",
-                      decoration: InputDecoration(labelText: dict.tr('login.password_label'), ),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('login.password_label'), ),
                       validators: [
                         FormBuilderValidators.required(),
                       ],
@@ -145,7 +141,7 @@ class LoginPageState extends State<LoginPage> {
                   RaisedButton(
                     onPressed: onLogin,
                     child: Text(
-                      dict.tr('login.login_button'),
+                      AppLocalizations.of(context).tr('login.login_button'),
                     ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
@@ -156,7 +152,7 @@ class LoginPageState extends State<LoginPage> {
                   RaisedButton(
                     onPressed: onReset,
                     child: Text(
-                      dict.tr('login.reset_button'),
+                      AppLocalizations.of(context).tr('login.reset_button'),
                     ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
@@ -166,12 +162,12 @@ class LoginPageState extends State<LoginPage> {
               Row(
                 children: <Widget>[
                   Text(
-                    dict.tr('login.no_account'),
+                    AppLocalizations.of(context).tr('login.no_account'),
                   ),
                   FlatButton(
                     onPressed: onRegister,
                     child: Text(
-                      dict.tr('login.register_button'),
+                      AppLocalizations.of(context).tr('login.register_button'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.teal,

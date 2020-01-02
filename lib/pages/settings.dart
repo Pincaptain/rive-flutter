@@ -9,21 +9,12 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
-  AppLocalizations dict;
-
-  @override
-  void initState() {
-    super.initState();
-
-    dict = AppLocalizations.of(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          dict.tr('settings.title'),
+          AppLocalizations.of(context).tr('settings.title'),
         ),
       ),
       body: ListView(
@@ -39,7 +30,7 @@ class SettingsPageState extends State<SettingsPage> {
           ),
           Center(
             child: Text(
-              dict.tr('settings.development_title'),
+              AppLocalizations.of(context).tr('settings.development_title'),
               style: TextStyle(
                 color: Colors.teal[400],
                 fontSize: 32,
@@ -57,7 +48,7 @@ class SettingsPageState extends State<SettingsPage> {
                 horizontal: 10,
               ),
               child: Text(
-                dict.tr('settings.development_description'),
+                AppLocalizations.of(context).tr('settings.development_description'),
                 style: TextStyle(
                   color: Colors.teal[400],
                 ),

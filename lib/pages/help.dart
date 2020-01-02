@@ -9,21 +9,12 @@ class HelpPage extends StatefulWidget {
 }
 
 class HelpPageState extends State<HelpPage> {
-  AppLocalizations dict;
-
-  @override
-  void initState() {
-    super.initState();
-
-    dict = AppLocalizations.of(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          dict.tr('help.title'),
+          AppLocalizations.of(context).tr('help.title'),
         ),
       ),
       body: ListView(
@@ -39,7 +30,7 @@ class HelpPageState extends State<HelpPage> {
           ),
           Center(
             child: Text(
-              dict.tr('help.development_title'),
+              AppLocalizations.of(context).tr('help.development_title'),
               style: TextStyle(
                 color: Colors.teal[400],
                 fontSize: 32,
@@ -57,7 +48,7 @@ class HelpPageState extends State<HelpPage> {
                 horizontal: 10,
               ),
               child: Text(
-                dict.tr('help.development_description'),
+                AppLocalizations.of(context).tr('help.development_description'),
                 style: TextStyle(
                   color: Colors.teal[400],
                 ),

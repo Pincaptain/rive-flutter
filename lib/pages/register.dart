@@ -20,8 +20,6 @@ class RegisterPage extends StatefulWidget {
 class RegisterPageState extends State<RegisterPage> {
   final registerFormKey = GlobalKey<FormBuilderState>();
 
-  AppLocalizations dict;
-
   RegisterBloc registerBloc;
 
   var isLoading = false;
@@ -29,8 +27,6 @@ class RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
     super.initState();
-
-    dict = AppLocalizations.of(context);
 
     registerBloc = RegisterBloc();
 
@@ -101,7 +97,7 @@ class RegisterPageState extends State<RegisterPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            dict.tr('register.title'),
+            AppLocalizations.of(context).tr('register.title'),
           ),
         ),
         body: Padding(
@@ -121,7 +117,7 @@ class RegisterPageState extends State<RegisterPage> {
                   children: <Widget>[
                     FormBuilderTextField(
                       attribute: "username",
-                      decoration: InputDecoration(labelText: dict.tr('register.username_label'),),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.username_label'),),
                       validators: [
                         FormBuilderValidators.required(),
                         FormBuilderValidators.maxLength(70)
@@ -129,7 +125,7 @@ class RegisterPageState extends State<RegisterPage> {
                     ),
                     FormBuilderTextField(
                       attribute: "email",
-                      decoration: InputDecoration(labelText: dict.tr('register.email_label'),),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.email_label'),),
                       validators: [
                         FormBuilderValidators.required(),
                         FormBuilderValidators.email(),
@@ -137,7 +133,7 @@ class RegisterPageState extends State<RegisterPage> {
                     ),
                     FormBuilderTextField(
                       attribute: "password1",
-                      decoration: InputDecoration(labelText: dict.tr('register.password1_label'), ),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.password1_label'), ),
                       validators: [
                         FormBuilderValidators.required(),
                         FormBuilderValidators.minLength(8),
@@ -148,7 +144,7 @@ class RegisterPageState extends State<RegisterPage> {
                     ),
                     FormBuilderTextField(
                       attribute: "password2",
-                      decoration: InputDecoration(labelText: dict.tr('register.password2_label'), ),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.password2_label'), ),
                       validators: [
                         FormBuilderValidators.required(),
                         FormBuilderValidators.minLength(8),
@@ -168,7 +164,7 @@ class RegisterPageState extends State<RegisterPage> {
                   RaisedButton(
                     onPressed: onRegister,
                     child: Text(
-                      dict.tr('register.register_button'),
+                      AppLocalizations.of(context).tr('register.register_button'),
                     ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
@@ -179,7 +175,7 @@ class RegisterPageState extends State<RegisterPage> {
                   RaisedButton(
                     onPressed: onReset,
                     child: Text(
-                      dict.tr('register.reset_button'),
+                      AppLocalizations.of(context).tr('register.reset_button'),
                     ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
@@ -189,12 +185,12 @@ class RegisterPageState extends State<RegisterPage> {
               Row(
                 children: <Widget>[
                   Text(
-                    dict.tr('register.already_account'),
+                    AppLocalizations.of(context).tr('register.already_account'),
                   ),
                   FlatButton(
                     onPressed: onLogin,
                     child: Text(
-                      dict.tr('register.login_button'),
+                      AppLocalizations.of(context).tr('register.login_button'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.teal,

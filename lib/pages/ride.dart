@@ -25,8 +25,6 @@ class RidePageState extends State<RidePage> {
     zoom: 16,
   );
 
-  AppLocalizations dict;
-
   RideBloc rideBloc;
 
   EndRideBloc endRideBloc;
@@ -37,8 +35,6 @@ class RidePageState extends State<RidePage> {
   @override
   void initState() {
     super.initState();
-
-    dict = AppLocalizations.of(context);
 
     rideBloc = RideBloc();
     endRideBloc = EndRideBloc();
@@ -90,7 +86,7 @@ class RidePageState extends State<RidePage> {
           drawer: DrawerWidget(context),
           appBar: AppBar(
             title: Text(
-              dict.tr('ride.title'),
+              AppLocalizations.of(context).tr('ride.title'),
             ),
           ),
           body: BlocBuilder<RideBloc, RideState>(
@@ -125,7 +121,7 @@ class RidePageState extends State<RidePage> {
             child: RaisedButton(
               onPressed: onEndRide,
               child: Text(
-                dict.tr('ride.end_ride'),
+                AppLocalizations.of(context).tr('ride.end_ride'),
                 style: TextStyle(
                   fontSize: 16,
                 ),

@@ -19,15 +19,11 @@ class HistoryPage extends StatefulWidget {
 class HistoryPageState extends State<HistoryPage> {
   HistoryBloc historyBloc;
 
-  AppLocalizations dict;
-
   final scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-
-    dict = AppLocalizations.of(context);
 
     historyBloc = HistoryBloc();
     historyBloc.add(HistoryPaginatedEvent());
@@ -52,7 +48,7 @@ class HistoryPageState extends State<HistoryPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            dict.tr('history.title'),
+            AppLocalizations.of(context).tr('history.title'),
           ),
         ),
         body: Padding(
@@ -115,7 +111,7 @@ class HistoryPageState extends State<HistoryPage> {
               size: 48
             ),
             title: Text(
-              '${dict.tr('history.ride_name')}: ${ride.pk}',
+              '${AppLocalizations.of(context).tr('history.ride_name')}: ${ride.pk}',
             ),
             subtitle: Text(
               '${dateTimeFormat.format(ride.startedDate)} - ${dateTimeFormat.format(ride.finishedDate)}',

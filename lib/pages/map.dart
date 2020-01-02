@@ -36,8 +36,6 @@ class MapPageState extends State<MapPage> {
     zoom: 16,
   );
 
-  AppLocalizations dict;
-
   LocationPermissionBloc locationPermissionBloc;
   BeginRideBloc beginRideBloc;
   RideStatusBloc rideStatusBloc;
@@ -52,8 +50,6 @@ class MapPageState extends State<MapPage> {
   @override
   void initState() {
     super.initState();
-
-    dict = AppLocalizations.of(context);
 
     locationPermissionBloc = LocationPermissionBloc();
     beginRideBloc = BeginRideBloc();
@@ -72,7 +68,7 @@ class MapPageState extends State<MapPage> {
 
   void onConnectivityResult(ConnectivityResult result) {
     if (result == ConnectivityResult.none) {
-      connectivityFlushbar = createWarningFlushbar(dict.tr('map.connection_required'));
+      connectivityFlushbar = createWarningFlushbar(AppLocalizations.of(context).tr('map.connection_required'));
       connectivityFlushbar.show(context);
     } else {
       if (connectivityFlushbar != null) {
@@ -84,7 +80,7 @@ class MapPageState extends State<MapPage> {
   void onLocationPermissionResult(LocationPermissionState state) {
     if (state is LocationPermissionDisallowedState) {
       locationPermissionFlushbar =
-          createWarningFlushbar(dict.tr('map.location_permission_required'));
+          createWarningFlushbar(AppLocalizations.of(context).tr('map.location_permission_required'));
       locationPermissionFlushbar.show(context);
     } else {
       if (locationPermissionFlushbar != null) {
@@ -133,11 +129,11 @@ class MapPageState extends State<MapPage> {
     try {
       qrCode = await BarcodeScanner.scan();
     } on PlatformException {
-      createErrorFlushbar(dict.tr('map.camera_permission_required')).show(context);
+      createErrorFlushbar(AppLocalizations.of(context).tr('map.camera_permission_required')).show(context);
     } on FormatException {
-      createErrorFlushbar(dict.tr('map.qr_incorrect_format')).show(context);
+      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_incorrect_format')).show(context);
     } catch(exc) {
-      createErrorFlushbar(dict.tr('map.qr_unexpected')).show(context);
+      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_unexpected')).show(context);
     }
 
     setLoading(false);
@@ -185,7 +181,7 @@ class MapPageState extends State<MapPage> {
           drawer: DrawerWidget(context),
           appBar: AppBar(
             title: Text(
-              dict.tr('map.title'),
+              AppLocalizations.of(context).tr('map.title'),
             ),
             actions: <Widget>[
               IconButton(
@@ -215,7 +211,7 @@ class MapPageState extends State<MapPage> {
             child: RaisedButton(
               onPressed: onRide,
               child: Text(
-                dict.tr('map.ride_button'),
+                AppLocalizations.of(context).tr('map.ride_button'),
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -248,8 +244,8 @@ class MapPageState extends State<MapPage> {
         position: LatLng(scooter.latitude, scooter.longitude),
         icon: BitmapDescriptor.defaultMarkerWithHue(scooter.battery.toDouble()),
         infoWindow: InfoWindow(
-          title: '${dict.tr('map.scooter_info_name')}: ${scooter.pk}',
-          snippet: '${dict.tr('map.scooter_info_battery')}: ${scooter.battery} %',
+          title: '${AppLocalizations.of(context).tr('map.scooter_info_name')}: ${scooter.pk}',
+          snippet: '${AppLocalizations.of(context).tr('map.scooter_info_battery')}: ${scooter.battery} %',
         ),
       )).toSet(),
     );
@@ -273,7 +269,7 @@ class MapPageState extends State<MapPage> {
       duration: Duration(seconds: 3),
       mainButton: FlatButton(
         child: Text(
-          dict.tr('map.login_now'),
+          AppLocalizations.of(context).tr('map.login_now'),
           style: TextStyle(
             color: Colors.white,
           ),
@@ -288,14 +284,14 @@ class MapPageState extends State<MapPage> {
       flarePath: 'assets/images/BarcodeSuccess.flr',
       flareAnimation: 'sucsess',
       title: Text(
-        dict.tr('map.qr_success_title'),
+        AppLocalizations.of(context).tr('map.qr_success_title'),
         style: TextStyle(
           fontSize: 22.0,
           fontWeight: FontWeight.w600
         ),
       ),
       description: Text(
-        dict.tr('map.qr_success_description'),
+        AppLocalizations.of(context).tr('map.qr_success_description'),
         textAlign: TextAlign.center,
       ),
       onOkButtonPressed: () {
@@ -303,13 +299,13 @@ class MapPageState extends State<MapPage> {
       },
       buttonOkColor: Colors.teal[400],
       buttonOkText: Text(
-        dict.tr('map.confirm_ride_button'),
+        AppLocalizations.of(context).tr('map.confirm_ride_button'),
         style: TextStyle(
           color: Colors.white,
         ),
       ),
       buttonCancelText: Text(
-        dict.tr('map.cancel_ride_button'),
+        AppLocalizations.of(context).tr('map.cancel_ride_button'),
         style: TextStyle(
           color: Colors.white,
         ),
