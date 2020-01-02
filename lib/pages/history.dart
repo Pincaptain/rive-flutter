@@ -1,10 +1,10 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc.dart';
@@ -19,11 +19,15 @@ class HistoryPage extends StatefulWidget {
 class HistoryPageState extends State<HistoryPage> {
   HistoryBloc historyBloc;
 
+  AppLocalizations dict;
+
   final scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+
+    dict = AppLocalizations.of(context);
 
     historyBloc = HistoryBloc();
     historyBloc.add(HistoryPaginatedEvent());
@@ -45,24 +49,21 @@ class HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return BlocProvider<HistoryBloc>(
       create: (context) => historyBloc,
-      child: EasyLocalizationProvider(
-        data: EasyLocalizationProvider.of(context).data,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              AppLocalizations.of(context).tr('history.title'),
-            ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            dict.tr('history.title'),
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: BlocBuilder<HistoryBloc, HistoryState>(
-              condition: (prevState, state) {
-                return !(state is HistoryPaginatedFinishedState || state is HistoryFetchingState);
-              },
-              builder: (context, state) {
-                return createHistoryList(state);
-              }
-            ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: BlocBuilder<HistoryBloc, HistoryState>(
+            condition: (prevState, state) {
+              return !(state is HistoryPaginatedFinishedState || state is HistoryFetchingState);
+            },
+            builder: (context, state) {
+              return createHistoryList(state);
+            }
           ),
         ),
       ),
@@ -114,7 +115,7 @@ class HistoryPageState extends State<HistoryPage> {
               size: 48
             ),
             title: Text(
-              '${AppLocalizations.of(context).tr('history.ride_name')}: ${ride.pk}',
+              '${dict.tr('history.ride_name')}: ${ride.pk}',
             ),
             subtitle: Text(
               '${dateTimeFormat.format(ride.startedDate)} - ${dateTimeFormat.format(ride.finishedDate)}',

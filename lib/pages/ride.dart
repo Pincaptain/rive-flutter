@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -25,6 +25,8 @@ class RidePageState extends State<RidePage> {
     zoom: 16,
   );
 
+  AppLocalizations dict;
+
   RideBloc rideBloc;
 
   EndRideBloc endRideBloc;
@@ -35,6 +37,8 @@ class RidePageState extends State<RidePage> {
   @override
   void initState() {
     super.initState();
+
+    dict = AppLocalizations.of(context);
 
     rideBloc = RideBloc();
     endRideBloc = EndRideBloc();
@@ -86,7 +90,7 @@ class RidePageState extends State<RidePage> {
           drawer: DrawerWidget(context),
           appBar: AppBar(
             title: Text(
-              AppLocalizations.of(context).tr('ride.title'),
+              dict.tr('ride.title'),
             ),
           ),
           body: BlocBuilder<RideBloc, RideState>(
@@ -121,7 +125,7 @@ class RidePageState extends State<RidePage> {
             child: RaisedButton(
               onPressed: onEndRide,
               child: Text(
-                AppLocalizations.of(context).tr('ride.end_ride'),
+                dict.tr('ride.end_ride'),
                 style: TextStyle(
                   fontSize: 16,
                 ),

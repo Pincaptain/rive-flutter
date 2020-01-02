@@ -1,7 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HelpPage extends StatefulWidget {
   @override
@@ -9,57 +9,63 @@ class HelpPage extends StatefulWidget {
 }
 
 class HelpPageState extends State<HelpPage> {
+  AppLocalizations dict;
+
+  @override
+  void initState() {
+    super.initState();
+
+    dict = AppLocalizations.of(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return EasyLocalizationProvider(
-      data: EasyLocalizationProvider.of(context).data,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            AppLocalizations.of(context).tr('help.title'),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          dict.tr('help.title'),
         ),
-        body: ListView(
-          children: <Widget>[
-            Center(
-              child: Container(
-                width: 350,
-                height: 350,
-                child: FlareActor(
-                  'assets/images/Error.flr',
-                ),
+      ),
+      body: ListView(
+        children: <Widget>[
+          Center(
+            child: Container(
+              width: 350,
+              height: 350,
+              child: FlareActor(
+                'assets/images/Error.flr',
               ),
             ),
-            Center(
+          ),
+          Center(
+            child: Text(
+              dict.tr('help.development_title'),
+              style: TextStyle(
+                color: Colors.teal[400],
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 8,
+          ),
+          Center(
+            child: Container(
+              margin: EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal: 10,
+              ),
               child: Text(
-                AppLocalizations.of(context).tr('help.development_title'),
+                dict.tr('help.development_description'),
                 style: TextStyle(
                   color: Colors.teal[400],
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(
-              height: 8,
-            ),
-            Center(
-              child: Container(
-                margin: EdgeInsets.symmetric(
-                  vertical: 0,
-                  horizontal: 10,
-                ),
-                child: Text(
-                  AppLocalizations.of(context).tr('help.development_description'),
-                  style: TextStyle(
-                    color: Colors.teal[400],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          ],
-        ),
+          )
+        ],
       ),
     );
   }

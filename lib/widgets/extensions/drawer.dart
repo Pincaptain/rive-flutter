@@ -1,7 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flare_flutter/flare_actor.dart';
 
 import 'package:rive_flutter/pages/account.dart';
@@ -16,7 +16,11 @@ import 'package:rive_flutter/models/auth.dart';
 class DrawerWidget extends Drawer {
   final BuildContext context;
 
-  DrawerWidget(this.context);
+  AppLocalizations dict;
+
+  DrawerWidget(this.context) {
+    dict = AppLocalizations.of(context);
+  }
 
   void onAccount() {
     if (Token.isAuthenticated()) {
@@ -107,7 +111,7 @@ class DrawerWidget extends Drawer {
             ),
           ),
           ListTile(
-            title: Text(AppLocalizations.of(context).tr('global.extensions.drawer.account_button')),
+            title: Text(dict.tr('global.extensions.drawer.account_button')),
             trailing: Icon(
               Icons.account_circle,
               color: Colors.blue,
@@ -115,7 +119,7 @@ class DrawerWidget extends Drawer {
             onTap: onAccount,
           ),
           ListTile(
-            title: Text(AppLocalizations.of(context).tr('global.extensions.drawer.wallet_button')),
+            title: Text(dict.tr('global.extensions.drawer.wallet_button')),
             trailing: Icon(
               Icons.account_balance_wallet,
               color: Colors.lightGreen,
@@ -123,7 +127,7 @@ class DrawerWidget extends Drawer {
             onTap: onWallet,
           ),
           ListTile(
-            title: Text(AppLocalizations.of(context).tr('global.extensions.drawer.history_button')),
+            title: Text(dict.tr('global.extensions.drawer.history_button')),
             trailing: Icon(
               Icons.history,
               color: Colors.teal,
@@ -131,7 +135,7 @@ class DrawerWidget extends Drawer {
             onTap: onHistory,
           ),
           ListTile(
-            title: Text(AppLocalizations.of(context).tr('global.extensions.drawer.parked_or_not_button')),
+            title: Text(dict.tr('global.extensions.drawer.parked_or_not_button')),
             trailing: Icon(
               Icons.local_parking,
               color: Colors.yellow,
@@ -139,7 +143,7 @@ class DrawerWidget extends Drawer {
             onTap: onParkedOrNot,
           ),
           ListTile(
-            title: Text(AppLocalizations.of(context).tr('global.extensions.drawer.settings_button')),
+            title: Text(dict.tr('global.extensions.drawer.settings_button')),
             trailing: Icon(
               Icons.settings,
               color: Colors.grey,
@@ -147,7 +151,7 @@ class DrawerWidget extends Drawer {
             onTap: onSettings,
           ),
           ListTile(
-            title: Text(AppLocalizations.of(context).tr('global.extensions.drawer.help_button')),
+            title: Text(dict.tr('global.extensions.drawer.help_button')),
             trailing: Icon(
               Icons.help,
               color: Colors.orange,

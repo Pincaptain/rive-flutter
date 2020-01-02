@@ -1,6 +1,6 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
@@ -19,6 +19,8 @@ class ReviewPage extends StatefulWidget {
 class ReviewPageState extends State<ReviewPage> {
   final reviewGlobalKey = GlobalKey<FormBuilderState>();
 
+  AppLocalizations dict;
+
   ReviewBloc reviewBloc;
 
   var isLoading = false;
@@ -26,6 +28,8 @@ class ReviewPageState extends State<ReviewPage> {
   @override
   void initState() {
     super.initState();
+
+    dict = AppLocalizations.of(context);
 
     reviewBloc = ReviewBloc();
 
@@ -41,7 +45,7 @@ class ReviewPageState extends State<ReviewPage> {
       return;
     }
     else if (state is ReviewSuccessState) {
-      createSuccessFlushbar(AppLocalizations.of(context).tr('review.review_success'))
+      createSuccessFlushbar(dict.tr('review.review_success'))
           .show(context);
     } else if (state is ReviewErrorState) {
       createErrorFlushbar(state.errorMessage).show(context);
@@ -93,7 +97,7 @@ class ReviewPageState extends State<ReviewPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            AppLocalizations.of(context).tr('review.title'),
+            dict.tr('review.title'),
           ),
         ),
         body: Padding(
@@ -111,14 +115,14 @@ class ReviewPageState extends State<ReviewPage> {
                   children: <Widget>[
                     FormBuilderRate(
                       attribute: "rating",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('review.rating_label'),),
+                      decoration: InputDecoration(labelText: dict.tr('review.rating_label'),),
                       iconSize: 32.0,
                       initialValue: 1,
                       max: 5,
                     ),
                     FormBuilderTextField(
                       attribute: "description",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('review.description_label'), ),
+                      decoration: InputDecoration(labelText: dict.tr('review.description_label'), ),
                       minLines: 4,
                     ),
                   ],
@@ -132,7 +136,7 @@ class ReviewPageState extends State<ReviewPage> {
                   RaisedButton(
                     onPressed: onSubmit,
                     child: Text(
-                      AppLocalizations.of(context).tr('review.submit_button'),
+                      dict.tr('review.submit_button'),
                     ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
@@ -143,7 +147,7 @@ class ReviewPageState extends State<ReviewPage> {
                   RaisedButton(
                     onPressed: onReset,
                     child: Text(
-                      AppLocalizations.of(context).tr('review.reset_button'),
+                      dict.tr('review.reset_button'),
                     ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
@@ -153,13 +157,13 @@ class ReviewPageState extends State<ReviewPage> {
               Row(
                 children: <Widget>[
                   Text(
-                    AppLocalizations.of(context).tr('review.no_review'),
+                    dict.tr('review.no_review'),
                   ),
                   FlatButton(
                     onPressed: onMap,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     child: Text(
-                      AppLocalizations.of(context).tr('review.map_button'),
+                      dict.tr('review.map_button'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.teal,
