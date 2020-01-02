@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -85,7 +86,7 @@ class RidePageState extends State<RidePage> {
           drawer: DrawerWidget(context),
           appBar: AppBar(
             title: Text(
-              'Rive',
+              AppLocalizations.of(context).tr('ride.title'),
             ),
           ),
           body: BlocBuilder<RideBloc, RideState>(
@@ -120,7 +121,7 @@ class RidePageState extends State<RidePage> {
             child: RaisedButton(
               onPressed: onEndRide,
               child: Text(
-                'End Ride',
+                AppLocalizations.of(context).tr('ride.end_ride'),
                 style: TextStyle(
                   fontSize: 16,
                 ),

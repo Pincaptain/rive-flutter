@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,7 +68,7 @@ class MapPageState extends State<MapPage> {
 
   void onConnectivityResult(ConnectivityResult result) {
     if (result == ConnectivityResult.none) {
-      connectivityFlushbar = createWarningFlushbar('Internet connection is required to show scooters on map.');
+      connectivityFlushbar = createWarningFlushbar(AppLocalizations.of(context).tr('map.connection_required'));
       connectivityFlushbar.show(context);
     } else {
       if (connectivityFlushbar != null) {
@@ -79,7 +80,7 @@ class MapPageState extends State<MapPage> {
   void onLocationPermissionResult(LocationPermissionState state) {
     if (state is LocationPermissionDisallowedState) {
       locationPermissionFlushbar =
-          createWarningFlushbar('We need your location permission to show scooters on map.');
+          createWarningFlushbar(AppLocalizations.of(context).tr('map.location_permission_required'));
       locationPermissionFlushbar.show(context);
     } else {
       if (locationPermissionFlushbar != null) {
@@ -128,11 +129,11 @@ class MapPageState extends State<MapPage> {
     try {
       qrCode = await BarcodeScanner.scan();
     } on PlatformException {
-      createErrorFlushbar('Camera permission is required to scan the QR code.').show(context);
+      createErrorFlushbar(AppLocalizations.of(context).tr('map.camera_permission_required')).show(context);
     } on FormatException {
-      createErrorFlushbar('Incorrect format or nothing was detected. Please try again!').show(context);
-    } catch(exception) {
-      createErrorFlushbar('An unexpected error occurred while using the scanner. If this problem persists contact support!').show(context);
+      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_incorrect_format')).show(context);
+    } catch(exc) {
+      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_unexpected')).show(context);
     }
 
     setLoading(false);
@@ -180,8 +181,23 @@ class MapPageState extends State<MapPage> {
           drawer: DrawerWidget(context),
           appBar: AppBar(
             title: Text(
-              'Rive'
+              AppLocalizations.of(context).tr('map.title'),
             ),
+            actions: <Widget>[
+              IconButton(
+                onPressed: () {
+                  if (EasyLocalizationProvider.of(context).data.locale == Locale('en', 'US')) {
+                    EasyLocalizationProvider.of(context).data.changeLocale(Locale('mk', 'MK'));
+                  } else {
+                    EasyLocalizationProvider.of(context).data.changeLocale(Locale('en', 'US'));
+                  }
+                },
+                icon: Icon(
+                  Icons.language,
+                  color: Colors.white,
+                ),
+              )
+            ],
           ),
           body: BlocBuilder<ScootersBloc, ScootersState>(
             builder: (context, state) {
@@ -195,7 +211,7 @@ class MapPageState extends State<MapPage> {
             child: RaisedButton(
               onPressed: onRide,
               child: Text(
-                'Ride',
+                AppLocalizations.of(context).tr('map.ride_button'),
                 style: TextStyle(
                   fontSize: 16,
                 ),
@@ -223,7 +239,15 @@ class MapPageState extends State<MapPage> {
       mapType: MapType.normal,
       initialCameraPosition: initialLocation,
       myLocationEnabled: true,
-      markers: scootersBloc.toMarkers(scooters),
+      markers: scooters.map((scooter) => Marker(
+        markerId: MarkerId(scooter.pk.toString()),
+        position: LatLng(scooter.latitude, scooter.longitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(scooter.battery.toDouble()),
+        infoWindow: InfoWindow(
+          title: '${AppLocalizations.of(context).tr('map.scooter_info_name')}: ${scooter.pk}',
+          snippet: '${AppLocalizations.of(context).tr('map.scooter_info_battery')}: ${scooter.battery} %',
+        ),
+      )).toSet(),
     );
   }
 
@@ -245,7 +269,7 @@ class MapPageState extends State<MapPage> {
       duration: Duration(seconds: 3),
       mainButton: FlatButton(
         child: Text(
-          'Login Now',
+          AppLocalizations.of(context).tr('map.login_now'),
           style: TextStyle(
             color: Colors.white,
           ),
@@ -260,14 +284,14 @@ class MapPageState extends State<MapPage> {
       flarePath: 'assets/images/BarcodeSuccess.flr',
       flareAnimation: 'sucsess',
       title: Text(
-        'Success',
+        AppLocalizations.of(context).tr('map.qr_success_title'),
         style: TextStyle(
           fontSize: 22.0,
           fontWeight: FontWeight.w600
         ),
       ),
       description: Text(
-        'Make sure you want to ride this scooter and proceed by pressing ride. Otherwise press cancel to cancel the ride!',
+        AppLocalizations.of(context).tr('map.qr_success_description'),
         textAlign: TextAlign.center,
       ),
       onOkButtonPressed: () {
@@ -275,7 +299,13 @@ class MapPageState extends State<MapPage> {
       },
       buttonOkColor: Colors.teal[400],
       buttonOkText: Text(
-        'Ride',
+        AppLocalizations.of(context).tr('map.confirm_ride_button'),
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      buttonCancelText: Text(
+        AppLocalizations.of(context).tr('map.cancel_ride_button'),
         style: TextStyle(
           color: Colors.white,
         ),

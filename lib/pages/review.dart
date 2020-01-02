@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:loading_overlay/loading_overlay.dart';
@@ -40,7 +41,7 @@ class ReviewPageState extends State<ReviewPage> {
       return;
     }
     else if (state is ReviewSuccessState) {
-      createSuccessFlushbar('Your feedback is highly appreciated!')
+      createSuccessFlushbar(AppLocalizations.of(context).tr('review.review_success'))
           .show(context);
     } else if (state is ReviewErrorState) {
       createErrorFlushbar(state.errorMessage).show(context);
@@ -92,7 +93,7 @@ class ReviewPageState extends State<ReviewPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-              'Review'
+            AppLocalizations.of(context).tr('review.title'),
           ),
         ),
         body: Padding(
@@ -110,14 +111,14 @@ class ReviewPageState extends State<ReviewPage> {
                   children: <Widget>[
                     FormBuilderRate(
                       attribute: "rating",
-                      decoration: InputDecoration(labelText: "Rating"),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('review.rating_label'),),
                       iconSize: 32.0,
                       initialValue: 1,
                       max: 5,
                     ),
                     FormBuilderTextField(
                       attribute: "description",
-                      decoration: InputDecoration(labelText: "Description", ),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('review.description_label'), ),
                       minLines: 4,
                     ),
                   ],
@@ -130,7 +131,9 @@ class ReviewPageState extends State<ReviewPage> {
                 children: <Widget>[
                   RaisedButton(
                     onPressed: onSubmit,
-                    child: Text("Submit"),
+                    child: Text(
+                      AppLocalizations.of(context).tr('review.submit_button'),
+                    ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
                   ),
@@ -139,7 +142,9 @@ class ReviewPageState extends State<ReviewPage> {
                   ),
                   RaisedButton(
                     onPressed: onReset,
-                    child: Text("Reset"),
+                    child: Text(
+                      AppLocalizations.of(context).tr('review.reset_button'),
+                    ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
                   ),
@@ -148,12 +153,13 @@ class ReviewPageState extends State<ReviewPage> {
               Row(
                 children: <Widget>[
                   Text(
-                      'Don\'t want to submit a review?'
+                    AppLocalizations.of(context).tr('review.no_review'),
                   ),
                   FlatButton(
                     onPressed: onMap,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     child: Text(
-                      'Go back to map!',
+                      AppLocalizations.of(context).tr('review.map_button'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.teal,

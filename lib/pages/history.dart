@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
@@ -44,21 +45,24 @@ class HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return BlocProvider<HistoryBloc>(
       create: (context) => historyBloc,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'History'
+      child: EasyLocalizationProvider(
+        data: EasyLocalizationProvider.of(context).data,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              AppLocalizations.of(context).tr('history.title'),
+            ),
           ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: BlocBuilder<HistoryBloc, HistoryState>(
-            condition: (prevState, state) {
-              return !(state is HistoryPaginatedFinishedState || state is HistoryFetchingState);
-            },
-            builder: (context, state) {
-              return createHistoryList(state);
-            }
+          body: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: BlocBuilder<HistoryBloc, HistoryState>(
+              condition: (prevState, state) {
+                return !(state is HistoryPaginatedFinishedState || state is HistoryFetchingState);
+              },
+              builder: (context, state) {
+                return createHistoryList(state);
+              }
+            ),
           ),
         ),
       ),
@@ -110,7 +114,7 @@ class HistoryPageState extends State<HistoryPage> {
               size: 48
             ),
             title: Text(
-              'Ride: ${ride.pk}',
+              '${AppLocalizations.of(context).tr('history.ride_name')}: ${ride.pk}',
             ),
             subtitle: Text(
               '${dateTimeFormat.format(ride.startedDate)} - ${dateTimeFormat.format(ride.finishedDate)}',

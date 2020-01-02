@@ -49,18 +49,6 @@ class ScootersBloc extends Bloc<ScootersEvent, ScootersState> {
       );
     }
   }
-
-  Set<Marker> toMarkers(List<Scooter> scooters) {
-    return scooters.map((scooter) => Marker(
-      markerId: MarkerId(scooter.pk.toString()),
-      position: LatLng(scooter.latitude, scooter.longitude),
-      icon: BitmapDescriptor.defaultMarkerWithHue(scooter.battery.toDouble()),
-      infoWindow: InfoWindow(
-        title: 'Scooter: ${scooter.pk}',
-        snippet: 'Battery: ${scooter.battery} %', 
-      ),
-    )).toSet();
-  }
   
   void onScootersMessage(dynamic message) {
     add(ScootersListEvent());

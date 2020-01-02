@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -90,88 +91,95 @@ class LoginPageState extends State<LoginPage> {
   
   @override
   Widget build(BuildContext context) {
-    return LoadingOverlay(
-      color: Colors.teal,
-      opacity: 0.3,
-      isLoading: isLoading,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Login'
+    return EasyLocalizationProvider(
+      data: EasyLocalizationProvider.of(context).data,
+      child: LoadingOverlay(
+        color: Colors.teal,
+        opacity: 0.3,
+        isLoading: isLoading,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              AppLocalizations.of(context).tr('login.title'),
+            ),
           ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ListView(
-            children: <Widget>[
-              FormBuilder(
-                key: loginFormKey,
-                initialValue: {
-                  'username': '',
-                  'password': '',
-                },
-                autovalidate: true,
-                child: Column(
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
+              children: <Widget>[
+                FormBuilder(
+                  key: loginFormKey,
+                  initialValue: {
+                    'username': '',
+                    'password': '',
+                  },
+                  autovalidate: true,
+                  child: Column(
+                    children: <Widget>[
+                      FormBuilderTextField(
+                        attribute: "username",
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('login.username_label'), ),
+                        validators: [
+                          FormBuilderValidators.required(),
+                        ],
+                      ),
+                      FormBuilderTextField(
+                        attribute: "password",
+                        decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('login.password_label'), ),
+                        validators: [
+                          FormBuilderValidators.required(),
+                        ],
+                        obscureText: true,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
                   children: <Widget>[
-                    FormBuilderTextField(
-                      attribute: "username",
-                      decoration: InputDecoration(labelText: "Username"),
-                      validators: [
-                        FormBuilderValidators.required(),
-                      ],
+                    RaisedButton(
+                      onPressed: onLogin,
+                      child: Text(
+                        AppLocalizations.of(context).tr('login.login_button'),
+                      ),
+                      textColor: Colors.white,
+                      color: Colors.teal[400],
                     ),
-                    FormBuilderTextField(
-                      attribute: "password",
-                      decoration: InputDecoration(labelText: "Password", ),
-                      validators: [
-                        FormBuilderValidators.required(),
-                      ],
-                      obscureText: true,
-                      maxLines: 1,
+                    SizedBox(
+                      width: 20,
+                    ),
+                    RaisedButton(
+                      onPressed: onReset,
+                      child: Text(
+                        AppLocalizations.of(context).tr('login.reset_button'),
+                      ),
+                      textColor: Colors.white,
+                      color: Colors.teal[400],
                     ),
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: <Widget>[
-                  RaisedButton(
-                    onPressed: onLogin,
-                    child: Text("Login"),
-                    textColor: Colors.white,
-                    color: Colors.teal[400],
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  RaisedButton(
-                    onPressed: onReset,
-                    child: Text("Reset"),
-                    textColor: Colors.white,
-                    color: Colors.teal[400],
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Text(
-                    'Don\'t have an account?'
-                  ),
-                  FlatButton(
-                    onPressed: onRegister,
-                    child: Text(
-                      'Register now!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.teal,
+                Row(
+                  children: <Widget>[
+                    Text(
+                      AppLocalizations.of(context).tr('login.no_account'),
+                    ),
+                    FlatButton(
+                      onPressed: onRegister,
+                      child: Text(
+                        AppLocalizations.of(context).tr('login.register_button'),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.teal,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
