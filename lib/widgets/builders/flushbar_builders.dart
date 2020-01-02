@@ -58,22 +58,3 @@ Flushbar createSuccessFlushbar(String successMessage) {
     borderRadius: 8,
   );
 }
-
-Flushbar createLocationPermissionFlushbar() {
-  return Flushbar(
-    messageText: Text(
-      'We need your location permission to show scooters on map.',
-      style: TextStyle(
-        color: Colors.white,
-      ),
-    ),
-    backgroundColor: Colors.teal,
-    isDismissible: false,
-    icon: Icon(
-      Icons.error,
-      color: Colors.white,
-    ),
-    margin: EdgeInsets.all(8),
-    borderRadius: 8,
-  );
-}

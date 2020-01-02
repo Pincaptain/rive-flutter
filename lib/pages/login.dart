@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:rive_flutter/blocs/auth/auth_bloc.dart';
 import 'package:rive_flutter/blocs/auth/auth_bloc_events.dart';
@@ -19,6 +20,8 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final loginFormKey = GlobalKey<FormBuilderState>();
 
+  AppLocalizations dict;
+
   LoginBloc loginBloc;
 
   var isLoading = false;
@@ -27,6 +30,8 @@ class LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
 
+    dict = AppLocalizations.of(context);
+    
     loginBloc = LoginBloc();
 
     initStreams();
@@ -97,7 +102,7 @@ class LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Login'
+            dict.tr('login.title'),
           ),
         ),
         body: Padding(
@@ -115,14 +120,14 @@ class LoginPageState extends State<LoginPage> {
                   children: <Widget>[
                     FormBuilderTextField(
                       attribute: "username",
-                      decoration: InputDecoration(labelText: "Username"),
+                      decoration: InputDecoration(labelText: dict.tr('login.username_label'), ),
                       validators: [
                         FormBuilderValidators.required(),
                       ],
                     ),
                     FormBuilderTextField(
                       attribute: "password",
-                      decoration: InputDecoration(labelText: "Password", ),
+                      decoration: InputDecoration(labelText: dict.tr('login.password_label'), ),
                       validators: [
                         FormBuilderValidators.required(),
                       ],
@@ -139,7 +144,9 @@ class LoginPageState extends State<LoginPage> {
                 children: <Widget>[
                   RaisedButton(
                     onPressed: onLogin,
-                    child: Text("Login"),
+                    child: Text(
+                      dict.tr('login.login_button'),
+                    ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
                   ),
@@ -148,7 +155,9 @@ class LoginPageState extends State<LoginPage> {
                   ),
                   RaisedButton(
                     onPressed: onReset,
-                    child: Text("Reset"),
+                    child: Text(
+                      dict.tr('login.reset_button'),
+                    ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
                   ),
@@ -157,12 +166,12 @@ class LoginPageState extends State<LoginPage> {
               Row(
                 children: <Widget>[
                   Text(
-                    'Don\'t have an account?'
+                    dict.tr('login.no_account'),
                   ),
                   FlatButton(
                     onPressed: onRegister,
                     child: Text(
-                      'Register now!',
+                      dict.tr('login.register_button'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.teal,

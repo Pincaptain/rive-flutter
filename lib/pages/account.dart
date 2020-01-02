@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class AccountPage extends StatefulWidget {
   @override
@@ -8,12 +9,21 @@ class AccountPage extends StatefulWidget {
 }
 
 class AccountPageState extends State<AccountPage> {
+  AppLocalizations dict;
+
+  @override
+  void initState() {
+    super.initState();
+
+    dict = AppLocalizations.of(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Account'
+          dict.tr('account.title'),
         ),
       ),
       body: ListView(
@@ -29,13 +39,16 @@ class AccountPageState extends State<AccountPage> {
           ),
           Center(
             child: Text(
-              'Under Development',
+              dict.tr('account.development_title'),
               style: TextStyle(
                 color: Colors.teal[400],
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
+          ),
+          SizedBox(
+            height: 8,
           ),
           Center(
             child: Container(
@@ -44,13 +57,14 @@ class AccountPageState extends State<AccountPage> {
                 horizontal: 10,
               ),
               child: Text(
-                'Use the back icon near the app bar to return to map.',
+                dict.tr('account.development_description'),
                 style: TextStyle(
                   color: Colors.teal[400],
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
-          )
+          ),
         ],
       ),
     );

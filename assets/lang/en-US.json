@@ -1,0 +1,96 @@
+{
+    "account": {
+        "title": "Account",
+        "development_title": "Under Development",
+        "development_description": "Use the arrow icon right next to the app bar to go back."
+    },
+    "help": {
+        "title": "Help",
+        "development_title": "Under Development",
+        "development_description": "Use the arrow icon right next to the app bar to go back."
+    },
+    "history": {
+        "title": "History",
+        "ride_name": "Ride"
+    },
+    "login": {
+        "title": "Login",
+        "username_label": "Username",
+        "password_label": "Password",
+        "login_button": "Login",
+        "reset_button": "Reset",
+        "no_account": "Don't have an account?",
+        "register_button": "Register Now!"
+    },
+    "map": {
+        "title": "Rive",
+        "ride_button": "Ride",
+        "connection_required": "Internet connection is required to show scooters on map.",
+        "location_permission_required": "We need your location to show scooters on map.",
+        "camera_permission_required": "Camera permission is required to scan the QR code.",
+        "qr_incorrect_format": "Incorrect format or nothing was detected. Please try again!",
+        "qr_unexpected": "An unexpected error occurred while using the scanner. If this problem persists contact support!",
+        "login_now": "Login Now",
+        "qr_success_title": "Success",
+        "qr_success_description": "Make sure you want to ride this scooter and proceed by pressing ride. Otherwise press cancel to cancel the ride!",
+        "confirm_ride_button": "Ride",
+        "cancel_ride_button": "Cancel",
+        "scooter_info_name": "Scooter",
+        "scooter_info_battery": "Battery"
+    },
+    "parked_or_not": {
+        "title": "Parked Or Not",
+        "development_title": "Under Development",
+        "development_description": "Use the arrow icon right next to the app bar to go back."
+    },
+    "register": {
+        "title": "Register",
+        "username_label": "Username",
+        "email_label": "Email",
+        "password1_label": "Password",
+        "password2_label": "Verify Password",
+        "register_button": "Register",
+        "reset_button": "Reset",
+        "already_account": "Already have an account?",
+        "login_button": "Login Now!"
+    },
+    "review": {
+        "title": "Review",
+        "review_success": "Your feedback is highly appreciated!",
+        "rating_label": "Rating",
+        "description_label": "Description",
+        "submit_button": "Submit",
+        "reset_button": "Reset",
+        "no_review": "Don't want to submit a review?",
+        "map_button": "Go Back!"
+    },
+    "ride": {
+        "title": "Ride",
+        "end_ride": "End Ride"
+    },
+    "settings": {
+        "title": "Settings",
+        "development_title": "Under Development",
+        "development_description": "Use the arrow icon right next to the app bar to go back."
+    },
+    "splash": {
+        "location_permission_required": "We need your location to show scooters on map."
+    },
+    "wallet": {
+        "title": "Wallet",
+        "development_title": "Under Development",
+        "development_description": "Use the arrow icon right next to the app bar to go back."
+    },
+    "global": {
+        "extensions": {
+            "drawer": {
+                "account_button": "Account",
+                "wallet_button": "Wallet",
+                "history_button": "History",
+                "parked_or_not_button": "Parked or Not",
+                "settings_button": "Settings",
+                "help_button": "Help"
+            }
+        }
+    }
+}

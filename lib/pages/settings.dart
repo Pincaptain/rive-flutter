@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flare_flutter/flare_actor.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -8,12 +9,21 @@ class SettingsPage extends StatefulWidget {
 }
 
 class SettingsPageState extends State<SettingsPage> {
+  AppLocalizations dict;
+
+  @override
+  void initState() {
+    super.initState();
+
+    dict = AppLocalizations.of(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            'Settings'
+          dict.tr('settings.title'),
         ),
       ),
       body: ListView(
@@ -29,13 +39,16 @@ class SettingsPageState extends State<SettingsPage> {
           ),
           Center(
             child: Text(
-              'Under Development',
+              dict.tr('settings.development_title'),
               style: TextStyle(
                 color: Colors.teal[400],
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
+          ),
+          SizedBox(
+            height: 8,
           ),
           Center(
             child: Container(
@@ -44,10 +57,11 @@ class SettingsPageState extends State<SettingsPage> {
                 horizontal: 10,
               ),
               child: Text(
-                'Use the back icon near the app bar to return to map.',
+                dict.tr('settings.development_description'),
                 style: TextStyle(
                   color: Colors.teal[400],
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
           )

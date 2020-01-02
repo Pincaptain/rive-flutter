@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc.dart';
@@ -18,11 +19,15 @@ class HistoryPage extends StatefulWidget {
 class HistoryPageState extends State<HistoryPage> {
   HistoryBloc historyBloc;
 
+  AppLocalizations dict;
+
   final scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+
+    dict = AppLocalizations.of(context);
 
     historyBloc = HistoryBloc();
     historyBloc.add(HistoryPaginatedEvent());
@@ -47,7 +52,7 @@ class HistoryPageState extends State<HistoryPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'History'
+            dict.tr('history.title'),
           ),
         ),
         body: Padding(
@@ -110,7 +115,7 @@ class HistoryPageState extends State<HistoryPage> {
               size: 48
             ),
             title: Text(
-              'Ride: ${ride.pk}',
+              '${dict.tr('history.ride_name')}: ${ride.pk}',
             ),
             subtitle: Text(
               '${dateTimeFormat.format(ride.startedDate)} - ${dateTimeFormat.format(ride.finishedDate)}',
