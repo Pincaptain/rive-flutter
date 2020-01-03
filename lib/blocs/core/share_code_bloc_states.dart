@@ -4,9 +4,9 @@ abstract class ShareCodeState {}
 
 class ShareCodeUninitializedState extends ShareCodeState {}
 
-class ShareCodeFetchingState extends ShareCodeState{}
+class ShareCodeFetchingState extends ShareCodeState {}
 
-class ShareCodeSuccessState extends ShareCodeState{
+class ShareCodeSuccessState extends ShareCodeState {
   final String code;
 
   ShareCodeSuccessState({
@@ -14,7 +14,7 @@ class ShareCodeSuccessState extends ShareCodeState{
   });
 }
 
-class ShareCodeErrorState extends ShareCodeState{
+class ShareCodeErrorState extends ShareCodeState {
   final String errorMessage;
 
   ShareCodeErrorState({

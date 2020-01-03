@@ -125,7 +125,7 @@ class RideStatus extends Object {
 }
 
 @JsonSerializable()
-class ShareCode extends Object{
+class ShareCode extends Object {
   final String code;
 
   ShareCode(this.code);
@@ -136,7 +136,8 @@ class ShareCode extends Object{
 }
 
 @JsonSerializable()
-class ShareCodeErrorModel extends Object{
+class ShareCodeErrorModel extends Object {
+  @JsonKey(name: 'error_message')
   final String errorMessage;
 
   ShareCodeErrorModel(this.errorMessage);

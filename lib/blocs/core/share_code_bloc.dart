@@ -7,7 +7,7 @@ import 'package:rive_flutter/providers/core/share_code_provider_exceptions.dart'
 import 'package:rive_flutter/repositories/core/share_code_repository.dart';
 
 
-class ShareCodeBloc extends Bloc<ShareCodeEvent, ShareCodeState>{
+class ShareCodeBloc extends Bloc<ShareCodeEvent, ShareCodeState> {
   ShareCodeRepository shareCodeRepository = getIt<ShareCodeRepository>();
 
   @override

@@ -1,3 +1,3 @@
-abstract class ShareCodeEvent{}
+abstract class ShareCodeEvent {}
 
 class GetShareCodeEvent extends ShareCodeEvent {}

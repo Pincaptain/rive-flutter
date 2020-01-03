@@ -31,7 +31,6 @@ class RiveApp extends StatelessWidget {
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
-          //app-specific localization
           EasylocaLizationDelegate(
             locale: EasyLocalizationProvider.of(context).data.locale,
             path: 'assets/lang'
