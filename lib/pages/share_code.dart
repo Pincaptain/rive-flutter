@@ -65,7 +65,7 @@ class ShareCodePageState extends State<ShareCodePage> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.teal[400],
-                      fontSize: 32,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

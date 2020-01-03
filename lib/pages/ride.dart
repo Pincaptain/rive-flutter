@@ -26,7 +26,6 @@ class RidePageState extends State<RidePage> {
   );
 
   RideBloc rideBloc;
-
   EndRideBloc endRideBloc;
   StreamSubscription endRideSubscription;
 
@@ -37,6 +36,8 @@ class RidePageState extends State<RidePage> {
     super.initState();
 
     rideBloc = RideBloc();
+    rideBloc.add(RideCheckEvent());
+
     endRideBloc = EndRideBloc();
 
     initStreams();
@@ -75,8 +76,15 @@ class RidePageState extends State<RidePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<RideBloc>(
-      create: (context) => rideBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<RideBloc>(
+          create: (context) => rideBloc,
+        ),
+        BlocProvider<EndRideBloc>(
+          create: (context) => endRideBloc,
+        ),
+      ],
       child: LoadingOverlay(
         color: Colors.teal[400],
         progressIndicator: CircularProgressIndicator(),
@@ -118,19 +126,10 @@ class RidePageState extends State<RidePage> {
             height: 45,
             width: double.infinity,
             margin: EdgeInsets.only(left: 30),
-            child: RaisedButton(
-              onPressed: onEndRide,
-              child: Text(
-                AppLocalizations.of(context).tr('ride.end_ride'),
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              color: Colors.teal[400],
-              textColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
+            child: BlocBuilder<EndRideBloc, EndRideState>(
+              builder: (context, state) {
+                return createEndRideButton(state);
+              },
             ),
           ),
         ),
@@ -160,6 +159,35 @@ class RidePageState extends State<RidePage> {
         successState.ride.scooter.battery.toString(),
       );
     }
+  }
+
+  Widget createEndRideButton(EndRideState state) {
+    Widget displayWidget = Text(
+      AppLocalizations.of(context).tr('ride.end_ride'),
+      style: TextStyle(
+        fontSize: 16,
+      ),
+    );
+
+    if (state is EndRideFetchingState) {
+      displayWidget = Container(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        )
+      );
+    }
+
+    return RaisedButton(
+      onPressed: state is EndRideFetchingState ? () {} : onEndRide,
+      child: displayWidget,
+      color: Colors.teal[400],
+      textColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    );
   }
 
   @override

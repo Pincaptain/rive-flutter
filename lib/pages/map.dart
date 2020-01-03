@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:loading_overlay/loading_overlay.dart';
@@ -11,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/core.dart';
@@ -24,6 +24,7 @@ import 'package:rive_flutter/blocs/core/scooters_bloc.dart';
 import 'package:rive_flutter/blocs/core/scooters_bloc_states.dart';
 import 'package:rive_flutter/blocs/extensions/location_bloc.dart';
 import 'package:rive_flutter/blocs/extensions/location_bloc_states.dart';
+import 'package:rive_flutter/blocs/core/scooters_bloc_events.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -53,8 +54,12 @@ class MapPageState extends State<MapPage> {
 
     locationPermissionBloc = LocationPermissionBloc();
     beginRideBloc = BeginRideBloc();
+
     rideStatusBloc = RideStatusBloc();
+    rideStatusBloc.add(RideStatusCheckEvent());
+
     scootersBloc = ScootersBloc();
+    scootersBloc.add(ScootersListEvent());
 
     initStreams();
   }
@@ -200,6 +205,22 @@ class MapPageState extends State<MapPage> {
             ],
           ),
           body: BlocBuilder<ScootersBloc, ScootersState>(
+            condition: (prevState, state) {
+              if (state is ScootersSuccessState) {
+                if (scootersBloc.prevSuccessState == null) {
+                  scootersBloc.prevSuccessState = state;
+
+                  return true;
+                } else {
+                  final condition = state.scooters != scootersBloc.prevSuccessState.scooters;
+                  scootersBloc.prevSuccessState = state;
+
+                  return condition;
+                }
+              } else {
+                return false;
+              }
+            },
             builder: (context, state) {
               return createGoogleMap(state);
             }

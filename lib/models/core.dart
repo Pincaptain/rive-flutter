@@ -19,6 +19,22 @@ class Scooter extends Object {
   factory Scooter.fromJson(Map<String, dynamic> json) => _$ScooterFromJson(json);
 
   Map<String, dynamic> toJson() => _$ScooterToJson(this);
+
+  @override
+  bool operator ==(Object object) {
+    if (object is Scooter) {
+      return pk == object.pk &&
+      longitude == object.longitude &&
+      latitude == object.latitude &&
+      isRented == object.isRented &&
+      battery == object.battery;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  int get hashCode => super.hashCode;
 }
 
 @JsonSerializable()
