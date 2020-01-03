@@ -135,3 +135,25 @@ Map<String, dynamic> _$RideStatusToJson(RideStatus instance) =>
     <String, dynamic>{
       'status': instance.status,
     };
+
+ShareCode _$ShareCodeFromJson(Map<String, dynamic> json) {
+  return ShareCode(
+    json['code'] as String,
+  );
+}
+
+Map<String, dynamic> _$ShareCodeToJson(ShareCode instance) => <String, dynamic>{
+      'code': instance.code,
+    };
+
+ShareCodeErrorModel _$ShareCodeErrorModelFromJson(Map<String, dynamic> json) {
+  return ShareCodeErrorModel(
+    json['errorMessage'] as String,
+  );
+}
+
+Map<String, dynamic> _$ShareCodeErrorModelToJson(
+        ShareCodeErrorModel instance) =>
+    <String, dynamic>{
+      'errorMessage': instance.errorMessage,
+    };

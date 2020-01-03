@@ -43,6 +43,7 @@ dependencies:
   loading_overlay: ^0.2.0
   flutter_bloc: ^2.1.1
   get_it: ^3.1.0
+  share: ^0.6.3
   easy_localization: ^1.3.1
 
 dev_dependencies:
@@ -73,6 +74,7 @@ flutter:
     - assets/images/NoConnection.flr
     - assets/images/Error.flr
     - assets/images/BarcodeSuccess.flr
+    - assets/images/Giftbox.flr
 
     - assets/lang/en-US.json
     - assets/lang/mk-MK.json

@@ -123,3 +123,25 @@ class RideStatus extends Object {
 
   Map<String, dynamic> toJson() => _$RideStatusToJson(this);
 }
+
+@JsonSerializable()
+class ShareCode extends Object{
+  final String code;
+
+  ShareCode(this.code);
+
+  factory ShareCode.fromJson(Map<String, dynamic> json) => _$ShareCodeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ShareCodeToJson(this);
+}
+
+@JsonSerializable()
+class ShareCodeErrorModel extends Object{
+  final String errorMessage;
+
+  ShareCodeErrorModel(this.errorMessage);
+
+  factory ShareCodeErrorModel.fromJson(Map<String, dynamic> json) => _$ShareCodeErrorModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ShareCodeErrorModelToJson(this);
+}
