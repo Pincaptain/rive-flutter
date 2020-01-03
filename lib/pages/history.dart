@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc.dart';
@@ -47,7 +48,7 @@ class HistoryPageState extends State<HistoryPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'History'
+            AppLocalizations.of(context).tr('history.title'),
           ),
         ),
         body: Padding(
@@ -110,7 +111,7 @@ class HistoryPageState extends State<HistoryPage> {
               size: 48
             ),
             title: Text(
-              'Ride: ${ride.pk}',
+              '${AppLocalizations.of(context).tr('history.ride_name')}: ${ride.pk}',
             ),
             subtitle: Text(
               '${dateTimeFormat.format(ride.startedDate)} - ${dateTimeFormat.format(ride.finishedDate)}',

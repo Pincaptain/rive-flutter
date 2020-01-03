@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
 import 'package:rxdart/rxdart.dart';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flushbar/flushbar.dart';
@@ -34,7 +35,7 @@ class SplashPageState extends State<SplashPage> {
         locationPermissionBloc,
         onConnectivityAndLocationPermission
     );
-    locationPermissionFlushbar = createLocationPermissionFlushbar();
+    locationPermissionFlushbar = createErrorFlushbar(AppLocalizations.of(context).tr('splash.location_permission_required'));
 
     initStreams();
   }

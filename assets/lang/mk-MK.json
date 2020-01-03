@@ -1,0 +1,96 @@
+{
+    "account": {
+        "title": "Корисничка Сметка",
+        "development_title": "Во Развој",
+        "development_description": "Овој изглед сеуште се изработува. Вратете се назад користејки ја стрелката на горната лента."
+    },
+    "help": {
+        "title": "Помош",
+        "development_title": "Во Развој",
+        "development_description": "Овој изглед сеуште се изработува. Вратете се назад користејки ја стрелката на горната лента."
+    },
+    "history": {
+        "title": "Историја",
+        "ride_name": "Возење"
+    },
+    "login": {
+        "title": "Најава",
+        "username_label": "Корисничко име",
+        "password_label": "Лозинка",
+        "login_button": "Најави се",
+        "reset_button": "Ресетирај",
+        "no_account": "Немаш корисничка сметка?",
+        "register_button": "Регистрирај се одма!"
+    },
+    "map": {
+        "title": "Rive",
+        "ride_button": "Вози",
+        "connection_required": "Интернет конекција е задолжителна за да ви ги прикажеме скутерите на мапа.",
+        "location_permission_required": "Потребна ни е вашата локација за да ви ги прикажеме скутерите на мапа.",
+        "camera_permission_required": "Камера пермисија е задолжителна за да се скенира QR код.",
+        "qr_incorrect_format": "Грешен формат или ништо не беше пронајдено. Ве молиме обидете се повторно!",
+        "qr_unexpected": "Дојде до неочекувана грешка со скенерот. Ако проблемот продолжи ве молиме контактирајте не!",
+        "login_now": "Најави се веднаш",
+        "qr_success_title": "Успешно скенирање",
+        "qr_success_description": "Aко сте сигурни продолжете со притискање на копчето вози. Инаку, притиснете откажи за да го откажете возењето!",
+        "confirm_ride_button": "Вози",
+        "cancel_ride_button": "Откажи",
+        "scooter_info_name": "Скутер",
+        "scooter_info_battery": "Батерија"
+    },
+    "parked_or_not": {
+        "title": "Паркиран Или Не",
+        "development_title": "Во Развој",
+        "development_description": "Овој изглед сеуште се изработува. Вратете се назад користејки ја стрелката на горната лента."
+    },
+    "register": {
+        "title": "Регистрирај се",
+        "username_label": "Корисничко име",
+        "email_label": "Е-Пошта",
+        "password1_label": "Лозинка",
+        "password2_label": "Потврди Лозинка",
+        "register_button": "Регистрирај се",
+        "reset_button": "Ресетирај",
+        "already_account": "Веќе имаш корисничка сметка?",
+        "login_button": "Најави се веднаш!"
+    },
+    "review": {
+        "title": "Преглед",
+        "review_success": "Вашата повратна информација ни е од големо значење!",
+        "rating_label": "Оцена",
+        "description_label": "Опис",
+        "submit_button": "Поднеси",
+        "reset_button": "Ресетирај",
+        "no_review": "Не сакаш да оставиш преглед?",
+        "map_button": "Назад!"
+    },
+    "ride": {
+        "title": "Возење",
+        "end_ride": "Заврши Возење"
+    },
+    "settings": {
+        "title": "Поставки",
+        "development_title": "Во Развој",
+        "development_description": "Овој изглед сеуште се изработува. Вратете се назад користејки ја стрелката на горната лента."
+    },
+    "splash": {
+        "location_permission_required": "Потребна ни е вашата локација за да ви ги прикажеме скутерите на мапа."
+    },
+    "wallet": {
+        "title": "Паричник",
+        "development_title": "Во Развој",
+        "development_description": "Овој изглед сеуште се изработува. Вратете се назад користејки ја стрелката на горната лента."
+    },
+    "global": {
+        "extensions": {
+            "drawer": {
+                "account_button": "Корисничка Сметка",
+                "wallet_button": "Паричник",
+                "history_button": "Историја",
+                "parked_or_not_button": "Паркиран или Не",
+                "settings_button": "Поставки",
+                "help_button": "Помош"
+            }
+        }
+    }
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 
@@ -96,7 +97,7 @@ class RegisterPageState extends State<RegisterPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            'Register'
+            AppLocalizations.of(context).tr('register.title'),
           ),
         ),
         body: Padding(
@@ -116,7 +117,7 @@ class RegisterPageState extends State<RegisterPage> {
                   children: <Widget>[
                     FormBuilderTextField(
                       attribute: "username",
-                      decoration: InputDecoration(labelText: "Username"),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.username_label'),),
                       validators: [
                         FormBuilderValidators.required(),
                         FormBuilderValidators.maxLength(70)
@@ -124,7 +125,7 @@ class RegisterPageState extends State<RegisterPage> {
                     ),
                     FormBuilderTextField(
                       attribute: "email",
-                      decoration: InputDecoration(labelText: "Email"),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.email_label'),),
                       validators: [
                         FormBuilderValidators.required(),
                         FormBuilderValidators.email(),
@@ -132,7 +133,7 @@ class RegisterPageState extends State<RegisterPage> {
                     ),
                     FormBuilderTextField(
                       attribute: "password1",
-                      decoration: InputDecoration(labelText: "Password", ),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.password1_label'), ),
                       validators: [
                         FormBuilderValidators.required(),
                         FormBuilderValidators.minLength(8),
@@ -143,7 +144,7 @@ class RegisterPageState extends State<RegisterPage> {
                     ),
                     FormBuilderTextField(
                       attribute: "password2",
-                      decoration: InputDecoration(labelText: "Verify Password", ),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.password2_label'), ),
                       validators: [
                         FormBuilderValidators.required(),
                         FormBuilderValidators.minLength(8),
@@ -162,7 +163,9 @@ class RegisterPageState extends State<RegisterPage> {
                 children: <Widget>[
                   RaisedButton(
                     onPressed: onRegister,
-                    child: Text("Register"),
+                    child: Text(
+                      AppLocalizations.of(context).tr('register.register_button'),
+                    ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
                   ),
@@ -171,7 +174,9 @@ class RegisterPageState extends State<RegisterPage> {
                   ),
                   RaisedButton(
                     onPressed: onReset,
-                    child: Text("Reset"),
+                    child: Text(
+                      AppLocalizations.of(context).tr('register.reset_button'),
+                    ),
                     textColor: Colors.white,
                     color: Colors.teal[400],
                   ),
@@ -180,12 +185,12 @@ class RegisterPageState extends State<RegisterPage> {
               Row(
                 children: <Widget>[
                   Text(
-                    'Already have an accout?'
+                    AppLocalizations.of(context).tr('register.already_account'),
                   ),
                   FlatButton(
                     onPressed: onLogin,
                     child: Text(
-                      'Login now!',
+                      AppLocalizations.of(context).tr('register.login_button'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.teal,

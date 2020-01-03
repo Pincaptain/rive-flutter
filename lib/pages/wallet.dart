@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flare_flutter/flare_actor.dart';
 
 class WalletPage extends StatefulWidget {
@@ -13,7 +14,7 @@ class WalletPageState extends State<WalletPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            'Wallet'
+          AppLocalizations.of(context).tr('wallet.title'),
         ),
       ),
       body: ListView(
@@ -29,13 +30,16 @@ class WalletPageState extends State<WalletPage> {
           ),
           Center(
             child: Text(
-              'Under Development',
+              AppLocalizations.of(context).tr('wallet.development_title'),
               style: TextStyle(
                 color: Colors.teal[400],
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
+          ),
+          SizedBox(
+            height: 8,
           ),
           Center(
             child: Container(
@@ -44,10 +48,11 @@ class WalletPageState extends State<WalletPage> {
                 horizontal: 10,
               ),
               child: Text(
-                'Use the back icon near the app bar to return to map.',
+                AppLocalizations.of(context).tr('wallet.development_description'),
                 style: TextStyle(
                   color: Colors.teal[400],
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
           )
