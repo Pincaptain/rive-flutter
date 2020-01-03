@@ -81,6 +81,13 @@
         "development_title": "Under Development",
         "development_description": "Use the arrow icon right next to the app bar to go back."
     },
+    "share_code": {
+        "title": "Get Free Credits",
+        "share_code_title": "GIFT & GET 1 UNLOCK CREDIT",
+        "share_code_description": "Invite a friend to Rive, and you'll both get 1 free unlock once he or she starts riding.",
+        "share_code_invite": "Share your invite code",
+        "share_code_share": "Get a free begin ride here!\nPromotion code: "
+    },
     "global": {
         "extensions": {
             "drawer": {

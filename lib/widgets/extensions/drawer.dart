@@ -91,23 +91,6 @@ class DrawerWidget extends Drawer {
     );
   }
 
-  void onShareCode() {
-    if (Token.isAuthenticated()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ShareCodePage(),
-        ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginPage(),
-        ),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,14 +156,6 @@ class DrawerWidget extends Drawer {
             ),
             onTap: onHelp,
           ),
-          ListTile(
-            title: Text('Invite a friend'),
-            trailing: Icon(
-              Icons.person_add,
-              color: Colors.black,
-            ),
-            onTap: onShareCode,
-          )
         ],
       ),
     );
