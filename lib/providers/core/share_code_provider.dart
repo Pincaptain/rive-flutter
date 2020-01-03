@@ -26,10 +26,7 @@ class ShareCodeProvider {
         var jsonData = json.decode(jsonString);
         var shareCode = ShareCode.fromJson(jsonData);
 
-          ShareCode shareCodeTest= ShareCode('ABCDEE');
-
-//        return shareCode;
-          return shareCodeTest;
+        return shareCode;
       case 401:
         throw ShareCodeUnauthorizedException(
           errorMessage: 'You are not authenticated!'

@@ -135,14 +135,14 @@ class ShareCodePageState extends State<ShareCodePage> {
                     SizedBox(width: 5),
                     Text(displayText,
                         style: TextStyle(
-                            fontSize: 22.0,
+                            fontSize: 12.0,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1)),
                     SizedBox(width: 5),
-                    Container(
-                        child: (state is ShareCodeSuccessState)
-                            ? Icon(Icons.share, size: 24.0)
-                            : null)
+//                    Container(
+//                        child: (state is ShareCodeSuccessState)
+//                            ? Icon(Icons.share, size: 24.0)
+//                            : null)
                   ]))
         ]));
   }
