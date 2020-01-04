@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loading_overlay/loading_overlay.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 
 import 'package:rive_flutter/blocs/core/ride_bloc.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc_events.dart';
@@ -28,8 +28,6 @@ class RidePageState extends State<RidePage> {
   RideBloc rideBloc;
   EndRideBloc endRideBloc;
   StreamSubscription endRideSubscription;
-
-  var isLoading = false;
 
   @override
   void initState() {
@@ -59,19 +57,10 @@ class RidePageState extends State<RidePage> {
         ),
       );
     }
-
-    setLoading(false);
   }
 
   void onEndRide() {
-    setLoading(true);
     endRideBloc.add(EndRideEvent());
-  }
-
-  void setLoading(bool loading) {
-    setState(() {
-      isLoading = loading;
-    });
   }
 
   @override
@@ -85,52 +74,46 @@ class RidePageState extends State<RidePage> {
           create: (context) => endRideBloc,
         ),
       ],
-      child: LoadingOverlay(
-        color: Colors.teal[400],
-        progressIndicator: CircularProgressIndicator(),
-        isLoading: isLoading,
-        opacity: 0.3,
-        child: Scaffold(
-          drawer: DrawerWidget(context),
-          appBar: AppBar(
-            title: Text(
-              AppLocalizations.of(context).tr('ride.title'),
-            ),
+      child: Scaffold(
+        drawer: DrawerWidget(context),
+        appBar: AppBar(
+          title: Text(
+            AppLocalizations.of(context).tr('ride.title'),
           ),
-          body: BlocBuilder<RideBloc, RideState>(
-            builder: (context, state) {
-              return Stack(
-                children: <Widget>[
-                  GoogleMap(
-                    initialCameraPosition: initialLocation,
-                    myLocationButtonEnabled: true,
-                    myLocationEnabled: true,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: FloatingActionButton(
-                        onPressed: null,
-                        materialTapTargetSize: MaterialTapTargetSize.padded,
-                        backgroundColor: Colors.teal[400],
-                        child: createBatteryIndicator(state),
-                      ),
+        ),
+        body: BlocBuilder<RideBloc, RideState>(
+          builder: (context, state) {
+            return Stack(
+              children: <Widget>[
+                GoogleMap(
+                  initialCameraPosition: initialLocation,
+                  myLocationButtonEnabled: true,
+                  myLocationEnabled: true,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: FloatingActionButton(
+                      onPressed: null,
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                      backgroundColor: Colors.teal[400],
+                      child: createBatteryIndicator(state),
                     ),
                   ),
-                ],
-              );
-            }
-          ),
-          floatingActionButton: Container(
-            height: 45,
-            width: double.infinity,
-            margin: EdgeInsets.only(left: 30),
-            child: BlocBuilder<EndRideBloc, EndRideState>(
-              builder: (context, state) {
-                return createEndRideButton(state);
-              },
-            ),
+                ),
+              ],
+            );
+          }
+        ),
+        floatingActionButton: Container(
+          height: 45,
+          width: double.infinity,
+          margin: EdgeInsets.only(left: 30),
+          child: BlocBuilder<EndRideBloc, EndRideState>(
+            builder: (context, state) {
+              return createEndRideButton(state);
+            },
           ),
         ),
       ),
@@ -144,8 +127,12 @@ class RidePageState extends State<RidePage> {
         color: Colors.white,
       );
     } else if (state is RideFetchingState) {
-      return CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      return Container(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        )
       );
     } else if (state is RideErrorState) {
       return Icon(
@@ -154,9 +141,29 @@ class RidePageState extends State<RidePage> {
       );
     } else {
       RideSuccessState successState = state as RideSuccessState;
+      final battery = successState.ride.scooter.battery != 0 ?
+        successState.ride.scooter.battery / 100 :
+        0.0;
+      Color batteryPercentageColor;
 
-      return Text(
-        successState.ride.scooter.battery.toString(),
+      if (battery >= 0.60) {
+        batteryPercentageColor = Colors.white;
+      } else if (battery <= 0.40) {
+        batteryPercentageColor = Colors.teal[400];
+      } else {
+        batteryPercentageColor = Colors.teal[900];
+      }
+
+      return LiquidCircularProgressIndicator(
+        value: battery,
+        valueColor: AlwaysStoppedAnimation(Colors.teal[400]),
+        backgroundColor: Colors.white,
+        center: Text(
+          '${successState.ride.scooter.battery.toString()}',
+          style: TextStyle(
+            color: batteryPercentageColor,
+          ),
+        ),
       );
     }
   }

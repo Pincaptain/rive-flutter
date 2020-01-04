@@ -36,7 +36,8 @@
         "confirm_ride_button": "Ride",
         "cancel_ride_button": "Cancel",
         "scooter_info_name": "Scooter",
-        "scooter_info_battery": "Battery"
+        "scooter_info_battery": "Battery",
+        "localization_button": "Change language"
     },
     "parked_or_not": {
         "title": "Parked Or Not",

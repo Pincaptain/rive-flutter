@@ -36,7 +36,8 @@
         "confirm_ride_button": "Вози",
         "cancel_ride_button": "Откажи",
         "scooter_info_name": "Скутер",
-        "scooter_info_battery": "Батерија"
+        "scooter_info_battery": "Батерија",
+        "localization_button": "Променете го јазикот"
     },
     "parked_or_not": {
         "title": "Паркиран Или Не",

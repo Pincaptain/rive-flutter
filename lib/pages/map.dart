@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:loading_overlay/loading_overlay.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flushbar/flushbar.dart';
@@ -46,7 +45,7 @@ class MapPageState extends State<MapPage> {
   Flushbar locationPermissionFlushbar;
   Flushbar connectivityFlushbar;
 
-  var isLoading = false;
+  var isScanning = false;
 
   @override
   void initState() {
@@ -95,10 +94,6 @@ class MapPageState extends State<MapPage> {
   }
 
   void onBeginRideResult(BeginRideState state) {
-    if (state is BeginRideUninitializedState || state is BeginRideFetchingState) {
-      return;
-    }
-
     if (state is BeginRideSuccessState) {
       Navigator.pushReplacement(
         context,
@@ -111,8 +106,6 @@ class MapPageState extends State<MapPage> {
     } else if (state is BeginRideErrorState) {
       createErrorFlushbar(state.errorMessage).show(context);
     }
-
-    setLoading(false);
   }
 
   void onRideStatusResult(RideStatusState state) {
@@ -127,11 +120,14 @@ class MapPageState extends State<MapPage> {
   }
 
   void onRide() async {
-    setLoading(true);
+    if (isScanning) {
+      return;
+    }
 
     String qrCode;
 
     try {
+      isScanning = true;
       qrCode = await BarcodeScanner.scan();
     } on PlatformException {
       createErrorFlushbar(AppLocalizations.of(context).tr('map.camera_permission_required')).show(context);
@@ -139,9 +135,10 @@ class MapPageState extends State<MapPage> {
       createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_incorrect_format')).show(context);
     } catch(exc) {
       createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_unexpected')).show(context);
+    } finally {
+      isScanning = false;
     }
 
-    setLoading(false);
     if (qrCode != null) {
       showDialog(
         context: context,
@@ -151,7 +148,6 @@ class MapPageState extends State<MapPage> {
   }
 
   void onRideAccepted(String qrCode) {
-    setLoading(true);
     Navigator.of(context).pop();
     beginRideBloc.add(BeginRideEvent(
       qrCode: qrCode,
@@ -167,82 +163,69 @@ class MapPageState extends State<MapPage> {
     );
   }
 
-  void setLoading(bool loading) {
-    setState(() {
-      isLoading = loading;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ScootersBloc>(
-      create: (context) => scootersBloc,
-      child: LoadingOverlay(
-        progressIndicator: CircularProgressIndicator(),
-        color: Colors.teal[400],
-        opacity: 0.3,
-        isLoading: isLoading,
-        child: Scaffold(
-          drawer: DrawerWidget(context),
-          appBar: AppBar(
-            title: Text(
-              AppLocalizations.of(context).tr('map.title'),
-            ),
-            actions: <Widget>[
-              IconButton(
-                onPressed: () {
-                  if (EasyLocalizationProvider.of(context).data.locale == Locale('en', 'US')) {
-                    EasyLocalizationProvider.of(context).data.changeLocale(Locale('mk', 'MK'));
-                  } else {
-                    EasyLocalizationProvider.of(context).data.changeLocale(Locale('en', 'US'));
-                  }
-                },
-                icon: Icon(
-                  Icons.language,
-                  color: Colors.white,
-                ),
-              )
-            ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ScootersBloc>(
+          create: (context) => scootersBloc,
+        ),
+        BlocProvider<BeginRideBloc>(
+          create: (context) => beginRideBloc,
+        )
+      ],
+      child: Scaffold(
+        drawer: DrawerWidget(context),
+        appBar: AppBar(
+          title: Text(
+            AppLocalizations.of(context).tr('map.title'),
           ),
-          body: BlocBuilder<ScootersBloc, ScootersState>(
-            condition: (prevState, state) {
-              if (state is ScootersSuccessState) {
-                if (scootersBloc.prevSuccessState == null) {
-                  scootersBloc.prevSuccessState = state;
-
-                  return true;
+          actions: <Widget>[
+            IconButton(
+              onPressed: () {
+                if (EasyLocalizationProvider.of(context).data.locale == Locale('en', 'US')) {
+                  EasyLocalizationProvider.of(context).data.changeLocale(Locale('mk', 'MK'));
                 } else {
-                  final condition = state.scooters != scootersBloc.prevSuccessState.scooters;
-                  scootersBloc.prevSuccessState = state;
-
-                  return condition;
+                  EasyLocalizationProvider.of(context).data.changeLocale(Locale('en', 'US'));
                 }
+              },
+              tooltip: AppLocalizations.of(context).tr('map.localization_button'),
+              icon: Icon(
+                Icons.language,
+                color: Colors.white,
+              ),
+            )
+          ],
+        ),
+        body: BlocBuilder<ScootersBloc, ScootersState>(
+          condition: (prevState, state) {
+            if (state is ScootersSuccessState) {
+              if (scootersBloc.prevSuccessState == null) {
+                scootersBloc.prevSuccessState = state;
+
+                return true;
               } else {
-                return false;
+                final condition = state.scooters != scootersBloc.prevSuccessState.scooters;
+                scootersBloc.prevSuccessState = state;
+
+                return condition;
               }
-            },
-            builder: (context, state) {
-              return createGoogleMap(state);
+            } else {
+              return false;
             }
-          ),
-          floatingActionButton: Container(
-            height: 45,
-            width: double.infinity,
-            margin: EdgeInsets.only(left: 30),
-            child: RaisedButton(
-              onPressed: onRide,
-              child: Text(
-                AppLocalizations.of(context).tr('map.ride_button'),
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              color: Colors.teal[400],
-              textColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
+          },
+          builder: (context, state) {
+            return createGoogleMap(state);
+          }
+        ),
+        floatingActionButton: Container(
+          height: 45,
+          width: double.infinity,
+          margin: EdgeInsets.only(left: 30),
+          child: BlocBuilder<BeginRideBloc, BeginRideState>(
+            builder: (context, state) {
+              return createBeginRideButton(state);
+            }
           ),
         ),
       ),
@@ -269,6 +252,35 @@ class MapPageState extends State<MapPage> {
           snippet: '${AppLocalizations.of(context).tr('map.scooter_info_battery')}: ${scooter.battery} %',
         ),
       )).toSet(),
+    );
+  }
+
+  Widget createBeginRideButton(BeginRideState state) {
+    Widget displayWidget = Text(
+      AppLocalizations.of(context).tr('map.ride_button'),
+      style: TextStyle(
+        fontSize: 16,
+      ),
+    );
+
+    if (state is BeginRideFetchingState) {
+      displayWidget = Container(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        )
+      );
+    }
+
+    return RaisedButton(
+      onPressed: state is BeginRideFetchingState ? () {} : onRide,
+      child: displayWidget,
+      color: Colors.teal[400],
+      textColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
     );
   }
 
