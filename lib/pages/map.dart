@@ -269,7 +269,7 @@ class MapPageState extends State<MapPage> {
         height: 16,
         child: CircularProgressIndicator(
           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-        )
+        ),
       );
     }
 

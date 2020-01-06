@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:loading_overlay/loading_overlay.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import 'package:rive_flutter/pages/map.dart';
@@ -21,8 +21,6 @@ class ReviewPageState extends State<ReviewPage> {
 
   ReviewBloc reviewBloc;
 
-  var isLoading = false;
-
   @override
   void initState() {
     super.initState();
@@ -37,17 +35,12 @@ class ReviewPageState extends State<ReviewPage> {
   }
 
   void onReviewResult(ReviewState state) {
-    if (state is ReviewUninitializedState || state is ReviewFetchingState) {
-      return;
-    }
-    else if (state is ReviewSuccessState) {
+    if (state is ReviewSuccessState) {
       createSuccessFlushbar(AppLocalizations.of(context).tr('review.review_success'))
           .show(context);
     } else if (state is ReviewErrorState) {
       createErrorFlushbar(state.errorMessage).show(context);
     }
-
-    setLoading(false);
   }
 
   void onMap() {
@@ -64,32 +57,19 @@ class ReviewPageState extends State<ReviewPage> {
   }
 
   void onSubmit() {
-    setLoading(true);
-
     if (reviewGlobalKey.currentState.saveAndValidate()) {
       var reviewModel = ReviewModel.fromJson(reviewGlobalKey.currentState.value);
 
       reviewBloc.add(ReviewSendEvent(
         reviewModel: reviewModel,
       ));
-    } else {
-      setLoading(false);
     }
-  }
-
-  void setLoading(bool loading) {
-    setState(() {
-      isLoading = loading;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return LoadingOverlay(
-      isLoading: isLoading,
-      progressIndicator: CircularProgressIndicator(),
-      opacity: 0.3,
-      color: Colors.teal[400],
+    return BlocProvider<ReviewBloc>(
+      create: (context) => reviewBloc,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -111,14 +91,18 @@ class ReviewPageState extends State<ReviewPage> {
                   children: <Widget>[
                     FormBuilderRate(
                       attribute: "rating",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('review.rating_label'),),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).tr('review.rating_label'),
+                      ),
                       iconSize: 32.0,
                       initialValue: 1,
                       max: 5,
                     ),
                     FormBuilderTextField(
                       attribute: "description",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('review.description_label'), ),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).tr('review.description_label'),
+                      ),
                       minLines: 4,
                     ),
                   ],
@@ -129,13 +113,10 @@ class ReviewPageState extends State<ReviewPage> {
               ),
               Row(
                 children: <Widget>[
-                  RaisedButton(
-                    onPressed: onSubmit,
-                    child: Text(
-                      AppLocalizations.of(context).tr('review.submit_button'),
-                    ),
-                    textColor: Colors.white,
-                    color: Colors.teal[400],
+                  BlocBuilder<ReviewBloc, ReviewState>(
+                    builder: (context, state) {
+                      return createSubmitButton(state);
+                    }
                   ),
                   SizedBox(
                     width: 20,
@@ -172,6 +153,29 @@ class ReviewPageState extends State<ReviewPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget createSubmitButton(ReviewState state) {
+    Widget displayWidget = Text(
+      AppLocalizations.of(context).tr('review.submit_button'),
+    );
+
+    if (state is ReviewFetchingState) {
+      displayWidget = Container(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      ); 
+    }
+
+    return RaisedButton(
+      onPressed: state is ReviewFetchingState ? () {} : onSubmit,
+      child: displayWidget,
+      textColor: Colors.white,
+      color: Colors.teal[400],
     );
   }
 

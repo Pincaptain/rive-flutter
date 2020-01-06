@@ -62,7 +62,7 @@ class AuthenticationApiProvider {
     );
 
     switch (response.statusCode) {
-      case 200:
+      case 201:
         var jsonString = utf8.decode(response.bodyBytes);
         var jsonData = json.decode(jsonString);
         var tokenModel = TokenModel.fromJson(jsonData);

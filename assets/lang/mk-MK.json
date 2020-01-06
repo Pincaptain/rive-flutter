@@ -24,7 +24,9 @@
         "login_button": "Најави се",
         "reset_button": "Ресетирај",
         "no_account": "Немаш корисничка сметка?",
-        "register_button": "Регистрирај се одма!"
+        "register_button": "Регистрирај се!",
+        "username_required_text": "Полето за корисничко име не може да биде празно.",
+        "password_required_text": "Полето за лозинка не може да биде празно."
     },
     "map": {
         "title": "Rive",
@@ -57,7 +59,13 @@
         "register_button": "Регистрирај се",
         "reset_button": "Ресетирај",
         "already_account": "Веќе имаш корисничка сметка?",
-        "login_button": "Најави се веднаш!"
+        "login_button": "Најави се!",
+        "username_required_text": "Полето за корисничко име не може да биде празно.",
+        "email_required_text": "Полето за е-пошта не може да биде празно.",
+        "email_format_text": "Полето за е-пошта мора да е во точен формат.",
+        "password1_required_text": "Полето за лозинка не може да биде празно.",
+        "password1_min_text": "Полето за лозинка мора да содржи барем 8 карактери.",
+        "password2_required_text": "Полето за потврдување не може да биде празно."
     },
     "review": {
         "title": "Преглед",

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:loading_overlay/loading_overlay.dart';
 
 import 'package:rive_flutter/blocs/auth/auth_bloc.dart';
 import 'package:rive_flutter/blocs/auth/auth_bloc_events.dart';
@@ -20,9 +20,12 @@ class RegisterPage extends StatefulWidget {
 class RegisterPageState extends State<RegisterPage> {
   final registerFormKey = GlobalKey<FormBuilderState>();
 
-  RegisterBloc registerBloc;
+  final usernameFocusNode = FocusNode();
+  final emailFocusNode = FocusNode();
+  final password1FocusNode = FocusNode();
+  final password2FocusNode = FocusNode();
 
-  var isLoading = false;
+  RegisterBloc registerBloc;
 
   @override
   void initState() {
@@ -38,9 +41,7 @@ class RegisterPageState extends State<RegisterPage> {
   }
 
   void onRegisterResult(RegisterState state) {
-    if (state is RegisterUninitializedState || state is RegisterFetchingState) {
-      return;
-    } else if (state is RegisterSuccessState) {
+    if (state is RegisterSuccessState) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -50,21 +51,20 @@ class RegisterPageState extends State<RegisterPage> {
     } else if (state is RegisterErrorState) {
       createErrorFlushbar(state.errorMessage).show(context);
     }
+  }
 
-    setLoading(false);
+  void onFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   void onRegister() {
-    setLoading(true);
-
     if (registerFormKey.currentState.saveAndValidate()) {
       final registerModel = RegisterModel.fromJson(registerFormKey.currentState.value);
 
       registerBloc.add(RegisterEvent(
         registerModel: registerModel,
       ));
-    } else {
-      setLoading(false);
     }
   }
 
@@ -80,20 +80,11 @@ class RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
-
-  void setLoading(bool loading) {
-    setState(() {
-      isLoading = loading;
-    });
-  }
   
   @override
   Widget build(BuildContext context) {
-    return LoadingOverlay(
-      progressIndicator: CircularProgressIndicator(),
-      opacity: 0.3,
-      isLoading: isLoading,
-      color: Colors.teal[400],
+    return BlocProvider(
+      create: (context) => registerBloc,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -117,41 +108,75 @@ class RegisterPageState extends State<RegisterPage> {
                   children: <Widget>[
                     FormBuilderTextField(
                       attribute: "username",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.username_label'),),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).tr('register.username_label'),
+                      ),
                       validators: [
-                        FormBuilderValidators.required(),
-                        FormBuilderValidators.maxLength(70)
+                        FormBuilderValidators.required(
+                          errorText: AppLocalizations.of(context).tr('register.username_required_text'),
+                        ),
                       ],
+                      textInputAction: TextInputAction.next,
+                      focusNode: usernameFocusNode,
+                      onFieldSubmitted: (value) {
+                        onFocusChange(context, usernameFocusNode, emailFocusNode);
+                      },
                     ),
                     FormBuilderTextField(
                       attribute: "email",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.email_label'),),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).tr('register.email_label'),
+                      ),
                       validators: [
-                        FormBuilderValidators.required(),
-                        FormBuilderValidators.email(),
+                        FormBuilderValidators.required(
+                          errorText: AppLocalizations.of(context).tr('register.email_required_text'),
+                        ),
+                        FormBuilderValidators.email(
+                          errorText: AppLocalizations.of(context).tr('register.email_format_text'),
+                        ),
                       ],
+                      textInputAction: TextInputAction.next,
+                      focusNode: emailFocusNode,
+                      onFieldSubmitted: (value) {
+                        onFocusChange(context, emailFocusNode, password1FocusNode);
+                      },
                     ),
                     FormBuilderTextField(
                       attribute: "password1",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.password1_label'), ),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).tr('register.password1_label'),
+                      ),
                       validators: [
-                        FormBuilderValidators.required(),
-                        FormBuilderValidators.minLength(8),
-                        FormBuilderValidators.maxLength(32)
+                        FormBuilderValidators.required(
+                          errorText: AppLocalizations.of(context).tr('register.password1_required_text'),
+                        ),
+                        FormBuilderValidators.minLength(
+                          8,
+                          errorText: AppLocalizations.of(context).tr('register.password1_min_text'),
+                        ),
                       ],
+                      textInputAction: TextInputAction.next,
                       obscureText: true,
                       maxLines: 1,
+                      focusNode: password1FocusNode,
+                      onFieldSubmitted: (value) {
+                        onFocusChange(context, password1FocusNode, password2FocusNode);
+                      },
                     ),
                     FormBuilderTextField(
                       attribute: "password2",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('register.password2_label'), ),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).tr('register.password2_label'),
+                      ),
                       validators: [
-                        FormBuilderValidators.required(),
-                        FormBuilderValidators.minLength(8),
-                        FormBuilderValidators.maxLength(32)
+                        FormBuilderValidators.required(
+                          errorText: AppLocalizations.of(context).tr('register.password2_required_text'),
+                        ),
                       ],
+                      textInputAction: TextInputAction.done,
                       obscureText: true,
                       maxLines: 1,
+                      focusNode: password2FocusNode,
                     ),
                   ],
                 ),
@@ -161,13 +186,10 @@ class RegisterPageState extends State<RegisterPage> {
               ),
               Row(
                 children: <Widget>[
-                  RaisedButton(
-                    onPressed: onRegister,
-                    child: Text(
-                      AppLocalizations.of(context).tr('register.register_button'),
-                    ),
-                    textColor: Colors.white,
-                    color: Colors.teal[400],
+                  BlocBuilder<RegisterBloc, RegisterState>(
+                    builder: (context, state) {
+                      return createRegisterButton(state);
+                    }
                   ),
                   SizedBox(
                     width: 20,
@@ -203,6 +225,29 @@ class RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget createRegisterButton(RegisterState state) {
+    Widget displayWidget = Text(
+      AppLocalizations.of(context).tr('register.register_button'),
+    );
+
+    if (state is RegisterFetchingState) {
+      displayWidget = Container(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      );
+    }
+    
+    return RaisedButton(
+      onPressed: state is RegisterFetchingState ? () {} : onRegister,
+      child: displayWidget,
+      textColor: Colors.white,
+      color: Colors.teal[400],
     );
   }
 

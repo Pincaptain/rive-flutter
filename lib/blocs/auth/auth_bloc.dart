@@ -54,7 +54,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       final tokenModel = await authenticationRepository.register(event.registerModel);
 
       Token.authenticate(tokenModel.token);
-      RegisterSuccessState(
+      yield RegisterSuccessState(
         tokenModel: tokenModel,
       );
     } on RegisterBadRequestException catch (exc) {

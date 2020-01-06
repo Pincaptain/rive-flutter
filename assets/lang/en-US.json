@@ -24,7 +24,9 @@
         "login_button": "Login",
         "reset_button": "Reset",
         "no_account": "Don't have an account?",
-        "register_button": "Register Now!"
+        "register_button": "Register Now!",
+        "username_required_text": "Username field cannot be empty.",
+        "password_required_text": "Password field cannot be empty."
     },
     "map": {
         "title": "Rive",
@@ -57,7 +59,13 @@
         "register_button": "Register",
         "reset_button": "Reset",
         "already_account": "Already have an account?",
-        "login_button": "Login Now!"
+        "login_button": "Login Now!",
+        "username_required_text": "Username field cannot be empty.",
+        "email_required_text": "Email field cannot be empty.",
+        "email_format_text": "Email field must be an email.",
+        "password1_required_text": "Password field cannot be empty.",
+        "password1_min_text": "Password field must be at least 8 characters long.",
+        "password2_required_text": "Verify password field cannot be empty."
     },
     "review": {
         "title": "Review",

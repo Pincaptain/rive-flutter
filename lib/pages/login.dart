@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:loading_overlay/loading_overlay.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:rive_flutter/blocs/auth/auth_bloc.dart';
 import 'package:rive_flutter/blocs/auth/auth_bloc_events.dart';
@@ -20,9 +20,10 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final loginFormKey = GlobalKey<FormBuilderState>();
 
-  LoginBloc loginBloc;
+  final usernameFocusNode = FocusNode();
+  final passwordFocusNode = FocusNode();
 
-  var isLoading = false;
+  LoginBloc loginBloc;
 
   @override
   void initState() {
@@ -38,10 +39,6 @@ class LoginPageState extends State<LoginPage> {
   }
 
   void onLoginResult(LoginState state) {
-    if (state is LoginUninitializedState || state is LoginFetchingState) {
-      return;
-    }
-
     if (state is LoginSuccessState) {
       Navigator.pushReplacement(
         context,
@@ -52,21 +49,20 @@ class LoginPageState extends State<LoginPage> {
     } else if (state is LoginErrorState) {
       createErrorFlushbar(state.errorMessage).show(context);
     }
+  }
 
-    setLoading(false);
+  void onFocusChange(BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   void onLogin() {
-    setLoading(true);
-
     if (loginFormKey.currentState.saveAndValidate()) {
       final loginModel = LoginModel.fromJson(loginFormKey.currentState.value);
       
       loginBloc.add(LoginEvent(
         loginModel: loginModel,
       ));
-    } else {
-      setLoading(false);
     }
   }
 
@@ -82,19 +78,11 @@ class LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
-  void setLoading(bool loading) {
-    setState(() {
-      isLoading = loading;
-    });
-  }
   
   @override
   Widget build(BuildContext context) {
-    return LoadingOverlay(
-      color: Colors.teal,
-      opacity: 0.3,
-      isLoading: isLoading,
+    return BlocProvider<LoginBloc>(
+      create: (context) => loginBloc,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -116,19 +104,34 @@ class LoginPageState extends State<LoginPage> {
                   children: <Widget>[
                     FormBuilderTextField(
                       attribute: "username",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('login.username_label'), ),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).tr('login.username_label'), 
+                      ),
                       validators: [
-                        FormBuilderValidators.required(),
+                        FormBuilderValidators.required(
+                          errorText: AppLocalizations.of(context).tr('login.username_required_text'),
+                        ),
                       ],
+                      textInputAction: TextInputAction.next,
+                      focusNode: usernameFocusNode,
+                      onFieldSubmitted: (value) {
+                        onFocusChange(context, usernameFocusNode, passwordFocusNode);
+                      },
                     ),
                     FormBuilderTextField(
                       attribute: "password",
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context).tr('login.password_label'), ),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context).tr('login.password_label'),
+                      ),
                       validators: [
-                        FormBuilderValidators.required(),
+                        FormBuilderValidators.required(
+                          errorText: AppLocalizations.of(context).tr('login.password_required_text'),
+                        ),
                       ],
                       obscureText: true,
                       maxLines: 1,
+                      textInputAction: TextInputAction.done,
+                      focusNode: passwordFocusNode,
                     ),
                   ],
                 ),
@@ -138,13 +141,10 @@ class LoginPageState extends State<LoginPage> {
               ),
               Row(
                 children: <Widget>[
-                  RaisedButton(
-                    onPressed: onLogin,
-                    child: Text(
-                      AppLocalizations.of(context).tr('login.login_button'),
-                    ),
-                    textColor: Colors.white,
-                    color: Colors.teal[400],
+                  BlocBuilder<LoginBloc, LoginState>(
+                    builder: (context, state) {
+                      return createLoginButton(state);
+                    }
                   ),
                   SizedBox(
                     width: 20,
@@ -180,6 +180,29 @@ class LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget createLoginButton(LoginState state) {
+    Widget displayWidget = Text(
+      AppLocalizations.of(context).tr('login.login_button'),
+    );
+
+    if (state is LoginFetchingState) {
+      displayWidget = Container(
+        width: 16,
+        height: 16,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      );
+    }
+
+    return RaisedButton(
+      onPressed: state is LoginFetchingState ? () {} : onLogin,
+      child: displayWidget,
+      textColor: Colors.white,
+      color: Colors.teal[400],
     );
   }
 
