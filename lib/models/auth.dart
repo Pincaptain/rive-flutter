@@ -34,7 +34,7 @@ class Token {
     }
   }
 
-  static void forget() async {
+  static void logout() async {
     token = null;
 
     final prefs = await SharedPreferences.getInstance();
@@ -66,6 +66,8 @@ class TokenModel extends Object {
 class User extends Object {
   @JsonKey(name: 'id')
   final int pk;
+  @JsonKey(name: 'username')
+  final String username;
   @JsonKey(name: 'first_name')
   final String firstName;
   @JsonKey(name: 'last_name')
@@ -74,7 +76,7 @@ class User extends Object {
   @JsonKey(name: 'phone_number')
   final String phoneNumber;
 
-  User(this.pk, this.firstName, this.lastName, this.email, this.phoneNumber);
+  User(this.pk, this.username, this.firstName, this.lastName, this.email, this.phoneNumber);
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 

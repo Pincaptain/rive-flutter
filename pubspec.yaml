@@ -76,6 +76,7 @@ flutter:
     - assets/images/Error.flr
     - assets/images/BarcodeSuccess.flr
     - assets/images/Giftbox.flr
+    - assets/images/ProfileAvatar.flr
 
     - assets/lang/en-US.json
     - assets/lang/mk-MK.json

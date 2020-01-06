@@ -1,8 +1,12 @@
 {
     "account": {
         "title": "Account",
-        "development_title": "Under Development",
-        "development_description": "Use the arrow icon right next to the app bar to go back."
+        "logout_button": "Logout",
+        "username_label": "Username",
+        "first_name_label": "First Name",
+        "last_name_label": "Last Name",
+        "email_label": "Email",
+        "phone_number_label": "Phone Number"
     },
     "help": {
         "title": "Help",

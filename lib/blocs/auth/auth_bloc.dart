@@ -72,3 +72,35 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     }
   }
 }
+
+class AccountBloc extends Bloc<AccountEvent, AccountState> {
+  AuthenticationRepository authenticationRepository = getIt<AuthenticationRepository>();
+
+  @override
+  AccountState get initialState => AccountUninitializedState();
+
+  @override
+  Stream<AccountState> mapEventToState(AccountEvent event) async* {
+    yield AccountFetchingState();
+
+    try {
+      final user = await authenticationRepository.fetchCurrentUser();
+
+      yield AccountSuccessState(
+        user: user,
+      );
+    } on AccountUnauthorizedException catch (exc) {
+      yield AccountErrorState(
+        errorMessage: exc.errorMessage,
+      );
+    } on AccountInternalServerException catch (exc) {
+      yield AccountErrorState(
+        errorMessage: exc.errorMessage,
+      );
+    } on AccountUnexpectedException catch (exc) {
+      yield AccountErrorState(
+        errorMessage: exc.errorMessage,
+      );
+    }
+  }
+}

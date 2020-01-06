@@ -47,3 +47,25 @@ class RegisterSuccessState extends RegisterState {
     @required this.tokenModel
   });
 }
+
+abstract class AccountState extends AuthState {}
+
+class AccountUninitializedState extends AccountState {}
+
+class AccountFetchingState extends AccountState {}
+
+class AccountErrorState extends AccountState {
+  final String errorMessage;
+
+  AccountErrorState({
+    @required this.errorMessage,
+  });
+}
+
+class AccountSuccessState extends AccountState {
+  final User user;
+
+  AccountSuccessState({
+    @required this.user,
+  });
+}

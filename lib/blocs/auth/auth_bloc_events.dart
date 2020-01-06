@@ -19,3 +19,5 @@ class RegisterEvent extends AuthEvent {
     @required this.registerModel
   });
 }
+
+class AccountEvent extends AuthEvent {}

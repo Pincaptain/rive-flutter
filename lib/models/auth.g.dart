@@ -20,6 +20,7 @@ Map<String, dynamic> _$TokenModelToJson(TokenModel instance) =>
 User _$UserFromJson(Map<String, dynamic> json) {
   return User(
     json['id'] as int,
+    json['username'] as String,
     json['first_name'] as String,
     json['last_name'] as String,
     json['email'] as String,
@@ -29,6 +30,7 @@ User _$UserFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'id': instance.pk,
+      'username': instance.username,
       'first_name': instance.firstName,
       'last_name': instance.lastName,
       'email': instance.email,

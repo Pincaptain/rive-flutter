@@ -92,4 +92,42 @@ class AuthenticationApiProvider {
         );
     }
   }
+
+  Future<User> fetchCurrentUser() async {
+    var response = await http.get(
+      Uri.encodeFull('${Client.client}/api/users/self/'),
+      headers: {
+        HttpHeaders.acceptHeader: 'application/json',
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
+      },
+    );
+
+    switch (response.statusCode) {
+      case 200:
+        var jsonString = utf8.decode(response.bodyBytes);
+        var jsonData = json.decode(jsonString);
+        var user = User.fromJson(jsonData);
+
+        return user;
+
+      case 401:
+        throw AccountUnauthorizedException(
+          errorMessage: 'You need an active account to fetch your profile!',
+        );
+
+      case 500:
+        throw AccountInternalServerException(
+          errorMessage: 'An error occurred on the server. '
+              'This may be due to maintenance. Please try again soon!',
+        );
+
+      default:
+        throw AccountUnexpectedException(
+          errorMessage: 'This is a weird problem. '
+              'Probably a result of time travel or a genious mind! '
+              'If this problem persists contact support!',
+        );
+    }
+  }
 }

@@ -1,8 +1,12 @@
 {
     "account": {
         "title": "Корисничка Сметка",
-        "development_title": "Во Развој",
-        "development_description": "Овој изглед сеуште се изработува. Вратете се назад користејки ја стрелката на горната лента."
+        "logout_button": "Одјави се",
+        "username_label": "Корисничко име",
+        "first_name_label": "Име",
+        "last_name_label": "Презиме",
+        "email_label": "Е-Пошта",
+        "phone_number_label": "Телефонски Број"
     },
     "help": {
         "title": "Помош",

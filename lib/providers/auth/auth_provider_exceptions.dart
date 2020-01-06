@@ -73,3 +73,27 @@ class RegisterUnexpectedException implements Exception {
     @required this.errorMessage
   });
 }
+
+class AccountUnauthorizedException implements Exception {
+  final String errorMessage;
+
+  AccountUnauthorizedException({
+    @required this.errorMessage,
+  });
+}
+
+class AccountInternalServerException implements Exception {
+  final String errorMessage;
+
+  AccountInternalServerException({
+    @required this.errorMessage,
+  });
+}
+
+class AccountUnexpectedException implements Exception {
+  final String errorMessage;
+
+  AccountUnexpectedException({
+    @required this.errorMessage,
+  });
+}

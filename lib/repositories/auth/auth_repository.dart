@@ -9,4 +9,6 @@ class AuthenticationRepository {
 
   Future<TokenModel> register(RegisterModel registerModel) =>
       authenticationApiProvider.register(registerModel);
+
+  Future<User> fetchCurrentUser() => authenticationApiProvider.fetchCurrentUser();
 }
