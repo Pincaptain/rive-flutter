@@ -1,19 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/pages/ride.dart';
+import 'package:rive_flutter/pages/scanner.dart';
 import 'package:rive_flutter/widgets/builders/flushbar_builders.dart';
 import 'package:rive_flutter/widgets/extensions/drawer.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc.dart';
@@ -124,21 +123,15 @@ class MapPageState extends State<MapPage> {
       return;
     }
 
-    String qrCode;
+    isScanning = true;
+    final qrCode = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ScannerPage(),
+      ),
+    );
 
-    try {
-      isScanning = true;
-      qrCode = await BarcodeScanner.scan();
-    } on PlatformException {
-      createErrorFlushbar(AppLocalizations.of(context).tr('map.camera_permission_required')).show(context);
-    } on FormatException {
-      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_incorrect_format')).show(context);
-    } catch(exc) {
-      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_unexpected')).show(context);
-    } finally {
-      isScanning = false;
-    }
-
+    isScanning = false;
     if (qrCode != null) {
       showDialog(
         context: context,
