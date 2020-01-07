@@ -4,7 +4,7 @@ class BaseBlocDelegate extends BlocDelegate {
   @override
   void onEvent(Bloc bloc, Object event) {
     super.onEvent(bloc, event);
-
+    
     print('BLoC: ${bloc.runtimeType}, Event: $event');
   }
 

@@ -1,8 +1,28 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:rive_flutter/models/core.dart';
 
 abstract class RideState {}
+
+class RideUninitializedState extends RideState {}
+
+class RideFetchingState extends RideState {}
+
+class RideErrorState extends RideState {
+  final String errorMessage;
+
+  RideErrorState({
+    @required this.errorMessage,
+  });
+}
+
+class RideSuccessState extends RideState {
+  final Ride ride;
+
+  RideSuccessState({
+    @required this.ride,
+  });
+}
 
 abstract class RideStatusState extends RideState {}
 
@@ -42,26 +62,6 @@ class BeginRideSuccessState extends BeginRideState {
   final Ride ride;
 
   BeginRideSuccessState({
-    @required this.ride,
-  });
-}
-
-class RideUninitializedState extends RideState {}
-
-class RideFetchingState extends RideState {}
-
-class RideErrorState extends RideState {
-  final String errorMessage;
-
-  RideErrorState({
-    @required this.errorMessage,
-  });
-}
-
-class RideSuccessState extends RideState {
-  final Ride ride;
-
-  RideSuccessState({
     @required this.ride,
   });
 }

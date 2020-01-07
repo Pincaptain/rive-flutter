@@ -16,7 +16,7 @@ class RideApiProvider {
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
         HttpHeaders.contentTypeHeader: 'application/json',
-        'Authorization': Token.getHeaderToken(),
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
       },
     );
 
@@ -45,7 +45,7 @@ class RideApiProvider {
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
         HttpHeaders.contentTypeHeader: 'application/json',
-        'Authorization': Token.getHeaderToken(),
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
       },
     );
 
@@ -92,7 +92,7 @@ class RideApiProvider {
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
         HttpHeaders.contentTypeHeader: 'application/json',
-        'Authorization': Token.getHeaderToken(),
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
       },
     );
 
@@ -139,7 +139,7 @@ class RideApiProvider {
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
         HttpHeaders.contentTypeHeader: 'application/json',
-        'Authorization': Token.getHeaderToken(),
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
       },
     );
 
@@ -178,7 +178,7 @@ class RideApiProvider {
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
         HttpHeaders.contentTypeHeader: 'application/json',
-        'Authorization': Token.getHeaderToken(),
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
       },
     );
 
@@ -224,7 +224,7 @@ class RideApiProvider {
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
         HttpHeaders.contentTypeHeader: 'application/json',
-        'Authorization': Token.getHeaderToken(),
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
       },
     );
 
@@ -273,7 +273,7 @@ class RideApiProvider {
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
         HttpHeaders.contentTypeHeader: 'application/json',
-        'Authorization': Token.getHeaderToken(),
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
       },
       body: json.encode(reviewModel.toJson()),
     );

@@ -23,16 +23,16 @@ class ShareCodePageState extends State<ShareCodePage> {
     super.initState();
 
     shareCodeBloc = ShareCodeBloc();
-    shareCodeBloc.add(GetShareCodeEvent());
+    shareCodeBloc.add(ShareCodeGetEvent());
 
     initStreams();
   }
 
   void initStreams() {
-    shareCodeBloc.listen(onShareCodeError);
+    shareCodeBloc.listen(onShareCodeResult);
   }
 
-  void onShareCodeError(ShareCodeState state) {
+  void onShareCodeResult(ShareCodeState state) {
     if (state is ShareCodeErrorState) {
       createErrorFlushbar(state.errorMessage).show(context);
     }
@@ -121,7 +121,7 @@ class ShareCodePageState extends State<ShareCodePage> {
 
     if (state is ShareCodeSuccessState) {
       displayWidget = Text(
-        state.code,
+        state.shareCode.code,
         style: TextStyle(
           fontSize: 12.0,
           fontWeight: FontWeight.w900,
@@ -139,7 +139,7 @@ class ShareCodePageState extends State<ShareCodePage> {
       onPressed: () {
         if (state is ShareCodeSuccessState) {
           Share.share(
-            '${AppLocalizations.of(context).tr("share_code.share_code_share")}\n${state.code}'
+            '${AppLocalizations.of(context).tr("share_code.share_code_share")}\n${state.shareCode.code}'
           );
         } else if (state is ShareCodeErrorState) {
           createErrorFlushbar(state.errorMessage).show(context);

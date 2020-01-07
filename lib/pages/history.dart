@@ -122,19 +122,6 @@ class HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Widget createHistoryLoadingIndicator(HistoryState state) {
-    if (state is HistoryFetchingState) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircularProgressIndicator(),
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-
   @override
   void dispose() {
     super.dispose();

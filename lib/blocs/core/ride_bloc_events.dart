@@ -1,8 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:rive_flutter/models/core.dart';
 
 abstract class RideEvent {}
+
+class RideCheckEvent extends RideEvent {}
 
 abstract class RideStatusEvent extends RideEvent {}
 
@@ -15,8 +17,6 @@ class BeginRideEvent extends RideEvent {
     @required this.qrCode
   });
 }
-
-class RideCheckEvent extends RideEvent {}
 
 class EndRideEvent extends RideEvent {}
 

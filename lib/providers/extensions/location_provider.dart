@@ -26,9 +26,9 @@ class LocationApiProvider {
     var response = await http.post(
       Uri.encodeFull('$providerUrl/send_location/'),
       headers: {
-        'Authorization': Token.getHeaderToken(),
         HttpHeaders.acceptHeader: 'application/json',
-        HttpHeaders.contentTypeHeader: 'application/json'
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
       },
       body: json.encode(locationModel.toJson()),
     );

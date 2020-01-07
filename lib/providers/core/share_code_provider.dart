@@ -12,12 +12,12 @@ class ShareCodeProvider {
 
   Future<ShareCode> fetchShareCode() async {
     var response = await http.get(
-        Uri.encodeFull('$providerUrl/share_code/'),
-        headers: {
-          HttpHeaders.acceptHeader: 'application/json',
-          HttpHeaders.contentTypeHeader: 'application/json',
-          'Authorization': Token.getHeaderToken(),
-        },
+      Uri.encodeFull('$providerUrl/share_code/'),
+      headers: {
+        HttpHeaders.acceptHeader: 'application/json',
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: Token.getHeaderToken(),
+      },
     );
 
     switch (response.statusCode) {
@@ -29,7 +29,7 @@ class ShareCodeProvider {
         return shareCode;
       case 401:
         throw ShareCodeUnauthorizedException(
-          errorMessage: 'You are not authenticated!'
+          errorMessage: 'Only authorized can obtain a share code!'
         );
       case 500:
         throw ShareCodeInternalServerException(

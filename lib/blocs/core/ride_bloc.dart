@@ -103,10 +103,11 @@ class RideBloc extends Bloc<RideEvent, RideState> {
   Timer rideTimer;
 
   RideBloc() {
+    locationSubscription = Location().onLocationChanged().listen(onLocationChanged);
+
     rideChannel = IOWebSocketChannel.connect('${Client.webSocketsClient}/ride/');
     rideChannel.sink.add(Token.token);
     rideChannelSubscription = rideChannel.stream.listen(onRideMessage);
-    locationSubscription = Location().onLocationChanged().listen(onLocationChanged);
     rideTimer = Timer.periodic(Duration(seconds: 10), onRideTick);
   }
 
@@ -142,12 +143,12 @@ class RideBloc extends Bloc<RideEvent, RideState> {
     }
   }
 
-  void onRideMessage(dynamic message) {
-    add(RideCheckEvent());
-  }
-
   void onLocationChanged(LocationData locationData) async {
     locationRepository.sendLocation(locationData);
+  }
+
+  void onRideMessage(dynamic message) {
+    add(RideCheckEvent());
   }
 
   void onRideTick(Timer timer) {

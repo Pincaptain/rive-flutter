@@ -100,6 +100,19 @@ class Ride extends Object {
 }
 
 @JsonSerializable()
+class RideErrorModel extends Object {
+  @JsonKey(name: 'error_message')
+  final String errorMessage;
+
+  RideErrorModel(this.errorMessage);
+
+  factory RideErrorModel.fromJson(Map<String, dynamic> json) =>
+      _$RideErrorModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RideErrorModelToJson(this);
+}
+
+@JsonSerializable()
 class HistoryPaginated extends Object {
   final int count;
   @JsonKey(name: 'next')
@@ -114,19 +127,6 @@ class HistoryPaginated extends Object {
   factory HistoryPaginated.fromJson(Map<String, dynamic> json) => _$HistoryPaginatedFromJson(json);
 
   Map<String, dynamic> toJson() => _$HistoryPaginatedToJson(this);
-}
-
-@JsonSerializable()
-class RideErrorModel extends Object {
-  @JsonKey(name: 'error_message')
-  final String errorMessage;
-
-  RideErrorModel(this.errorMessage);
-
-  factory RideErrorModel.fromJson(Map<String, dynamic> json) =>
-      _$RideErrorModelFromJson(json);
-
-  Map<String, dynamic> toJson() => _$RideErrorModelToJson(this);
 }
 
 @JsonSerializable()

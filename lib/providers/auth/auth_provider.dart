@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:rive_flutter/models/auth.dart';
 import 'package:rive_flutter/providers/auth/auth_provider_exceptions.dart';
@@ -129,5 +130,25 @@ class AuthenticationApiProvider {
               'If this problem persists contact support!',
         );
     }
+  }
+}
+
+class AuthenticationSharedPreferencesProvider {
+  Future<bool> storeToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.setString('token', token);
+  }
+
+  Future<String> fetchToken() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString('token') ?? null;
+  }
+
+  Future<bool> discardToken() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.remove('token');
   }
 }

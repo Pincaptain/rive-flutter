@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:rive_flutter/models/auth.dart';
 
@@ -20,4 +20,6 @@ class RegisterEvent extends AuthEvent {
   });
 }
 
-class AccountEvent extends AuthEvent {}
+abstract class AccountEvent extends AuthEvent {}
+
+class AccountSelfEvent extends AccountEvent {}

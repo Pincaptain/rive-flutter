@@ -1,3 +1,3 @@
 abstract class ShareCodeEvent {}
 
-class GetShareCodeEvent extends ShareCodeEvent {}
+class ShareCodeGetEvent extends ShareCodeEvent {}

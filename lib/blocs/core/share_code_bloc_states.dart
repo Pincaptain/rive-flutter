@@ -1,4 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import 'package:rive_flutter/models/core.dart';
 
 abstract class ShareCodeState {}
 
@@ -7,10 +9,10 @@ class ShareCodeUninitializedState extends ShareCodeState {}
 class ShareCodeFetchingState extends ShareCodeState {}
 
 class ShareCodeSuccessState extends ShareCodeState {
-  final String code;
+  final ShareCode shareCode;
 
   ShareCodeSuccessState({
-    @required this.code,
+    @required this.shareCode,
   });
 }
 

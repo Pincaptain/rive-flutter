@@ -18,10 +18,10 @@ class ShareCodeBloc extends Bloc<ShareCodeEvent, ShareCodeState> {
     yield ShareCodeFetchingState();
 
     try {
-      final shareCodeModel = await shareCodeRepository.fetchShareCode();
+      final shareCode = await shareCodeRepository.fetchShareCode();
 
       yield ShareCodeSuccessState(
-          code: shareCodeModel.code
+          shareCode: shareCode
       );
     } on ShareCodeUnauthorizedException catch (exc) {
       yield ShareCodeErrorState(

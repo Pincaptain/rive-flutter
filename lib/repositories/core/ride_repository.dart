@@ -14,10 +14,7 @@ class RideRepository {
 
   Future<List<Ride>> fetchHistory() => rideApiProvider.fetchHistory();
 
-  Future<List<Ride>> fetchHistoryPaginated(int page) =>
-      rideApiProvider.fetchHistoryPaginated(page);
+  Future<List<Ride>> fetchHistoryPaginated(int page) => rideApiProvider.fetchHistoryPaginated(page);
 
-  Future<void> sendReview(ReviewModel reviewModel) =>
-      rideApiProvider.sendReview(reviewModel);
-  
+  Future<void> sendReview(ReviewModel reviewModel) => rideApiProvider.sendReview(reviewModel);
 }

@@ -1,5 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:rive_flutter/locator.dart';
+import 'package:rive_flutter/repositories/auth/auth_repository.dart';
 
 part 'auth.g.dart';
 
@@ -9,6 +11,8 @@ class Client {
 }
 
 class Token {
+  static final authenticationRepository = getIt<AuthenticationRepository>();
+
   static String token;
 
   static bool isAuthenticated() {
@@ -17,17 +21,12 @@ class Token {
 
   static void authenticate(String token) {
     Token.token = token;
-    Token.storeToken(token);
-  }
 
-  static void storeToken(token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', token);
+    authenticationRepository.storeToken(token);
   }
   
   static void tryAuthenticate() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token') ?? null;
+    final token = await authenticationRepository.fetchToken();
 
     if (token != null) {
       Token.token = token;
@@ -37,8 +36,7 @@ class Token {
   static void logout() async {
     token = null;
 
-    final prefs = await SharedPreferences.getInstance();
-    prefs.remove('token');
+    authenticationRepository.discardToken();
   }
 
   static String getHeaderToken() {

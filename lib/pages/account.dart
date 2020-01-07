@@ -27,7 +27,7 @@ class AccountPageState extends State<AccountPage> {
     super.initState();
 
     accountBloc = AccountBloc();
-    accountBloc.add(AccountEvent());
+    accountBloc.add(AccountSelfEvent());
   }
 
   void onLogout() async {

@@ -90,9 +90,7 @@
         "location_permission_required": "We need your location to show scooters on map."
     },
     "wallet": {
-        "title": "Wallet",
-        "development_title": "Under Development",
-        "development_description": "Use the arrow icon right next to the app bar to go back."
+        "title": "Wallet"
     },
     "share_code": {
         "title": "Get Free Credits",

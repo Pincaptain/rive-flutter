@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:rive_flutter/models/auth.dart';
 import 'package:rive_flutter/pages/share_code.dart';
 
-import 'login.dart';
+import 'package:rive_flutter/pages/login.dart';
 
 class WalletPage extends StatefulWidget {
   @override
