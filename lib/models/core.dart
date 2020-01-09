@@ -38,6 +38,31 @@ class Scooter extends Object {
 }
 
 @JsonSerializable()
+class Station extends Object {
+  @JsonKey(name: "id")
+  final int pk;
+  final String name;
+  @JsonKey(name: "scooter_count")
+  final int scooterCount;
+  final double longitude;
+  final double latitude;
+  final int capacity;
+  @JsonKey(name: "date_added")
+  final DateTime dateAdded;
+  @JsonKey(name: "station_model")
+  final String stationModel;
+  @JsonKey(name: "station_confirmation_status")
+  final String confirmationStatus;
+
+  Station(this.pk,this.name,this.scooterCount,this.longitude,this.latitude,this.capacity,this.dateAdded,this.stationModel,this.confirmationStatus);
+
+  factory Station.fromJson(Map<String, dynamic> json) => _$StationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StationToJson(this);
+}
+
+
+@JsonSerializable()
 class Review extends Object {
   @JsonKey(name: 'id')
   final int pk;

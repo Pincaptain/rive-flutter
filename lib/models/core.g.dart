@@ -24,6 +24,34 @@ Map<String, dynamic> _$ScooterToJson(Scooter instance) => <String, dynamic>{
       'battery': instance.battery,
     };
 
+Station _$StationFromJson(Map<String, dynamic> json) {
+  return Station(
+    json['id'] as int,
+    json['name'] as String,
+    json['scooter_count'] as int,
+    (json['longitude'] as num)?.toDouble(),
+    (json['latitude'] as num)?.toDouble(),
+    json['capacity'] as int,
+    json['date_added'] == null
+        ? null
+        : DateTime.parse(json['date_added'] as String),
+    json['station_model'] as String,
+    json['station_confirmation_status'] as String,
+  );
+}
+
+Map<String, dynamic> _$StationToJson(Station instance) => <String, dynamic>{
+      'id': instance.pk,
+      'name': instance.name,
+      'scooter_count': instance.scooterCount,
+      'longitude': instance.longitude,
+      'latitude': instance.latitude,
+      'capacity': instance.capacity,
+      'date_added': instance.dateAdded?.toIso8601String(),
+      'station_model': instance.stationModel,
+      'station_confirmation_status': instance.confirmationStatus,
+    };
+
 Review _$ReviewFromJson(Map<String, dynamic> json) {
   return Review(
     json['id'] as int,
@@ -94,6 +122,17 @@ Map<String, dynamic> _$RideToJson(Ride instance) => <String, dynamic>{
       'user': instance.user,
     };
 
+RideErrorModel _$RideErrorModelFromJson(Map<String, dynamic> json) {
+  return RideErrorModel(
+    json['error_message'] as String,
+  );
+}
+
+Map<String, dynamic> _$RideErrorModelToJson(RideErrorModel instance) =>
+    <String, dynamic>{
+      'error_message': instance.errorMessage,
+    };
+
 HistoryPaginated _$HistoryPaginatedFromJson(Map<String, dynamic> json) {
   return HistoryPaginated(
     json['count'] as int,
@@ -112,17 +151,6 @@ Map<String, dynamic> _$HistoryPaginatedToJson(HistoryPaginated instance) =>
       'next': instance.nextPage,
       'previous': instance.previousPage,
       'results': instance.history,
-    };
-
-RideErrorModel _$RideErrorModelFromJson(Map<String, dynamic> json) {
-  return RideErrorModel(
-    json['error_message'] as String,
-  );
-}
-
-Map<String, dynamic> _$RideErrorModelToJson(RideErrorModel instance) =>
-    <String, dynamic>{
-      'error_message': instance.errorMessage,
     };
 
 RideStatus _$RideStatusFromJson(Map<String, dynamic> json) {

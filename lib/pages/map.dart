@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,9 @@ import 'package:flushbar/flushbar.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rive_flutter/blocs/core/map_bloc.dart';
+import 'package:rive_flutter/blocs/core/map_bloc_events.dart';
+import 'package:rive_flutter/blocs/core/map_bloc_states.dart';
 
 import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/core.dart';
@@ -19,11 +23,8 @@ import 'package:rive_flutter/widgets/extensions/drawer.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc_events.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc_states.dart';
-import 'package:rive_flutter/blocs/core/scooters_bloc.dart';
-import 'package:rive_flutter/blocs/core/scooters_bloc_states.dart';
 import 'package:rive_flutter/blocs/extensions/location_bloc.dart';
 import 'package:rive_flutter/blocs/extensions/location_bloc_states.dart';
-import 'package:rive_flutter/blocs/core/scooters_bloc_events.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -39,11 +40,14 @@ class MapPageState extends State<MapPage> {
   LocationPermissionBloc locationPermissionBloc;
   BeginRideBloc beginRideBloc;
   RideStatusBloc rideStatusBloc;
-  ScootersBloc scootersBloc;
+
+  MapBloc mapBloc;
   StreamSubscription connectivitySubscription;
 
   Flushbar locationPermissionFlushbar;
   Flushbar connectivityFlushbar;
+  List<Scooter> scooters;
+  List<Station> stations;
 
   var isScanning = false;
 
@@ -51,20 +55,24 @@ class MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
 
+    scooters=List<Scooter>();
+    stations=List<Station>();
+
     locationPermissionBloc = LocationPermissionBloc();
     beginRideBloc = BeginRideBloc();
 
+    mapBloc = MapBloc();
+    mapBloc.add(ListMapElementsEvent());
+
     rideStatusBloc = RideStatusBloc();
     rideStatusBloc.add(RideStatusCheckEvent());
-
-    scootersBloc = ScootersBloc();
-    scootersBloc.add(ScootersListEvent());
 
     initStreams();
   }
 
   void initStreams() {
-    connectivitySubscription = Connectivity().onConnectivityChanged.listen(onConnectivityResult);
+    connectivitySubscription =
+        Connectivity().onConnectivityChanged.listen(onConnectivityResult);
     locationPermissionBloc.listen(onLocationPermissionResult);
     beginRideBloc.listen(onBeginRideResult);
     rideStatusBloc.listen(onRideStatusResult);
@@ -72,7 +80,8 @@ class MapPageState extends State<MapPage> {
 
   void onConnectivityResult(ConnectivityResult result) {
     if (result == ConnectivityResult.none) {
-      connectivityFlushbar = createWarningFlushbar(AppLocalizations.of(context).tr('map.connection_required'));
+      connectivityFlushbar = createWarningFlushbar(
+          AppLocalizations.of(context).tr('map.connection_required'));
       connectivityFlushbar.show(context);
     } else {
       if (connectivityFlushbar != null) {
@@ -83,8 +92,8 @@ class MapPageState extends State<MapPage> {
 
   void onLocationPermissionResult(LocationPermissionState state) {
     if (state is LocationPermissionDisallowedState) {
-      locationPermissionFlushbar =
-          createWarningFlushbar(AppLocalizations.of(context).tr('map.location_permission_required'));
+      locationPermissionFlushbar = createWarningFlushbar(
+          AppLocalizations.of(context).tr('map.location_permission_required'));
       locationPermissionFlushbar.show(context);
     } else {
       if (locationPermissionFlushbar != null) {
@@ -130,11 +139,16 @@ class MapPageState extends State<MapPage> {
       isScanning = true;
       qrCode = await BarcodeScanner.scan();
     } on PlatformException {
-      createErrorFlushbar(AppLocalizations.of(context).tr('map.camera_permission_required')).show(context);
+      createErrorFlushbar(
+              AppLocalizations.of(context).tr('map.camera_permission_required'))
+          .show(context);
     } on FormatException {
-      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_incorrect_format')).show(context);
-    } catch(exc) {
-      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_unexpected')).show(context);
+      createErrorFlushbar(
+              AppLocalizations.of(context).tr('map.qr_incorrect_format'))
+          .show(context);
+    } catch (exc) {
+      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_unexpected'))
+          .show(context);
     } finally {
       isScanning = false;
     }
@@ -167,8 +181,8 @@ class MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ScootersBloc>(
-          create: (context) => scootersBloc,
+        BlocProvider<MapBloc>(
+          create: (context) => mapBloc,
         ),
         BlocProvider<BeginRideBloc>(
           create: (context) => beginRideBloc,
@@ -183,13 +197,19 @@ class MapPageState extends State<MapPage> {
           actions: <Widget>[
             IconButton(
               onPressed: () {
-                if (EasyLocalizationProvider.of(context).data.locale == Locale('en', 'US')) {
-                  EasyLocalizationProvider.of(context).data.changeLocale(Locale('mk', 'MK'));
+                if (EasyLocalizationProvider.of(context).data.locale ==
+                    Locale('en', 'US')) {
+                  EasyLocalizationProvider.of(context)
+                      .data
+                      .changeLocale(Locale('mk', 'MK'));
                 } else {
-                  EasyLocalizationProvider.of(context).data.changeLocale(Locale('en', 'US'));
+                  EasyLocalizationProvider.of(context)
+                      .data
+                      .changeLocale(Locale('en', 'US'));
                 }
               },
-              tooltip: AppLocalizations.of(context).tr('map.localization_button'),
+              tooltip:
+                  AppLocalizations.of(context).tr('map.localization_button'),
               icon: Icon(
                 Icons.language,
                 color: Colors.white,
@@ -197,39 +217,116 @@ class MapPageState extends State<MapPage> {
             )
           ],
         ),
-        body: BlocBuilder<ScootersBloc, ScootersState>(
-          condition: (prevState, state) {
-            if (state is ScootersSuccessState) {
-              if (scootersBloc.prevSuccessState == null) {
-                scootersBloc.prevSuccessState = state;
-
-                return true;
-              } else {
-                final condition = state.scooters != scootersBloc.prevSuccessState.scooters;
-                scootersBloc.prevSuccessState = state;
-
-                return condition;
-              }
-            } else {
-              return false;
+        body: BlocBuilder<MapBloc, MapState>(condition: (prevState, state) {
+          if(state is MapElementsSuccessState) {
+            if(state.stations != stations || state.scooters!= scooters){
+              //TODO either global variables or save success state instance
+              return true;
             }
-          },
-          builder: (context, state) {
-            return createGoogleMap(state);
+          return false;
           }
-        ),
+          var scootersChanged;
+          var stationsChanged;
+          log("MAP: STATE IS $state");
+          if (state is ScootersSuccessState) {
+            log("MAP: CONFIRM STATE IS $state");
+
+            if (mapBloc.prevScootersSuccessState == null) {
+              mapBloc.prevScootersSuccessState = state;
+              scootersChanged = true;
+            } else {
+              scootersChanged =
+                  state.scooters != mapBloc.prevScootersSuccessState.scooters;
+              mapBloc.prevScootersSuccessState = state;
+            }
+            log("MAP: SCOOTERS CHANGED $scootersChanged");
+
+          } else if (state is StationsSuccessState) {
+            log("MAP: CONFIRM STATE IS $state");
+
+            if (mapBloc.prevStationsSuccessState == null) {
+              mapBloc.prevStationsSuccessState = state;
+              stationsChanged = true;
+            } else {
+              scootersChanged =
+                  state.stations != mapBloc.prevStationsSuccessState.stations;
+              mapBloc.prevStationsSuccessState = state;
+            }
+            log("MAP: STATIONS CHANGED $stationsChanged");
+          }else{
+            scootersChanged=false;
+            stationsChanged=false;
+          }
+          log("MAP: STATE OUTPUT ${stationsChanged || scootersChanged}");
+
+          return stationsChanged || scootersChanged;
+
+
+        }, builder: (context, state) {
+          return createGoogleMap2(state);
+        }),
         floatingActionButton: Container(
           height: 45,
           width: double.infinity,
           margin: EdgeInsets.only(left: 30),
           child: BlocBuilder<BeginRideBloc, BeginRideState>(
-            builder: (context, state) {
-              return createBeginRideButton(state);
-            }
-          ),
+              builder: (context, state) {
+            return createBeginRideButton(state);
+          }),
         ),
       ),
     );
+  }
+
+  Widget createGoogleMap2(MapState state) {
+    log("MAP: CREATE_MAP $state");
+
+    if(state is MapElementsSuccessState){
+      scooters=state.scooters;
+      stations=state.stations;
+    }
+
+    var markers =(createScooterMarkers(scooters)).union(createStationMarkers(stations));
+    log("MAP: markers $markers");
+
+    return GoogleMap(
+      mapType: MapType.normal,
+      initialCameraPosition: initialLocation,
+      myLocationEnabled: true,
+      markers: markers,
+    );
+  }
+
+  Set<Marker> createStationMarkers(List<Station> stations) {
+    return stations
+        .map((station) => Marker(
+            markerId: MarkerId('st_${station.pk.toString()}'),
+            position: LatLng(station.latitude, station.longitude),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+            infoWindow: InfoWindow(
+              title:
+                  '${AppLocalizations.of(context).tr('map.station_info_name')}: ${station.name}',
+              snippet:
+                  '${AppLocalizations.of(context).tr('map.station_info_model')}: ${station.stationModel}',
+            )))
+        .toSet();
+  }
+
+  Set<Marker> createScooterMarkers(List<Scooter> scooters) {
+    return scooters
+        .map((scooter) => Marker(
+              markerId: MarkerId('sc_${scooter.pk.toString()}'),
+              position: LatLng(scooter.latitude, scooter.longitude),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  scooter.battery.toDouble()),
+              infoWindow: InfoWindow(
+                title:
+                    '${AppLocalizations.of(context).tr('map.scooter_info_name')}: ${scooter.pk}',
+                snippet:
+                    '${AppLocalizations.of(context).tr('map.scooter_info_battery')}: ${scooter.battery} %',
+              ),
+            ))
+        .toSet();
   }
 
   Widget createGoogleMap(ScootersState state) {
@@ -243,15 +340,20 @@ class MapPageState extends State<MapPage> {
       mapType: MapType.normal,
       initialCameraPosition: initialLocation,
       myLocationEnabled: true,
-      markers: scooters.map((scooter) => Marker(
-        markerId: MarkerId(scooter.pk.toString()),
-        position: LatLng(scooter.latitude, scooter.longitude),
-        icon: BitmapDescriptor.defaultMarkerWithHue(scooter.battery.toDouble()),
-        infoWindow: InfoWindow(
-          title: '${AppLocalizations.of(context).tr('map.scooter_info_name')}: ${scooter.pk}',
-          snippet: '${AppLocalizations.of(context).tr('map.scooter_info_battery')}: ${scooter.battery} %',
-        ),
-      )).toSet(),
+      markers: scooters
+          .map((scooter) => Marker(
+                markerId: MarkerId(scooter.pk.toString()),
+                position: LatLng(scooter.latitude, scooter.longitude),
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                    scooter.battery.toDouble()),
+                infoWindow: InfoWindow(
+                  title:
+                      '${AppLocalizations.of(context).tr('map.scooter_info_name')}: ${scooter.pk}',
+                  snippet:
+                      '${AppLocalizations.of(context).tr('map.scooter_info_battery')}: ${scooter.battery} %',
+                ),
+              ))
+          .toSet(),
     );
   }
 
@@ -318,10 +420,7 @@ class MapPageState extends State<MapPage> {
       flareAnimation: 'sucsess',
       title: Text(
         AppLocalizations.of(context).tr('map.qr_success_title'),
-        style: TextStyle(
-          fontSize: 22.0,
-          fontWeight: FontWeight.w600
-        ),
+        style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
       ),
       description: Text(
         AppLocalizations.of(context).tr('map.qr_success_description'),
@@ -348,11 +447,11 @@ class MapPageState extends State<MapPage> {
 
   @override
   void dispose() {
-    super.dispose();
     locationPermissionBloc.close();
     beginRideBloc.close();
     rideStatusBloc.close();
-    scootersBloc.close();
+    mapBloc.close();
     connectivitySubscription.cancel();
+    super.dispose();
   }
 }

@@ -1,3 +1,3 @@
-abstract class ScootersEvent {}
-
-class ScootersListEvent extends ScootersEvent {}
+//abstract class ScootersEvent {}
+//
+//class ScootersListEvent extends ScootersEvent {}
