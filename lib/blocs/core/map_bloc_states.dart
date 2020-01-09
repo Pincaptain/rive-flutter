@@ -47,7 +47,13 @@ class StationsUninitializedState extends StationsState {}
 
 class StationsFetchingState extends StationsState {}
 
-class StationsErrorState extends StationsState {}
+class StationsErrorState extends StationsState {
+  final String errorMessage;
+
+  StationsErrorState({
+    @required this.errorMessage
+  });
+}
 
 class StationsSuccessState extends StationsState {
   final List<Station> stations;

@@ -46,17 +46,12 @@ class MapPageState extends State<MapPage> {
 
   Flushbar locationPermissionFlushbar;
   Flushbar connectivityFlushbar;
-  List<Scooter> scooters;
-  List<Station> stations;
 
   var isScanning = false;
 
   @override
   void initState() {
     super.initState();
-
-    scooters=List<Scooter>();
-    stations=List<Station>();
 
     locationPermissionBloc = LocationPermissionBloc();
     beginRideBloc = BeginRideBloc();
@@ -218,52 +213,42 @@ class MapPageState extends State<MapPage> {
           ],
         ),
         body: BlocBuilder<MapBloc, MapState>(condition: (prevState, state) {
-          if(state is MapElementsSuccessState) {
-            if(state.stations != stations || state.scooters!= scooters){
-              //TODO either global variables or save success state instance
-              return true;
-            }
-          return false;
-          }
-          var scootersChanged;
-          var stationsChanged;
-          log("MAP: STATE IS $state");
-          if (state is ScootersSuccessState) {
-            log("MAP: CONFIRM STATE IS $state");
+          var condition = false;
+          log("MAP: $state");
 
-            if (mapBloc.prevScootersSuccessState == null) {
-              mapBloc.prevScootersSuccessState = state;
-              scootersChanged = true;
+          if (state is MapElementsSuccessState) {
+            if (mapBloc.prevSuccessState == null) {
+              mapBloc.prevSuccessState = state;
+              condition = true;
             } else {
-              scootersChanged =
-                  state.scooters != mapBloc.prevScootersSuccessState.scooters;
-              mapBloc.prevScootersSuccessState = state;
+              condition =
+                  (mapBloc.prevSuccessState.scooters != state.scooters ||
+                      mapBloc.prevSuccessState.stations != state.stations);
             }
-            log("MAP: SCOOTERS CHANGED $scootersChanged");
-
+          } else if (state is ScootersSuccessState) {
+            if (mapBloc.prevSuccessState == null) {
+              mapBloc.prevSuccessState = MapElementsSuccessState(
+                  stations: List<Station>(),
+                  scooters: state.scooters
+              );
+              condition = true;
+            } else {
+              condition = mapBloc.prevSuccessState.scooters != state.scooters;
+            }
           } else if (state is StationsSuccessState) {
-            log("MAP: CONFIRM STATE IS $state");
-
-            if (mapBloc.prevStationsSuccessState == null) {
-              mapBloc.prevStationsSuccessState = state;
-              stationsChanged = true;
+            if (mapBloc.prevSuccessState == null) {
+              mapBloc.prevSuccessState = MapElementsSuccessState(
+                  stations: state.stations,
+                  scooters: List<Scooter>()
+              );
+              condition = true;
             } else {
-              scootersChanged =
-                  state.stations != mapBloc.prevStationsSuccessState.stations;
-              mapBloc.prevStationsSuccessState = state;
+              condition = mapBloc.prevSuccessState.stations != state.stations;
             }
-            log("MAP: STATIONS CHANGED $stationsChanged");
-          }else{
-            scootersChanged=false;
-            stationsChanged=false;
           }
-          log("MAP: STATE OUTPUT ${stationsChanged || scootersChanged}");
-
-          return stationsChanged || scootersChanged;
-
-
+          return condition;
         }, builder: (context, state) {
-          return createGoogleMap2(state);
+          return createGoogleMap(state);
         }),
         floatingActionButton: Container(
           height: 45,
@@ -278,16 +263,21 @@ class MapPageState extends State<MapPage> {
     );
   }
 
-  Widget createGoogleMap2(MapState state) {
+  Widget createGoogleMap(MapState state) {
     log("MAP: CREATE_MAP $state");
+    var scooters = List<Scooter>();
+    var stations = List<Station>();
 
-    if(state is MapElementsSuccessState){
-      scooters=state.scooters;
-      stations=state.stations;
+    if (state is MapElementsSuccessState) {
+      scooters = state.scooters;
+      stations = state.stations;
+    } else if (state is ScootersSuccessState) {
+      scooters = state.scooters;
+    } else if (state is StationsSuccessState) {
+      stations = state.stations;
     }
 
-    var markers =(createScooterMarkers(scooters)).union(createStationMarkers(stations));
-    log("MAP: markers $markers");
+    final markers = (createScooterMarkers(scooters)).union(createStationMarkers(stations));
 
     return GoogleMap(
       mapType: MapType.normal,
@@ -302,7 +292,8 @@ class MapPageState extends State<MapPage> {
         .map((station) => Marker(
             markerId: MarkerId('st_${station.pk.toString()}'),
             position: LatLng(station.latitude, station.longitude),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueAzure),
             infoWindow: InfoWindow(
               title:
                   '${AppLocalizations.of(context).tr('map.station_info_name')}: ${station.name}',
@@ -329,33 +320,33 @@ class MapPageState extends State<MapPage> {
         .toSet();
   }
 
-  Widget createGoogleMap(ScootersState state) {
-    var scooters = List<Scooter>();
-
-    if (state is ScootersSuccessState) {
-      scooters = state.scooters;
-    }
-
-    return GoogleMap(
-      mapType: MapType.normal,
-      initialCameraPosition: initialLocation,
-      myLocationEnabled: true,
-      markers: scooters
-          .map((scooter) => Marker(
-                markerId: MarkerId(scooter.pk.toString()),
-                position: LatLng(scooter.latitude, scooter.longitude),
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                    scooter.battery.toDouble()),
-                infoWindow: InfoWindow(
-                  title:
-                      '${AppLocalizations.of(context).tr('map.scooter_info_name')}: ${scooter.pk}',
-                  snippet:
-                      '${AppLocalizations.of(context).tr('map.scooter_info_battery')}: ${scooter.battery} %',
-                ),
-              ))
-          .toSet(),
-    );
-  }
+//  Widget createGoogleMap(ScootersState state) {
+//    var scooters = List<Scooter>();
+//
+//    if (state is ScootersSuccessState) {
+//      scooters = state.scooters;
+//    }
+//
+//    return GoogleMap(
+//      mapType: MapType.normal,
+//      initialCameraPosition: initialLocation,
+//      myLocationEnabled: true,
+//      markers: scooters
+//          .map((scooter) => Marker(
+//                markerId: MarkerId(scooter.pk.toString()),
+//                position: LatLng(scooter.latitude, scooter.longitude),
+//                icon: BitmapDescriptor.defaultMarkerWithHue(
+//                    scooter.battery.toDouble()),
+//                infoWindow: InfoWindow(
+//                  title:
+//                      '${AppLocalizations.of(context).tr('map.scooter_info_name')}: ${scooter.pk}',
+//                  snippet:
+//                      '${AppLocalizations.of(context).tr('map.scooter_info_battery')}: ${scooter.battery} %',
+//                ),
+//              ))
+//          .toSet(),
+//    );
+//  }
 
   Widget createBeginRideButton(BeginRideState state) {
     Widget displayWidget = Text(

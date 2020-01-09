@@ -29,7 +29,6 @@ class StationsApiProvider {
             .toList();
 
         return stations;
-
       case 500:
         throw StationsInternalServerException(
           errorMessage: 'An error occurred on the server. '
