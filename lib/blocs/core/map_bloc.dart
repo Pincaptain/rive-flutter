@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:rive_flutter/models/auth.dart';
 import 'package:rive_flutter/models/core.dart';
@@ -23,8 +24,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   Timer scootersTimer;
 
-  ScootersSuccessState prevScootersSuccessState;
-  StationsSuccessState prevStationsSuccessState;
   MapElementsSuccessState prevSuccessState;
 
   MapBloc() {
@@ -49,22 +48,28 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         var response = await Future.wait([
           mapRepository.fetchStations(),
           mapRepository.fetchScooters(),
-        ]);
-//            , cleanUp: (value) {
-//          if (value is List<Station>) {
-            //TODO create event for listing stations &or scooters
-//            log(" stations $value");
-//          } else if (value is List<Scooter>) {
-//            log("YIELD scooters $value");
-//          } else {}
-//        });
+        ], cleanUp: (value) {
+          if (value is List<Station>) {
+            log("LIST STATIONS");
+            onStationsMessage(value);
+          } else if (value is List<Scooter>) {
+            log("LIST SCOOTERS");
+            onScootersMessage(value);
+          }
+        });
         yield MapElementsSuccessState(
           stations: response[0],
           scooters: response[1],
         );
-      } else if (event is ScootersListEvent) {
-
-      } else if (event is StationsListEvent) {}
+      } else if (event is ListStationsEvent) {
+        yield StationsSuccessState(
+            stations: event.stations
+        );
+      } else if (event is ListScootersEvent) {
+        yield ScootersSuccessState(
+            scooters: event.scooters
+        );
+      }
     } on ScootersInternalServerException catch (exc) {
       yield ScootersErrorState(
         errorMessage: exc.errorMessage,
@@ -74,22 +79,26 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         errorMessage: exc.errorMessage,
       );
     } on StationsInternalServerException catch (exc) {
-      yield StationsErrorState(errorMessage: exc.errorMessage);
+      yield StationsErrorState(
+          errorMessage: exc.errorMessage
+      );
     } on StationsUnexpectedException catch (exc) {
-      yield StationsErrorState(errorMessage: exc.errorMessage);
+      yield StationsErrorState(
+          errorMessage: exc.errorMessage
+      );
     }
   }
 
   void onScootersMessage(dynamic message) {
-    add(ScootersListEvent());
+    add(ListScootersEvent(message));
   }
 
   void onScootersTick(Timer timer) {
-    add(ScootersListEvent());
+//    add(ListStationsEvent());
   }
 
   void onStationsMessage(dynamic message) {
-    add(StationsListEvent());
+    add(ListStationsEvent(message));
   }
 
   @override

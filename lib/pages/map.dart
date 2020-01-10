@@ -66,11 +66,19 @@ class MapPageState extends State<MapPage> {
   }
 
   void initStreams() {
-    connectivitySubscription =
-        Connectivity().onConnectivityChanged.listen(onConnectivityResult);
+    connectivitySubscription = Connectivity().onConnectivityChanged.listen(onConnectivityResult);
     locationPermissionBloc.listen(onLocationPermissionResult);
     beginRideBloc.listen(onBeginRideResult);
     rideStatusBloc.listen(onRideStatusResult);
+    mapBloc.listen(onMapError);
+  }
+
+  void onMapError(MapState state) {
+    if (state is StationsErrorState) {
+      createUserErrorFlushbar(state.errorMessage).show(context);
+    } else if (state is ScootersErrorState) {
+      createUserErrorFlushbar(state.errorMessage).show(context);
+    }
   }
 
   void onConnectivityResult(ConnectivityResult result) {
@@ -214,7 +222,6 @@ class MapPageState extends State<MapPage> {
         ),
         body: BlocBuilder<MapBloc, MapState>(condition: (prevState, state) {
           var condition = false;
-          log("MAP: $state");
 
           if (state is MapElementsSuccessState) {
             if (mapBloc.prevSuccessState == null) {
@@ -228,21 +235,27 @@ class MapPageState extends State<MapPage> {
           } else if (state is ScootersSuccessState) {
             if (mapBloc.prevSuccessState == null) {
               mapBloc.prevSuccessState = MapElementsSuccessState(
-                  stations: List<Station>(),
-                  scooters: state.scooters
-              );
+                  stations: List<Station>(), scooters: state.scooters);
               condition = true;
             } else {
+              mapBloc.prevSuccessState = MapElementsSuccessState(
+                  scooters:state.scooters,
+                  stations: mapBloc.prevSuccessState.stations
+              );
+
               condition = mapBloc.prevSuccessState.scooters != state.scooters;
             }
           } else if (state is StationsSuccessState) {
             if (mapBloc.prevSuccessState == null) {
               mapBloc.prevSuccessState = MapElementsSuccessState(
-                  stations: state.stations,
-                  scooters: List<Scooter>()
-              );
+                  stations: state.stations, scooters: List<Scooter>());
               condition = true;
             } else {
+              mapBloc.prevSuccessState = MapElementsSuccessState(
+                stations:state.stations,
+                scooters: mapBloc.prevSuccessState.scooters
+              );
+
               condition = mapBloc.prevSuccessState.stations != state.stations;
             }
           }
@@ -264,7 +277,6 @@ class MapPageState extends State<MapPage> {
   }
 
   Widget createGoogleMap(MapState state) {
-    log("MAP: CREATE_MAP $state");
     var scooters = List<Scooter>();
     var stations = List<Station>();
 
@@ -320,33 +332,6 @@ class MapPageState extends State<MapPage> {
         .toSet();
   }
 
-//  Widget createGoogleMap(ScootersState state) {
-//    var scooters = List<Scooter>();
-//
-//    if (state is ScootersSuccessState) {
-//      scooters = state.scooters;
-//    }
-//
-//    return GoogleMap(
-//      mapType: MapType.normal,
-//      initialCameraPosition: initialLocation,
-//      myLocationEnabled: true,
-//      markers: scooters
-//          .map((scooter) => Marker(
-//                markerId: MarkerId(scooter.pk.toString()),
-//                position: LatLng(scooter.latitude, scooter.longitude),
-//                icon: BitmapDescriptor.defaultMarkerWithHue(
-//                    scooter.battery.toDouble()),
-//                infoWindow: InfoWindow(
-//                  title:
-//                      '${AppLocalizations.of(context).tr('map.scooter_info_name')}: ${scooter.pk}',
-//                  snippet:
-//                      '${AppLocalizations.of(context).tr('map.scooter_info_battery')}: ${scooter.battery} %',
-//                ),
-//              ))
-//          .toSet(),
-//    );
-//  }
 
   Widget createBeginRideButton(BeginRideState state) {
     Widget displayWidget = Text(

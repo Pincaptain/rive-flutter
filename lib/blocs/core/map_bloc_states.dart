@@ -4,16 +4,29 @@ import 'package:rive_flutter/models/core.dart';
 
 abstract class MapState {}
 
-abstract class ScootersState extends MapState {}
-
-abstract class StationsState extends MapState {}
-
 class MapUninitializedState extends MapState {}
 
-class ScootersUninitializedState extends ScootersState {}
+class MapElementsSuccessState extends MapState {
+  final List<Scooter> scooters;
+  final List<Station> stations;
+
+  MapElementsSuccessState({
+    @required this.scooters,
+    @required this.stations,
+  });
+}
+
+abstract class ScootersState extends MapState {}
 
 class ScootersFetchingState extends ScootersState {}
 
+class ScootersSuccessState extends ScootersState {
+  final List<Scooter> scooters;
+
+  ScootersSuccessState({
+    @required this.scooters
+  });
+}
 
 class ScootersEmptyState extends ScootersState {}
 
@@ -25,27 +38,17 @@ class ScootersErrorState extends ScootersState {
   });
 }
 
-class MapElementsSuccessState extends MapState{
-  final List<Scooter> scooters;
-  final List<Station> stations;
-
-  MapElementsSuccessState({
-    @required this.scooters,
-    @required this.stations,
-  });
-}
-
-class ScootersSuccessState extends ScootersState {
-  final List<Scooter> scooters;
-
-  ScootersSuccessState({
-    @required this.scooters
-  });
-}
-
-class StationsUninitializedState extends StationsState {}
+abstract class StationsState extends MapState {}
 
 class StationsFetchingState extends StationsState {}
+
+class StationsSuccessState extends StationsState {
+  final List<Station> stations;
+
+  StationsSuccessState({
+    @required this.stations
+  });
+}
 
 class StationsErrorState extends StationsState {
   final String errorMessage;
@@ -55,10 +58,3 @@ class StationsErrorState extends StationsState {
   });
 }
 
-class StationsSuccessState extends StationsState {
-  final List<Station> stations;
-
-  StationsSuccessState({
-    @required this.stations
-  });
-}
