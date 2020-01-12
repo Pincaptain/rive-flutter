@@ -35,7 +35,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         scootersChannel.stream.listen(onScootersMessage);
     stationsChannelSubscription =
         stationsChannel.stream.listen(onStationsMessage);
-    scootersTimer = Timer.periodic(Duration(seconds: 5), onScootersTick);
+    scootersTimer = Timer.periodic(Duration(seconds: 5), onMapTick);
   }
 
   @override
@@ -48,26 +48,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         var response = await Future.wait([
           mapRepository.fetchStations(),
           mapRepository.fetchScooters(),
-        ], cleanUp: (value) {
-          if (value is List<Station>) {
-            log("LIST STATIONS");
-            onStationsMessage(value);
-          } else if (value is List<Scooter>) {
-            log("LIST SCOOTERS");
-            onScootersMessage(value);
-          }
-        });
+        ]);
         yield MapElementsSuccessState(
           stations: response[0],
           scooters: response[1],
-        );
-      } else if (event is ListStationsEvent) {
-        yield StationsSuccessState(
-            stations: event.stations
-        );
-      } else if (event is ListScootersEvent) {
-        yield ScootersSuccessState(
-            scooters: event.scooters
         );
       }
     } on ScootersInternalServerException catch (exc) {
@@ -93,8 +77,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     add(ListScootersEvent(message));
   }
 
-  void onScootersTick(Timer timer) {
-//    add(ListStationsEvent());
+  void onMapTick(Timer timer) {
+    add(ListMapElementsEvent());
   }
 
   void onStationsMessage(dynamic message) {

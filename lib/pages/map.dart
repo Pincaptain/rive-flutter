@@ -232,33 +232,8 @@ class MapPageState extends State<MapPage> {
                   (mapBloc.prevSuccessState.scooters != state.scooters ||
                       mapBloc.prevSuccessState.stations != state.stations);
             }
-          } else if (state is ScootersSuccessState) {
-            if (mapBloc.prevSuccessState == null) {
-              mapBloc.prevSuccessState = MapElementsSuccessState(
-                  stations: List<Station>(), scooters: state.scooters);
-              condition = true;
-            } else {
-              mapBloc.prevSuccessState = MapElementsSuccessState(
-                  scooters:state.scooters,
-                  stations: mapBloc.prevSuccessState.stations
-              );
-
-              condition = mapBloc.prevSuccessState.scooters != state.scooters;
-            }
-          } else if (state is StationsSuccessState) {
-            if (mapBloc.prevSuccessState == null) {
-              mapBloc.prevSuccessState = MapElementsSuccessState(
-                  stations: state.stations, scooters: List<Scooter>());
-              condition = true;
-            } else {
-              mapBloc.prevSuccessState = MapElementsSuccessState(
-                stations:state.stations,
-                scooters: mapBloc.prevSuccessState.scooters
-              );
-
-              condition = mapBloc.prevSuccessState.stations != state.stations;
-            }
           }
+
           return condition;
         }, builder: (context, state) {
           return createGoogleMap(state);
@@ -282,10 +257,6 @@ class MapPageState extends State<MapPage> {
 
     if (state is MapElementsSuccessState) {
       scooters = state.scooters;
-      stations = state.stations;
-    } else if (state is ScootersSuccessState) {
-      scooters = state.scooters;
-    } else if (state is StationsSuccessState) {
       stations = state.stations;
     }
 
