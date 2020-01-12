@@ -43,7 +43,9 @@
         "cancel_ride_button": "Cancel",
         "scooter_info_name": "Scooter",
         "scooter_info_battery": "Battery",
-        "localization_button": "Change language"
+        "localization_button": "Change language",
+        "station_info_name": "Station",
+        "station_info_model": "Model"
     },
     "parked_or_not": {
         "title": "Parked Or Not",

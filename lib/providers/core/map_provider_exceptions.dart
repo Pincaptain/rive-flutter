@@ -15,3 +15,19 @@ class ScootersUnexpectedException implements Exception {
     @required this.errorMessage,
   });
 }
+
+class StationsInternalServerException implements Exception {
+  final String errorMessage;
+
+  StationsInternalServerException({
+    @required this.errorMessage,
+  });
+}
+
+class StationsUnexpectedException implements Exception {
+  final String errorMessage;
+
+  StationsUnexpectedException({
+    @required this.errorMessage,
+  });
+}
