@@ -5,8 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:rive_flutter/models/auth.dart';
 import 'package:rive_flutter/models/core.dart';
-
-import 'map_provider_exceptions.dart';
+import 'package:rive_flutter/providers/core/map_provider_exceptions.dart';
 
 class StationsApiProvider {
   final providerUrl = '${Client.client}/api/stations';

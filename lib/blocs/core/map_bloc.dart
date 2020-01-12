@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
-import 'package:rive_flutter/models/auth.dart';
-import 'package:rive_flutter/models/core.dart';
-import 'package:rive_flutter/repositories/core/map_repository.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:rive_flutter/providers/core/map_provider_exceptions.dart';
 
-import 'map_bloc_events.dart';
-import 'map_bloc_states.dart';
+import 'package:rive_flutter/models/auth.dart';
+import 'package:rive_flutter/repositories/core/map_repository.dart';
+import 'package:rive_flutter/providers/core/map_provider_exceptions.dart';
+import 'package:rive_flutter/blocs/core/map_bloc_events.dart';
+import 'package:rive_flutter/blocs/core/map_bloc_states.dart';
 import 'package:rive_flutter/locator.dart';
 
 class MapBloc extends Bloc<MapEvent, MapState> {
@@ -18,9 +16,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   WebSocketChannel scootersChannel;
   WebSocketChannel stationsChannel;
-
-  StreamSubscription scootersChannelSubscription;
-  StreamSubscription stationsChannelSubscription;
 
   Timer scootersTimer;
 
@@ -31,10 +26,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         IOWebSocketChannel.connect('${Client.webSocketsClient}/scooters/');
     stationsChannel =
         IOWebSocketChannel.connect('${Client.webSocketsClient}/stations/');
-    scootersChannelSubscription =
-        scootersChannel.stream.listen(onScootersMessage);
-    stationsChannelSubscription =
-        stationsChannel.stream.listen(onStationsMessage);
     scootersTimer = Timer.periodic(Duration(seconds: 5), onMapTick);
   }
 
@@ -55,40 +46,30 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         );
       }
     } on ScootersInternalServerException catch (exc) {
-      yield ScootersErrorState(
+      yield MapErrorState(
         errorMessage: exc.errorMessage,
       );
     } on ScootersUnexpectedException catch (exc) {
-      yield ScootersErrorState(
+      yield MapErrorState(
         errorMessage: exc.errorMessage,
       );
     } on StationsInternalServerException catch (exc) {
-      yield StationsErrorState(
+      yield MapErrorState(
           errorMessage: exc.errorMessage
       );
     } on StationsUnexpectedException catch (exc) {
-      yield StationsErrorState(
+      yield MapErrorState(
           errorMessage: exc.errorMessage
       );
     }
-  }
-
-  void onScootersMessage(dynamic message) {
-    add(ListScootersEvent(message));
   }
 
   void onMapTick(Timer timer) {
     add(ListMapElementsEvent());
   }
 
-  void onStationsMessage(dynamic message) {
-    add(ListStationsEvent(message));
-  }
-
   @override
   Future<void> close() {
-    scootersChannelSubscription.cancel();
-    stationsChannelSubscription.cancel();
     scootersTimer.cancel();
     return super.close();
   }

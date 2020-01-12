@@ -8,9 +8,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rive_flutter/blocs/core/map_bloc.dart';
-import 'package:rive_flutter/blocs/core/map_bloc_events.dart';
-import 'package:rive_flutter/blocs/core/map_bloc_states.dart';
 
 import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/core.dart';
@@ -23,6 +20,9 @@ import 'package:rive_flutter/blocs/core/ride_bloc_events.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc_states.dart';
 import 'package:rive_flutter/blocs/extensions/location_bloc.dart';
 import 'package:rive_flutter/blocs/extensions/location_bloc_states.dart';
+import 'package:rive_flutter/blocs/core/map_bloc.dart';
+import 'package:rive_flutter/blocs/core/map_bloc_events.dart';
+import 'package:rive_flutter/blocs/core/map_bloc_states.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -72,10 +72,8 @@ class MapPageState extends State<MapPage> {
   }
 
   void onMapError(MapState state) {
-    if (state is StationsErrorState) {
-      createUserErrorFlushbar(state.errorMessage).show(context);
-    } else if (state is ScootersErrorState) {
-      createUserErrorFlushbar(state.errorMessage).show(context);
+    if (state is MapErrorState) {
+      createErrorFlushbar(state.errorMessage).show(context);
     }
   }
 

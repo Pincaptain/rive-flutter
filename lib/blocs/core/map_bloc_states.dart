@@ -16,45 +16,10 @@ class MapElementsSuccessState extends MapState {
   });
 }
 
-abstract class ScootersState extends MapState {}
-
-class ScootersFetchingState extends ScootersState {}
-
-class ScootersSuccessState extends ScootersState {
-  final List<Scooter> scooters;
-
-  ScootersSuccessState({
-    @required this.scooters
-  });
-}
-
-class ScootersEmptyState extends ScootersState {}
-
-class ScootersErrorState extends ScootersState {
+class MapErrorState extends MapState {
   final String errorMessage;
 
-  ScootersErrorState({
-    @required this.errorMessage
+  MapErrorState({
+    @required this.errorMessage,
   });
 }
-
-abstract class StationsState extends MapState {}
-
-class StationsFetchingState extends StationsState {}
-
-class StationsSuccessState extends StationsState {
-  final List<Station> stations;
-
-  StationsSuccessState({
-    @required this.stations
-  });
-}
-
-class StationsErrorState extends StationsState {
-  final String errorMessage;
-
-  StationsErrorState({
-    @required this.errorMessage
-  });
-}
-
