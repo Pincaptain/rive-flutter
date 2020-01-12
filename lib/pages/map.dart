@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flushbar/flushbar.dart';
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rive_flutter/blocs/core/map_bloc.dart';
@@ -18,6 +15,7 @@ import 'package:rive_flutter/blocs/core/map_bloc_states.dart';
 import 'package:rive_flutter/pages/login.dart';
 import 'package:rive_flutter/models/core.dart';
 import 'package:rive_flutter/pages/ride.dart';
+import 'package:rive_flutter/pages/scanner.dart';
 import 'package:rive_flutter/widgets/builders/flushbar_builders.dart';
 import 'package:rive_flutter/widgets/extensions/drawer.dart';
 import 'package:rive_flutter/blocs/core/ride_bloc.dart';
@@ -83,8 +81,7 @@ class MapPageState extends State<MapPage> {
 
   void onConnectivityResult(ConnectivityResult result) {
     if (result == ConnectivityResult.none) {
-      connectivityFlushbar = createWarningFlushbar(
-          AppLocalizations.of(context).tr('map.connection_required'));
+      connectivityFlushbar = createWarningFlushbar(AppLocalizations.of(context).tr('map.connection_required'));
       connectivityFlushbar.show(context);
     } else {
       if (connectivityFlushbar != null) {
@@ -95,8 +92,8 @@ class MapPageState extends State<MapPage> {
 
   void onLocationPermissionResult(LocationPermissionState state) {
     if (state is LocationPermissionDisallowedState) {
-      locationPermissionFlushbar = createWarningFlushbar(
-          AppLocalizations.of(context).tr('map.location_permission_required'));
+      locationPermissionFlushbar =
+          createWarningFlushbar(AppLocalizations.of(context).tr('map.location_permission_required'));
       locationPermissionFlushbar.show(context);
     } else {
       if (locationPermissionFlushbar != null) {
@@ -136,26 +133,15 @@ class MapPageState extends State<MapPage> {
       return;
     }
 
-    String qrCode;
+    isScanning = true;
+    final qrCode = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ScannerPage(),
+      ),
+    );
 
-    try {
-      isScanning = true;
-      qrCode = await BarcodeScanner.scan();
-    } on PlatformException {
-      createErrorFlushbar(
-              AppLocalizations.of(context).tr('map.camera_permission_required'))
-          .show(context);
-    } on FormatException {
-      createErrorFlushbar(
-              AppLocalizations.of(context).tr('map.qr_incorrect_format'))
-          .show(context);
-    } catch (exc) {
-      createErrorFlushbar(AppLocalizations.of(context).tr('map.qr_unexpected'))
-          .show(context);
-    } finally {
-      isScanning = false;
-    }
-
+    isScanning = false;
     if (qrCode != null) {
       showDialog(
         context: context,
@@ -200,19 +186,13 @@ class MapPageState extends State<MapPage> {
           actions: <Widget>[
             IconButton(
               onPressed: () {
-                if (EasyLocalizationProvider.of(context).data.locale ==
-                    Locale('en', 'US')) {
-                  EasyLocalizationProvider.of(context)
-                      .data
-                      .changeLocale(Locale('mk', 'MK'));
+                if (EasyLocalizationProvider.of(context).data.locale == Locale('en', 'US')) {
+                  EasyLocalizationProvider.of(context).data.changeLocale(Locale('mk', 'MK'));
                 } else {
-                  EasyLocalizationProvider.of(context)
-                      .data
-                      .changeLocale(Locale('en', 'US'));
+                  EasyLocalizationProvider.of(context).data.changeLocale(Locale('en', 'US'));
                 }
               },
-              tooltip:
-                  AppLocalizations.of(context).tr('map.localization_button'),
+              tooltip: AppLocalizations.of(context).tr('map.localization_button'),
               icon: Icon(
                 Icons.language,
                 color: Colors.white,
@@ -303,7 +283,6 @@ class MapPageState extends State<MapPage> {
         .toSet();
   }
 
-
   Widget createBeginRideButton(BeginRideState state) {
     Widget displayWidget = Text(
       AppLocalizations.of(context).tr('map.ride_button'),
@@ -367,7 +346,10 @@ class MapPageState extends State<MapPage> {
       flareAnimation: 'sucsess',
       title: Text(
         AppLocalizations.of(context).tr('map.qr_success_title'),
-        style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
+        style: TextStyle(
+          fontSize: 22.0,
+          fontWeight: FontWeight.w600
+        ),
       ),
       description: Text(
         AppLocalizations.of(context).tr('map.qr_success_description'),
@@ -394,11 +376,11 @@ class MapPageState extends State<MapPage> {
 
   @override
   void dispose() {
+    super.dispose();
     locationPermissionBloc.close();
     beginRideBloc.close();
     rideStatusBloc.close();
     mapBloc.close();
     connectivitySubscription.cancel();
-    super.dispose();
   }
 }
